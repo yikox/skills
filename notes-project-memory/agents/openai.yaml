@@ -1,0 +1,4 @@
+interface:
+  display_name: "Notes Project Memory"
+  short_description: "Store project memory in Markdown notes"
+  default_prompt: "Use $notes-project-memory to record this project fact in my notes workspace."

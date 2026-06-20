@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Knowledge Memory"
+  short_description: "Record reusable project knowledge and lessons"
+  default_prompt: "Use $project-knowledge-memory to update knowledge-summary.md with this learning."

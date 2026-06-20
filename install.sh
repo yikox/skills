@@ -10,14 +10,13 @@ Usage:
   ./install.sh [--dry-run] [target_dir ...]
 
 Installs every skill directory in this repository into one or more agent
-skills directories. A repository child directory is treated as a skill when it
-contains SKILL.md.
+skills directories. Any directory under this repository is treated as a skill
+when it contains SKILL.md.
 
 Default targets:
+  ~/.agents/skills
   ~/.codex/skills
   ~/.claude/skills
-  ~/codex/skills
-  ~/claude/skills
 
 Examples:
   ./install.sh
@@ -58,24 +57,33 @@ done
 
 if ((${#targets[@]} == 0)); then
   targets=(
+    "$HOME/.agents/skills"
     "$HOME/.codex/skills"
     "$HOME/.claude/skills"
-    "$HOME/codex/skills"
-    "$HOME/claude/skills"
   )
 fi
 
 skills=()
-for entry in "$repo_dir"/*; do
-  if [[ -d "$entry" && -f "$entry/SKILL.md" ]]; then
-    skills+=("$entry")
-  fi
-done
+while IFS= read -r -d '' skill_file; do
+  skills+=("$(dirname "$skill_file")")
+done < <(
+  find "$repo_dir" \
+    -path "$repo_dir/.git" -prune -o \
+    -path "$repo_dir/.git/*" -prune -o \
+    -name SKILL.md -type f -print0
+)
+
+deprecated_skills=(
+  notes-project-memory
+)
 
 if ((${#skills[@]} == 0)); then
   echo "No skills found in $repo_dir" >&2
   exit 1
 fi
+
+IFS=$'\n' skills=($(printf '%s\n' "${skills[@]}" | sort))
+unset IFS
 
 rsync_flags=(-a --delete)
 if ((dry_run)); then
@@ -104,6 +112,17 @@ for target in "${targets[@]}"; do
     fi
 
     rsync "${rsync_flags[@]}" "$skill/" "$destination/"
+  done
+
+  for deprecated_skill in "${deprecated_skills[@]}"; do
+    deprecated_destination="$expanded_target/$deprecated_skill"
+    if [[ -e "$deprecated_destination" ]]; then
+      if ((dry_run)); then
+        echo "  remove deprecated $deprecated_skill -> $deprecated_destination"
+      else
+        rm -rf "$deprecated_destination"
+      fi
+    fi
   done
 done
 

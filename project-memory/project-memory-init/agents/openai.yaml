@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Memory Init"
+  short_description: "Connect a project to external memory notes"
+  default_prompt: "Use $project-memory-init to initialize project memory for this repo."

@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Management Memory"
-  short_description: "Record durable project status and commit checkpoints"
-  default_prompt: "Use $project-management-memory to update project-management.md from this change."
+  short_description: "Track active tasks, status, and commit checkpoints"
+  default_prompt: "Use $project-management-memory to record the active task or update project-management.md from this change."

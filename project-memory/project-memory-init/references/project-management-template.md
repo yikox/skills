@@ -22,7 +22,9 @@ Last updated: <YYYY-MM-DD>
 
 ## Active Tasks
 
-- 
+| Date | Task | Status | Next Step / Notes |
+| --- | --- | --- | --- |
+| <YYYY-MM-DD> |  | 进行中 |  |
 
 ## Milestones
 

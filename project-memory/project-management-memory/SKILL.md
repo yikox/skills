@@ -1,6 +1,6 @@
 ---
 name: project-management-memory
-description: Maintain the project-management.md file in the external project-memory notes workspace. Use after git commits, staged changes, PR merges, releases, tags, version bumps, changelog/package updates, feature completion, important bug fixes, milestone progress, blockers, risks, testing or CI changes, deployment changes, architecture decisions, or when Codex should record or recall durable project status, roadmap, version state, validation, deployment, risk, or ADR summaries. Check whether a commit changes durable project state; do not write ordinary commit logs.
+description: Maintain the project-management.md file in the external project-memory notes workspace. Use when starting or planning non-trivial project work to record the current in-progress task; while working to update active todos, blockers, and current focus; after git commits, staged changes, PR merges, releases, tags, version bumps, changelog/package updates, feature completion, important bug fixes, milestone progress, blockers, risks, testing or CI changes, deployment changes, architecture decisions; or when Codex should record or recall durable project status, roadmap, version state, validation, deployment, risk, or ADR summaries. Check whether a commit changes durable project state; do not write ordinary commit logs.
 ---
 
 # Project Management Memory
@@ -14,13 +14,28 @@ Record durable project state:
 - Project overview and current status.
 - Version, release, tag, or shipped capability summaries.
 - Git commit checkpoints when the change affects project state.
-- Active tasks, current focus, roadmap, and milestones.
+- In-progress tasks, active todos, current focus, roadmap, and milestones.
 - Test, CI, build, deployment, or rollback process changes.
 - Blockers, risks, mitigations, and status.
 - ADR summaries and important technical direction.
 - User-visible bug fixes or important stability fixes.
 
 Do not turn this file into a commit log. Record only the outcome or planning impact that a future agent should know.
+
+## In-Progress Task Rule
+
+When beginning non-trivial project work, update the `Active Tasks` section, or the equivalent Chinese section such as `进行中的任务`, before or near the start of implementation.
+
+Record:
+
+- The current task in one short line.
+- Status such as `进行中`, `blocked`, `done`, or the document's existing status style.
+- The next concrete step when useful.
+- A blocker or dependency if it affects execution.
+
+Update the same task entry as work progresses. When the task is completed, either mark it done, move the result to `Recent Updates`, or update the relevant milestone/status section. Do not leave stale `进行中` items after completion.
+
+Skip this for tiny one-shot edits, formatting-only fixes, direct answers that do not change the project, or tasks already tracked accurately in an issue/PR and not useful to duplicate.
 
 ## Git Checkpoint Rule
 
@@ -47,11 +62,12 @@ Skip the update when the change is only:
 
 1. Read [references/shared-rules.md](references/shared-rules.md).
 2. Resolve and read `project-management.md`.
-3. If git context matters, inspect the relevant diff, staged changes, commit, tag, or PR summary.
-4. Decide whether to update. If no update is warranted, say so briefly.
-5. Update the most relevant existing section instead of appending a duplicate section.
-6. Include the date for status, release, milestone, risk, ADR, and git checkpoint updates.
-7. Keep entries concise and outcome-oriented.
+3. If starting or planning work, update `Active Tasks` / `进行中的任务` with the current task unless the skip rule applies.
+4. If git context matters, inspect the relevant diff, staged changes, commit, tag, or PR summary.
+5. Decide whether to update other sections. If no update is warranted, say so briefly.
+6. Update the most relevant existing section instead of appending a duplicate section.
+7. Include the date for status, release, milestone, risk, ADR, active task, and git checkpoint updates.
+8. Keep entries concise and outcome-oriented.
 
 ## Suggested Sections
 

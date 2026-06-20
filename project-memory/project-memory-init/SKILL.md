@@ -43,6 +43,7 @@ This project uses external project memory in:
 
 Update project memory when durable project context changes:
 
+- When starting non-trivial project work, record the current task in `project-management.md` under `Active Tasks` / `进行中的任务`; update or close that task as work progresses.
 - After git commits, PR merges, releases, tags, or version bumps, check whether project status, shipped capability, milestone progress, testing, deployment, risk, blocker, or ADR information should be recorded in `project-management.md`.
 - After important debugging, verified commands, architecture discoveries, workflow changes, conventions, or lessons learned, update `knowledge-summary.md`.
 - Do not record tiny formatting-only edits, temporary scratch work, secrets, credentials, or ordinary commit logs.

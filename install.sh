@@ -75,6 +75,11 @@ done < <(
 
 deprecated_skills=(
   notes-project-memory
+  project-memory-init
+  project-management-memory
+  project-knowledge-memory
+  pm-architecture-docs
+  pm-requirement-to-design
 )
 
 if ((${#skills[@]} == 0)); then

@@ -8,17 +8,28 @@ installable skill.
 
 ### project-memory
 
-- `project-memory-init`: Set up durable project memory rules in project AI
+- `pm-init`: Set up durable project memory rules in project AI
   collaboration docs and reuse or create external memory notes.
-- `project-management-memory`: Maintain external `project-management.md` notes
+- `pm-track-status`: Maintain external `project-management.md` notes
   for project status, commit checkpoints, releases, milestones, testing,
   deployment, risks, and ADR summaries.
-- `project-knowledge-memory`: Maintain external `knowledge-summary.md` notes
+- `pm-record-requirement`: Clarify new requirements and record them in the PM
+  requirement backlog before design.
+- `pm-record-knowledge`: Maintain external `knowledge-summary.md` notes
   for verified commands, architecture facts, conventions, troubleshooting,
   investigation results, and lessons learned.
+- `pm-audit-memory`: Audit PM notes for stale tasks, missing design links,
+  lifecycle mismatches, and architecture baseline drift.
+- `pm-document-architecture`: Create and maintain baseline
+  `architecture/main-design.md` and module architecture design docs, with PM
+  design-document indexing, Mermaid-safe architecture diagrams, and SVG-first
+  UI schematic diagrams.
+- `pm-design-requirement`: Convert PM requirements or active tasks into
+  module-scoped change design docs, write the design paths back to PM, and mark
+  designs landed after implementation.
 
 Existing documents created by the previous `notes-project-memory` skill are
-still reused by `project-memory-init`; the legacy skill itself is no longer
+still reused by `pm-init`; the legacy skill itself is no longer
 installed as a separate capability.
 
 ## Install

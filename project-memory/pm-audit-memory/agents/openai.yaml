@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Audit Memory"
+  short_description: "Audit PM notes for lifecycle consistency"
+  default_prompt: "Use $pm-audit-memory to audit project memory for stale tasks, requirement/design status mismatches, and missing architecture updates."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Design Requirement"
+  short_description: "Turn PM requirements into module-scoped design docs"
+  default_prompt: "Use $pm-design-requirement to convert a PM task requirement into a module-scoped design document."

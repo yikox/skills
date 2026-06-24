@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">UI schematic template</title>
+  <desc id="desc">A reusable SVG-first template for PM architecture UI layout diagrams.</desc>
+  <style>
+    .frame { fill: #f8fafc; stroke: #1f2937; stroke-width: 2; }
+    .region { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+    .accent { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+    .muted { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.2; }
+    .label { fill: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 16px; font-weight: 600; }
+    .note { fill: #374151; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 13px; }
+  </style>
+  <rect id="window" class="frame" x="24" y="24" width="912" height="552" rx="10" />
+  <g id="top-bar">
+    <rect class="accent" x="40" y="40" width="880" height="56" rx="6" />
+    <text class="label" x="64" y="75">Top Bar</text>
+  </g>
+  <g id="activity-bar">
+    <rect class="muted" x="40" y="112" width="72" height="392" rx="6" />
+    <text class="label" x="59" y="306" transform="rotate(-90 59 306)">Activity</text>
+  </g>
+  <g id="sidebar">
+    <rect class="region" x="128" y="112" width="216" height="392" rx="6" />
+    <text class="label" x="152" y="148">Sidebar</text>
+    <text class="note" x="152" y="176">Navigation or list</text>
+  </g>
+  <g id="main-area">
+    <rect class="region" x="360" y="112" width="560" height="392" rx="6" />
+    <rect class="muted" x="376" y="128" width="528" height="44" rx="5" />
+    <text class="label" x="392" y="156">Tabs / Header</text>
+    <rect class="accent" x="376" y="188" width="528" height="300" rx="5" />
+    <text class="label" x="392" y="224">Main Content</text>
+    <text class="note" x="392" y="252">Replace regions and labels for the target UI.</text>
+  </g>
+  <g id="status-bar">
+    <rect class="muted" x="40" y="520" width="880" height="40" rx="6" />
+    <text class="label" x="64" y="546">Status Bar</text>
+  </g>
+</svg>

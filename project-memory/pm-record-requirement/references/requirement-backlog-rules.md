@@ -13,7 +13,29 @@ If no equivalent section exists, add it near `Active Tasks` / `进行中的任�
 
 ## Suggested Table
 
-English:
+Use the preferred table for new PM documents.
+
+Preferred English table:
+
+```markdown
+## Requirements Backlog
+
+| ID | Date | Requirement | Primary Module | Change Summary | Scope / Impact | Status | Priority | Next Step / Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | <module-slug or unknown> |  |  | ready-for-design |  |  |
+```
+
+Preferred Chinese table:
+
+```markdown
+## 需求待办
+
+| ID | 日期 | 需求 | 主模块 | 修改摘要 | 范围 / 影响点 | 状态 | 优先级 | 下一步 / 备注 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | <module-slug 或 unknown> |  |  | ready-for-design |  |  |
+```
+
+Minimum compatible English table:
 
 ```markdown
 ## Requirements Backlog
@@ -23,7 +45,7 @@ English:
 | REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | ready-for-design |  |  |  |
 ```
 
-Chinese:
+Minimum compatible Chinese table:
 
 ```markdown
 ## 需求待办
@@ -33,7 +55,7 @@ Chinese:
 | REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | ready-for-design |  |  |  |
 ```
 
-Adapt to the existing table columns when the PM document already has a requirement backlog.
+Adapt to the existing table columns when the PM document already has a requirement backlog. If the existing table lacks dedicated columns, put module, change summary, scope, and impact points into `Next Step / Notes` / `下一步 / 备注` instead of rewriting the whole table.
 
 ## Status Values
 
@@ -56,9 +78,13 @@ A requirement is `ready-for-design` only when it has:
 
 - clear user or project goal;
 - expected behavior or outcome;
+- primary module from architecture docs, or an explicit candidate/unknown marker;
+- modification summary that states what should change;
 - rough scope and non-goals when relevant;
-- likely module, product area, or unknown marker;
+- impact points, such as affected modules, workflows, data/state, API/contracts, UI, tests, operations, or compatibility;
 - acceptance criteria, validation signal, or observable completion condition;
 - open questions called out explicitly.
+
+Before handoff to `pm-design-requirement`, run `pm-review-artifact`. If review finds unresolved human questions, keep the requirement in `needs-clarification` or `needs-review` instead of promoting it.
 
 Do not invent missing business rules. Record assumptions as assumptions.

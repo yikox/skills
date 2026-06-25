@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Groom Roadmap"
+  short_description: "Prioritize PM backlog and roadmap"
+  default_prompt: "Use $pm-groom-roadmap to groom this project's PM backlog, priorities, and roadmap."

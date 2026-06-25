@@ -28,9 +28,9 @@ Last updated: <YYYY-MM-DD>
 
 ## Requirements Backlog
 
-| ID | Date | Requirement | Status | Priority | Module/Area | Next Step / Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | ready-for-design |  |  |  |
+| ID | Date | Requirement | Primary Module | Change Summary | Scope / Impact | Status | Priority | Next Step / Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | unknown |  |  | ready-for-design |  |  |
 
 ## Design Documents
 

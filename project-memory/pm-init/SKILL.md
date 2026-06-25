@@ -1,6 +1,6 @@
 ---
 name: pm-init
-description: Initialize or repair a project's durable memory setup in an external notes workspace. Use when Codex should connect a project to project memory; write or update memory rules in AGENTS.md, CLAUDE.md, .codex/AGENTS.md, or similar AI collaboration docs; discover, migrate, or reuse existing notes-project-memory documents; create missing project-management.md or knowledge-summary.md files; check whether architecture design docs already exist and offer optional creation through `pm-document-architecture`; or configure when future agents should update project memory after commits, PR merges, releases, deployments, debugging, architecture changes, or verified workflows.
+description: Initialize or repair a project's durable memory setup in an external notes workspace. Use when Codex should connect a project to project memory; write or update memory rules in AGENTS.md, CLAUDE.md, .codex/AGENTS.md, or similar AI collaboration docs; discover, reuse, or offer migration for existing notes-project-memory documents; create missing project-management.md or knowledge-summary.md files; check whether architecture design docs already exist and offer optional creation through `pm-document-architecture`; or configure when future agents should update project memory after commits, PR merges, releases, deployments, debugging, architecture changes, or verified workflows.
 ---
 
 # PM Init
@@ -25,13 +25,17 @@ Use this skill to connect a project to the external project-memory notes workspa
    - Repo already using `.codex/` or `.agents/`: use that directory's `AGENTS.md`.
 6. Resolve the external notes workspace and project folder using shared rules.
 7. Reuse existing `project-management.md` and `knowledge-summary.md` if present. Create only missing files from the templates in this skill.
-8. Check whether architecture design docs already exist:
+8. Check whether existing PM docs look like the current schema:
+   - Current schema includes `Requirements Backlog` / `需求待办`, `Design Documents` / `设计文档`, lifecycle-aware status wording, and `architecture/main-design.md` when architecture docs exist.
+   - If docs are older but usable, keep them as canonical and ask whether to run `pm-migrate-memory` before making large PM edits.
+   - Do not perform broad migration during init without user approval. Safe fixes such as adding missing AI rule pointers are allowed.
+9. Check whether architecture design docs already exist:
    - Existing architecture docs include `architecture/main-design.md`, module docs under `architecture/modules/`, or a `Design Documents` / `设计文档` PM section that points to those docs.
    - If architecture docs exist, mention them in the report and do not regenerate them unless the user asked for that.
    - If architecture docs do not exist and `pm-document-architecture` is available, ask whether to create them now. Say this is a larger token-consuming step because it may inspect the repository and produce main/module design docs. Also say the user can skip it now and later call `pm-document-architecture` directly.
    - If the user declines or does not clearly approve, leave architecture docs uncreated and report how to continue later.
-9. Write or update a short `Project Memory` section in the AI collaboration file.
-10. Report the AI doc path, notes folder, reused files, created files, architecture-doc status, and any unresolved ambiguity.
+10. Write or update a short `Project Memory` section in the AI collaboration file.
+11. Report the AI doc path, notes folder, reused files, created files, schema/migration status, architecture-doc status, and any unresolved ambiguity.
 
 ## Optional Architecture Docs
 
@@ -63,8 +67,14 @@ Update project memory when durable project context changes:
 
 - When starting non-trivial project work, record the current task in `project-management.md` under `Active Tasks` / `进行中的任务`; update or close that task as work progresses.
 - When a user states a new requirement that is not yet ready for design or implementation, record it in `Requirements Backlog` / `需求待办`. Use `pm-record-requirement` to clarify and capture requirements before `pm-design-requirement`.
+- When backlog priority, current focus, roadmap, or milestones need grooming, use `pm-groom-roadmap`.
+- After a requirement row or change design doc is generated, use `pm-review-artifact` as the automatic reviewer before human confirmation. Fix clear defects, but list product, scope, module, or tradeoff questions for the human.
 - When creating or changing architecture/design docs, keep `project-management.md` `Design Documents` / `设计文档` paths current. Use `architecture/main-design.md` as the main design doc and `architecture/modules/` for module docs. Index requirement/change design docs only after they are generated, and mark them implemented / 已落地 only after implementation is complete.
+- When a generated design is ready, use `pm-design-requirement` for design review/acceptance before implementation; acceptance is separate from implementation.
 - If architecture docs do not exist, they can be created later with `pm-document-architecture`.
+- When existing PM docs use an older schema or old skill names, use `pm-migrate-memory` before broad PM rewrites.
+- When PM active tables become noisy, use `pm-track-status` archive rules to move implemented/obsolete items into archive sections while preserving final statuses and design paths.
+- Run `pm-audit-memory` after design handoff, implementation completion, milestone/release cleanup, or migration when PM consistency matters.
 - After git commits, PR merges, releases, tags, or version bumps, check whether project status, shipped capability, milestone progress, testing, deployment, risk, blocker, or ADR information should be recorded in `project-management.md`.
 - After important debugging, verified commands, architecture discoveries, workflow changes, conventions, or lessons learned, update `knowledge-summary.md`.
 - Do not record tiny formatting-only edits, temporary scratch work, secrets, credentials, or ordinary commit logs.
@@ -80,6 +90,8 @@ When a project was previously initialized by `notes-project-memory`:
 - Keep the old file names.
 - Preserve existing headings unless normalizing a missing section is useful.
 - Add the new git commit checkpoint rule to the project AI doc.
+- Add the current skill names and handoff rules when missing: `pm-record-requirement`, `pm-review-artifact`, `pm-groom-roadmap`, `pm-design-requirement`, `pm-document-architecture`, `pm-track-status`, `pm-record-knowledge`, `pm-audit-memory`, and `pm-migrate-memory`.
+- If `Requirements Backlog`, `Design Documents`, architecture design paths, lifecycle statuses, or archive sections are missing, suggest `pm-migrate-memory` and ask before applying migration.
 - Do not duplicate content into a new `project-memory` folder.
 
 ## Templates

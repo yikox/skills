@@ -1,4 +1,4 @@
 interface:
   display_name: "PM Track Status"
-  short_description: "Track PM tasks, requirements, and status"
+  short_description: "Track PM tasks, roadmap, and archives"
   default_prompt: "Use $pm-track-status to record the active task, requirement status, or project-management.md update from this change."

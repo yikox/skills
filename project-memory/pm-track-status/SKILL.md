@@ -1,6 +1,6 @@
 ---
 name: pm-track-status
-description: Maintain the project-management.md file in the external project-memory notes workspace. Use when starting or planning non-trivial project work to record the current in-progress task; while working to update active todos, blockers, current focus, requirement backlog status, or design handoff state; after git commits, staged changes, PR merges, releases, tags, version bumps, changelog/package updates, feature completion, important bug fixes, milestone progress, blockers, risks, testing or CI changes, deployment changes, architecture decisions; or when Codex should record or recall durable project status, roadmap, version state, validation, deployment, risk, requirement backlog, or ADR summaries. Check whether a commit changes durable project state; do not write ordinary commit logs.
+description: Maintain the project-management.md file in the external project-memory notes workspace. Use when starting or planning non-trivial project work to record the current in-progress task; while working to update active todos, blockers, current focus, requirement backlog status, design handoff state, roadmap status, or archive completed/obsolete PM items; after git commits, staged changes, PR merges, releases, tags, version bumps, changelog/package updates, feature completion, important bug fixes, milestone progress, blockers, risks, testing or CI changes, deployment changes, architecture decisions; or when Codex should record or recall durable project status, roadmap, version state, validation, deployment, risk, requirement backlog, design index, archive, or ADR summaries. Check whether a commit changes durable project state; use `pm-groom-roadmap` for dedicated backlog prioritization and roadmap grooming; do not write ordinary commit logs.
 ---
 
 # PM Track Status
@@ -10,6 +10,10 @@ Use this skill to maintain `project-management.md`. This is the project-state ca
 ## Required References
 
 Read [references/pm-lifecycle-rules.md](references/pm-lifecycle-rules.md) when updating requirement, design, implementation, or design-document index statuses.
+
+Read [references/pm-archive-rules.md](references/pm-archive-rules.md) when moving completed, implemented, obsolete, or stale items out of active PM tables.
+
+Read [references/pm-workflow-map.md](references/pm-workflow-map.md) when orienting PM workflow sequence, handoffs, or next skill selection.
 
 ## What Belongs Here
 
@@ -21,12 +25,17 @@ Record durable project state:
 - In-progress tasks, active todos, current focus, roadmap, and milestones.
 - Requirements backlog entries and their lifecycle status when they affect planning or design handoff.
 - Design-document indexes and lifecycle status for main, module, and change design docs.
+- Archive summaries for completed, implemented, obsolete, or superseded work.
 - Test, CI, build, deployment, or rollback process changes.
 - Blockers, risks, mitigations, and status.
 - ADR summaries and important technical direction.
 - User-visible bug fixes or important stability fixes.
 
 Do not turn this file into a commit log. Record only the outcome or planning impact that a future agent should know.
+
+For dedicated backlog prioritization, next-focus selection, roadmap grooming, or milestone planning, use `pm-groom-roadmap`.
+
+For workflow sequencing across requirements, review, design, confirmation, implementation updates, and audit, follow the PM workflow map. Initialization is setup and is not part of the delivery workflow map.
 
 ## In-Progress Task Rule
 
@@ -51,11 +60,28 @@ Track:
 
 - stable requirement ID when available;
 - concise requirement statement;
+- primary module from architecture docs, or an explicit candidate/unknown marker;
+- modification summary and scope/impact points when available;
 - status such as `needs-clarification`, `ready-for-design`, `designing`, `designed`, `accepted`, `implementing`, `implemented`, `blocked`, `needs-review`, `obsolete`, or the document's existing status style;
 - priority or module/area when known;
 - next step, design path, or open question when useful.
 
 Do not mix ordinary active execution tasks with requirement intake. Move or link a requirement into `Active Tasks` only when implementation work actually begins.
+
+## Archive Rule
+
+Archive is an organization action, not a lifecycle status. Use it to keep active PM sections readable while preserving links, evidence, and final statuses.
+
+Archive candidates include:
+
+- completed active tasks whose outcome has already been summarized;
+- requirement rows marked `implemented` or `obsolete`;
+- change design index rows marked `implemented` or `obsolete`;
+- stale rows that a PM audit or the user confirms should no longer drive current work.
+
+Do not archive requirements, designs, or tasks that are `needs-clarification`, `ready-for-design`, `designing`, `designed`, `accepted`, `implementing`, `blocked`, or `needs-review` unless the user explicitly confirms they are no longer active.
+
+Keep `architecture/main-design.md` and module baseline docs indexed. For change design docs, archive the PM index row by moving it to `Design Archive` / `设计归档`; do not move the design file itself unless the user explicitly asks and all links are updated.
 
 ## Git Checkpoint Rule
 
@@ -84,11 +110,12 @@ Skip the update when the change is only:
 2. Resolve and read `project-management.md`.
 3. If starting or planning work, update `Active Tasks` / `进行中的任务` with the current task unless the skip rule applies.
 4. If recording or updating requirements, update `Requirements Backlog` / `需求待办` unless `pm-record-requirement` is a better fit for clarification.
-5. If git context matters, inspect the relevant diff, staged changes, commit, tag, or PR summary.
-6. Decide whether to update other sections. If no update is warranted, say so briefly.
-7. Update the most relevant existing section instead of appending a duplicate section.
-8. Include the date for status, release, milestone, risk, ADR, requirement, active task, and git checkpoint updates.
-9. Keep entries concise and outcome-oriented.
+5. If archiving completed or obsolete items, read the archive rules and preserve design paths/evidence.
+6. If git context matters, inspect the relevant diff, staged changes, commit, tag, or PR summary.
+7. Decide whether to update other sections. If no update is warranted, say so briefly.
+8. Update the most relevant existing section instead of appending a duplicate section.
+9. Include the date for status, release, milestone, risk, ADR, requirement, active task, archive, and git checkpoint updates.
+10. Keep entries concise and outcome-oriented.
 
 ## Suggested Sections
 
@@ -102,12 +129,14 @@ Suggested sections:
 4. Active Tasks
 5. Requirements Backlog
 6. Design Documents
-7. Milestones
-8. Testing and Validation
-9. Deployment
-10. Blockers and Risks
-11. ADR Summary
-12. Recent Updates
+7. Roadmap
+8. Milestones
+9. Testing and Validation
+10. Deployment
+11. Blockers and Risks
+12. ADR Summary
+13. Archive
+14. Recent Updates
 
 ## Writing Style
 

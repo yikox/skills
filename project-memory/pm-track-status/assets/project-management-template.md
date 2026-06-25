@@ -28,15 +28,21 @@ Last updated: <YYYY-MM-DD>
 
 ## Requirements Backlog
 
-| ID | Date | Requirement | Status | Priority | Module/Area | Next Step / Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | ready-for-design |  |  |  |
+| ID | Date | Requirement | Primary Module | Change Summary | Scope / Impact | Status | Priority | Next Step / Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | unknown |  |  | ready-for-design |  |  |
 
 ## Design Documents
 
 | Type | Path | Status | Notes |
 | --- | --- | --- | --- |
 | Main Design | architecture/main-design.md | draft |  |
+
+## Roadmap
+
+| Priority | Item | Status | Notes |
+| --- | --- | --- | --- |
+| P1 |  |  |  |
 
 ## Milestones
 
@@ -63,6 +69,20 @@ Last updated: <YYYY-MM-DD>
 | Date | Decision | Reason |
 | --- | --- | --- |
 |  |  |  |
+
+## Archive
+
+### Requirements Archive
+
+| ID | Date | Requirement | Final Status | Design Path / Evidence |
+| --- | --- | --- | --- | --- |
+|  |  |  |  |  |
+
+### Design Archive
+
+| Type | Path | Final Status | Notes |
+| --- | --- | --- | --- |
+|  |  |  |  |
 
 ## Recent Updates
 

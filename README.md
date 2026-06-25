@@ -15,11 +15,18 @@ installable skill.
   deployment, risks, and ADR summaries.
 - `pm-record-requirement`: Clarify new requirements and record them in the PM
   requirement backlog before design.
+- `pm-review-artifact`: Automatically review PM requirements, architecture
+  docs, and design docs before human confirmation, fixing clear defects and
+  listing open questions.
+- `pm-groom-roadmap`: Groom PM requirements, priorities, current focus,
+  roadmap, and milestones.
 - `pm-record-knowledge`: Maintain external `knowledge-summary.md` notes
   for verified commands, architecture facts, conventions, troubleshooting,
   investigation results, and lessons learned.
 - `pm-audit-memory`: Audit PM notes for stale tasks, missing design links,
   lifecycle mismatches, and architecture baseline drift.
+- `pm-migrate-memory`: Migrate older PM notes, AI rules, design indexes, and
+  lifecycle fields to the current `pm-*` schema.
 - `pm-document-architecture`: Create and maintain baseline
   `architecture/main-design.md` and module architecture design docs, with PM
   design-document indexing, Mermaid-safe architecture diagrams, and SVG-first
@@ -114,3 +121,23 @@ my-skill/
 
 Only `SKILL.md` is required. Optional folders can be added when the skill needs
 extra instructions, helper scripts, or reusable assets.
+
+## Maintain PM Skill References
+
+When editing duplicated PM reference files, run:
+
+```sh
+python3 scripts/check_pm_reference_sync.py
+```
+
+## Lint A PM Project
+
+For a deterministic first pass over one external PM project folder, run:
+
+```sh
+python3 scripts/check_pm_project.py /path/to/PM/project-slug
+```
+
+This checks requirement/design traceability, broken local design links,
+architecture baseline placement, review status, and implementation evidence
+consistency.

@@ -12,6 +12,12 @@ Related requirement/task: <project-management.md reference>
 
 Design status: draft
 
+Review status: not-reviewed
+
+Accepted by:
+
+Accepted date:
+
 Implementation status: not-started
 
 Implementation evidence:
@@ -63,7 +69,15 @@ Implementation evidence:
 | --- | --- | --- |
 | Requirement | designed | <project-management.md requirement row> |
 | Design Document | draft | This file |
+| Review / Acceptance | not-reviewed |  |
 | Implementation | not-started |  |
+
+## Review Findings
+
+| Type | Finding | Resolution |
+| --- | --- | --- |
+| fixed |  |  |
+| needs-human |  |  |
 
 ## Testing and Validation
 

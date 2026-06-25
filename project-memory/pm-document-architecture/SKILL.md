@@ -1,6 +1,6 @@
 ---
 name: pm-document-architecture
-description: Create and maintain architecture design documents inside the external project-memory PM workspace. Use when Codex should generate modular architecture docs from an existing repository, discuss and draft a current or accepted target architecture, create or update `architecture/main-design.md`, create module design docs, organize architecture docs by module, add Mermaid-safe architecture/flow diagrams, add SVG-first UI schematic or wireframe diagrams, validate diagram accuracy against architecture source facts, write main/module design-document paths back into `project-management.md`, or handle Chinese requests such as 架构设计文档, 主设计文档, 模块设计文档, Mermaid 图表, 图表校验, 界面示意图, or UI 布局图. Do not use this skill to track plans, pending changes, or implementation plans; use `pm-design-requirement` for requirement/change design docs. Coordinate with any available superpower design-document capability for the design-writing step while this skill owns PM placement, indexing, and lifecycle.
+description: Create and maintain modular architecture design docs inside the external PM workspace. Use when Codex should generate or update `architecture/main-design.md`, module docs, Mermaid-safe architecture diagrams, SVG-first UI schematics, diagram validation, `pm-review-artifact` architecture review, PM design-document indexes, or Chinese requests such as 架构设计文档, 主设计文档, 模块设计文档, Mermaid 图表, 图表校验, 界面示意图, or UI 布局图. Do not use for plans, pending changes, or implementation plans; use `pm-design-requirement` for requirement/change design docs. Coordinate with any available superpower design-document capability for writing while this skill owns PM placement, indexing, review handoff, and lifecycle.
 ---
 
 # PM Document Architecture
@@ -15,6 +15,7 @@ Read these before writing or reorganizing design docs:
 
 - [references/shared-rules.md](references/shared-rules.md) for resolving the external PM folder.
 - [references/pm-design-doc-rules.md](references/pm-design-doc-rules.md) for design paths, module rules, status values, and PM index rules.
+- [references/pm-lifecycle-rules.md](references/pm-lifecycle-rules.md) when PM design-document index status must be synchronized with requirement or implementation lifecycle state.
 - [references/mermaid-diagram-rules.md](references/mermaid-diagram-rules.md) when creating or replacing architecture relationship, flow, sequence, state, data, or dependency diagrams.
 - [references/svg-ui-diagram-rules.md](references/svg-ui-diagram-rules.md) when creating or replacing UI schematic, layout, screen-region, or wireframe diagrams.
 - [references/diagram-validation-rules.md](references/diagram-validation-rules.md) when creating or replacing any diagram.
@@ -33,8 +34,9 @@ Use [assets/main-design-template.md](assets/main-design-template.md) and [assets
 6. For architecture relationships, flows, and state transitions, prefer inline Mermaid and follow the Mermaid safety rules. For UI layouts or screen-region diagrams, create SVG assets under `architecture/assets/ui/` and reference them from Markdown.
 7. After drawing or updating a diagram, validate it against the source architecture facts. If the diagram is inaccurate or ambiguous, fix it and repeat the validation.
 8. Update the `Design Documents` section in `project-management.md` with only the main design path and module design paths.
-9. If the work discovers reusable architecture facts from current code, update `knowledge-summary.md` only with concise facts, not full design content.
-10. Report changed files, created files, skipped ambiguous areas, and any open questions.
+9. Run `pm-review-artifact` on the generated or updated main/module architecture docs. Apply clear review fixes and record human questions without treating automatic review as acceptance.
+10. If the work discovers reusable architecture facts from current code, update `knowledge-summary.md` only with concise facts, not full design content.
+11. Report changed files, created files, automatic review result, skipped ambiguous areas, and any open questions.
 
 ## Design Rules
 
@@ -46,6 +48,7 @@ Use [assets/main-design-template.md](assets/main-design-template.md) and [assets
 - Use SVG-first for UI schematic diagrams. Do not use ASCII box drawings for durable UI layout documentation unless the sketch is tiny and temporary.
 - Store UI schematic SVGs as separate files, not large inline SVG blobs in Markdown.
 - Treat diagram accuracy as part of the deliverable. Cross-check diagram nodes, edges, labels, ownership, flows, and file paths against code, existing docs, PM requirements, or explicit user input before finishing.
+- Treat architecture review as part of the deliverable. Use `pm-review-artifact` after docs and diagrams are written so baseline claims, module boundaries, PM index paths, and open questions are checked before handoff.
 - Do not include plan sections, implementation plans, pending-change queues, or `Planned Changes` tables in architecture baseline docs.
 - Put requirement/change designs under `pm-design-requirement`; when a change design has been implemented, refresh the relevant architecture docs to describe the new landed baseline.
 - Preserve existing user-written docs and headings where possible; merge by section instead of rewriting whole files.

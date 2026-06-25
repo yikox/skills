@@ -1,6 +1,6 @@
 ---
 name: pm-design-requirement
-description: Convert project-management requirements or active tasks into module-scoped design documents inside the external project-memory PM workspace. Use when a PM `Requirements Backlog` / `需求待办` row is ready for design; when a PM todo is only a requirement and needs a concrete design; when Codex should classify a requirement into an architecture module; when a detailed change design doc should be created under that module; when the design path must be written back into `project-management.md` `Design Documents` / `设计文档`; when a generated design has been implemented and should be marked implemented/落地; or for Chinese requests such as 需求转设计文档, 待办转设计, 模块变更设计, or 设计落地. Use `pm-record-requirement` first when the requirement is not yet clear enough to design. Coordinate with any available superpower design-document capability for the detailed design content while this skill owns PM placement, module classification, status lifecycle, and indexing.
+description: Convert project-management requirements or active tasks into module-scoped design documents inside the external project-memory PM workspace. Use when a PM `Requirements Backlog` / `需求待办` row is ready for design; when a PM todo is only a requirement and needs a concrete design; when Codex should classify a requirement into an architecture module; when a detailed change design doc should be created under that module; when the design path must be written back into `project-management.md` `Design Documents` / `设计文档`; when a generated design needs automatic review, human acceptance, rejection, revision, or implementation landing; or for Chinese requests such as 需求转设计文档, 待办转设计, 模块变更设计, 自动审核, 设计评审, 设计接受, or 设计落地. Use `pm-record-requirement` first when the requirement is not yet clear enough to design. Coordinate with any available superpower design-document capability for the detailed design content while this skill owns PM placement, module classification, status lifecycle, review/acceptance state, and indexing.
 ---
 
 # PM Design Requirement
@@ -29,9 +29,11 @@ Use [assets/change-design-template.md](assets/change-design-template.md) when cr
 6. Create a detailed change design at `architecture/modules/<module-slug>/changes/<YYYY-MM-DD>-<change-slug>.md`.
 7. Update `project-management.md` `Design Documents` / `设计文档` so the change design is indexed after the file exists.
 8. Update the original PM requirement or task according to the lifecycle rules so it points to the design document and has an accurate status.
-9. Add an ADR summary only if the design records a durable accepted decision, not for every proposed option.
-10. Do not update module architecture docs with plan or `Planned Changes` entries.
-11. Report the requirement, selected module, design path, PM update, and unresolved questions.
+9. Run `pm-review-artifact` on the generated design and PM index before asking for human acceptance. Apply clear review fixes and record human questions.
+10. If the user asks for design acceptance, run the Design Review And Acceptance workflow below after automatic review.
+11. Add an ADR summary only if the design records a durable accepted decision, not for every proposed option.
+12. Do not update module architecture docs with plan or `Planned Changes` entries.
+13. Report the requirement, selected module, design path, PM update, automatic review result, review status, and unresolved questions.
 
 ## Classification Rules
 
@@ -48,6 +50,8 @@ Use [assets/change-design-template.md](assets/change-design-template.md) when cr
 - Separate current state, target design, implementation plan, tests, risks, and open questions.
 - Translate template headings and metadata labels to match the existing PM document language.
 - Mark the design as `draft` while assumptions remain unresolved, `proposed` when ready for review, and `accepted` only when the user or project record confirms it.
+- Treat `designed` as "a design exists and is indexed", not as approval. Acceptance is a separate review gate.
+- Run automatic review before human acceptance. Automatic review may mark `Review status: reviewed`, but it must not mark the design `accepted`.
 - Do not mark the design or PM task as implemented just because the design doc exists.
 - Mark a design as `implemented` / `已落地` only after the generated design has been implemented.
 - Keep requirement, design doc, and `Design Documents` statuses synchronized with [references/pm-lifecycle-rules.md](references/pm-lifecycle-rules.md).
@@ -65,6 +69,18 @@ Use [assets/change-design-template.md](assets/change-design-template.md) when cr
 - Update the `Design Documents` / `设计文档` section after creating the detailed design file; use `Change Design` / `变更设计` as the row type when useful.
 - Keep change design rows in `draft`, `proposed`, or `accepted` until implementation is complete; then update them to `implemented` / `已落地`.
 - Keep PM entries concise; the detailed reasoning belongs in the design document.
+
+## Design Review And Acceptance
+
+Use this workflow when the user asks to review, accept, reject, revise, or approve a generated design.
+
+1. Read the change design, original requirement row, relevant module docs, and `Design Documents` / `设计文档` row.
+2. Check traceability: requirement intent, module ownership, current state, target design, scope, acceptance criteria, implementation plan, validation, risks, open questions, and impacted modules.
+3. If the design is incomplete or contradicted by known project facts, keep the design `draft` or `proposed`, mark the requirement or PM row `needs-review` when useful, and record concise review notes in the design.
+4. If the user requests edits, update the design doc first, then sync PM index/status rows.
+5. Mark a design `accepted` only after explicit user approval, a project record, or an accepted decision in PM confirms the direction.
+6. When accepted, update the change design status, `Design Documents` / `设计文档` row, and requirement row to `accepted` when that row tracks the same lifecycle.
+7. Acceptance does not mean implementation. Keep implementation status `not-started` until code work begins.
 
 ## Implementation Completion
 

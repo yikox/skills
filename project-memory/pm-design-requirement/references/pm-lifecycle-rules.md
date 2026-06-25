@@ -16,18 +16,27 @@ Terminal or side statuses:
 - `needs-review`: status or evidence is unclear and should be reviewed before changing lifecycle state.
 - `obsolete`: superseded, cancelled, or no longer relevant.
 
+Archive is not a lifecycle status. Archived rows keep their final lifecycle status and move to an archive section only for PM organization.
+
 ## Status Meaning
 
 - `needs-clarification`: the requirement is captured but key scope, acceptance, or ownership facts are missing.
 - `ready-for-design`: the requirement is clear enough for `pm-design-requirement`.
 - `designing`: a design handoff has started, but the detailed design is not indexed yet.
 - `designed`: a detailed change design exists and is indexed in PM.
-- `accepted`: the design has been approved or confirmed as the intended direction.
+- `accepted`: the design has been explicitly approved or confirmed as the intended direction.
 - `implementing`: implementation work has started.
 - `implemented`: implementation has landed and the PM row, design doc, and architecture baseline have been updated where needed.
 - `blocked`: a blocker is preventing the next transition.
 - `needs-review`: status or evidence is unclear and should be reviewed before changing lifecycle state.
 - `obsolete`: the item should not continue through the lifecycle.
+
+## Review Gate
+
+- `designed` does not mean approved.
+- Keep a ready-but-unapproved design as `proposed` in the design doc and `designed` in the requirement row.
+- Use `needs-review` when review finds missing scope, contradictory facts, unresolved ownership, or unclear implementation evidence.
+- Move to `accepted` only after user approval, project approval, or a durable accepted decision in PM.
 
 ## Sync Rules
 
@@ -35,6 +44,7 @@ Terminal or side statuses:
 - Change design docs use design statuses: `draft`, `proposed`, `accepted`, `implemented`, or `obsolete`.
 - `Design Documents` rows mirror the design doc status, not the requirement backlog status.
 - When a design doc is created and indexed, update the requirement row to `designed`.
+- When review finds blockers or unclear evidence, keep or mark the relevant PM row `needs-review`.
 - When a design is accepted, update the design doc and `Design Documents` row to `accepted`; update the requirement row to `accepted` if it tracks the same lifecycle.
 - When implementation starts, update the requirement row or active task to `implementing`; do not mark the design implemented yet.
 - When implementation is complete, update the change design doc and `Design Documents` row to `implemented`, update the requirement row to `implemented`, and refresh architecture baseline docs if durable architecture changed.

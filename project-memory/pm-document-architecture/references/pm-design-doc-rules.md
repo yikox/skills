@@ -32,11 +32,11 @@ Use these values unless the existing project uses a different status vocabulary:
 
 - `draft`: incomplete or assumption-heavy.
 - `proposed`: ready for review.
-- `accepted`: approved direction or confirmed project design.
+- `accepted`: explicitly approved direction or confirmed project design.
 - `implemented`: design has been implemented in code and is now landed / 已落地.
 - `obsolete`: superseded by a newer design.
 
-For requirement backlog and implementation lifecycle status, follow the lifecycle rules used by `pm-design-requirement`.
+For requirement backlog and implementation lifecycle status, follow [pm-lifecycle-rules.md](pm-lifecycle-rules.md).
 
 ## Slug Rules
 
@@ -63,7 +63,9 @@ After a change design is implemented, mark that detailed design and its PM index
 
 - When a requirement row enters design work, mark it `designing`.
 - When the detailed design file exists and is indexed, mark the requirement row `designed`.
-- When the design is accepted, mark the design doc and `Design Documents` row `accepted`; mark the requirement row `accepted` when that row tracks the same lifecycle.
+- When a design is ready but not approved, keep the design doc `proposed` and the requirement row `designed`.
+- When review finds blockers or unclear evidence, keep or mark the relevant PM row `needs-review` and record the open questions.
+- When the design is explicitly accepted, mark the design doc and `Design Documents` row `accepted`; mark the requirement row `accepted` when that row tracks the same lifecycle.
 - When implementation starts, mark the requirement row or active task `implementing`.
 - When implementation is complete, mark the requirement row, change design doc, and `Design Documents` row `implemented`.
 

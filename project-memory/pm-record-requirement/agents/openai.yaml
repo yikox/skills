@@ -1,4 +1,4 @@
 interface:
   display_name: "PM Record Requirement"
-  short_description: "Clarify and record PM requirement backlog"
-  default_prompt: "Use $pm-record-requirement to clarify this requirement and add it to the PM requirement backlog."
+  short_description: "Record PM requirements with module and impact"
+  default_prompt: "Use $pm-record-requirement to clarify this requirement, identify its architecture module and impact points, and add it to the PM backlog."

@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订单系统架构</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1e293b;
+        --muted: #64748b;
+        --line: #3b82f6;
+        --paper: #ffffff;
+        --warning-bg: #fff7ed;
+        --warning-line: #fb923c;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #eef2f7;
+        color: var(--ink);
+      }
+      main {
+        max-width: none;
+        margin: 0 auto;
+        padding: 32px 24px 44px;
+      }
+      header {
+        max-width: 1120px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .canvas {
+        overflow: auto;
+        background: var(--paper);
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        box-shadow: 0 18px 55px rgba(30, 41, 59, 0.12);
+      }
+      .diagram {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .node-shape {
+        stroke-width: 1.6;
+      }
+      .node-link,
+      .group-link {
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .node-link:hover .node-shape,
+      .node-link:focus .node-shape,
+      .group-link:hover .group-shape,
+      .group-link:focus .group-shape {
+        stroke-width: 2.6;
+      }
+      .node-line {
+        fill: none;
+        stroke-width: 1.6;
+      }
+      .group-shape {
+        fill: #eef2ff;
+        stroke: #4f46e5;
+        stroke-width: 1.8;
+        stroke-dasharray: 10 7;
+      }
+      .group-title {
+        fill: #312e81;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .group-description {
+        fill: #4338ca;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .node-title {
+        fill: var(--ink);
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .node-description {
+        fill: var(--muted);
+        font-size: 12px;
+      }
+      .relation-line {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 2;
+      }
+      .relation-hitbox {
+        fill: none;
+        stroke: transparent;
+        stroke-width: 18;
+        pointer-events: stroke;
+        cursor: help;
+      }
+      .relation-hover-line {
+        fill: none;
+        stroke: #2563eb;
+        stroke-width: 3;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .relation-hover:hover .relation-hover-line {
+        opacity: 0.75;
+      }
+      .relation-bubble {
+        opacity: 0;
+        transition: opacity 120ms ease;
+        pointer-events: none;
+      }
+      .relation-hover:hover .relation-bubble {
+        opacity: 1;
+      }
+      .relation-bubble-box {
+        fill: #ffffff;
+        stroke: #94a3b8;
+        stroke-width: 1;
+      }
+      .relation-bubble-text {
+        fill: #0f172a;
+        font-size: 12px;
+        font-weight: 650;
+        pointer-events: none;
+      }
+      .arrow { fill: var(--line); }
+      .warnings {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border-left: 4px solid var(--warning-line);
+        background: var(--warning-bg);
+        border-radius: 6px;
+      }
+      .warnings h2 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+      .warnings ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>订单系统架构</h1>
+        <p>用户、网关、订单服务和数据库之间的最小架构关系</p>
+      </header>
+      <section class="canvas">
+        <svg class="diagram" style="min-width: 1215px;" viewBox="0 0 1215 665" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">订单系统架构</title>
+  <desc id="diagram-desc">用户、网关、订单服务和数据库之间的最小架构关系</desc>
+  <defs>
+    <style>
+      .node-shape { stroke-width: 1.6; }
+      .node-link,
+      .group-link {
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .node-link:hover .node-shape,
+      .node-link:focus .node-shape,
+      .group-link:hover .group-shape,
+      .group-link:focus .group-shape {
+        stroke-width: 2.6;
+      }
+      .node-line {
+        fill: none;
+        stroke-width: 1.6;
+      }
+      .group-shape {
+        fill: #eef2ff;
+        stroke: #4f46e5;
+        stroke-width: 1.8;
+        stroke-dasharray: 10 7;
+      }
+      .group-title {
+        fill: #312e81;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .group-description {
+        fill: #4338ca;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .node-title {
+        fill: #1e293b;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .node-description {
+        fill: #64748b;
+        font-size: 12px;
+      }
+      .relation-line {
+        fill: none;
+        stroke: #3b82f6;
+        stroke-width: 2;
+      }
+      .relation-hitbox {
+        fill: none;
+        stroke: transparent;
+        stroke-width: 18;
+        pointer-events: stroke;
+        cursor: help;
+      }
+      .relation-hover-line {
+        fill: none;
+        stroke: #2563eb;
+        stroke-width: 3;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .relation-hover:hover .relation-hover-line {
+        opacity: 0.75;
+      }
+      .relation-bubble {
+        opacity: 0;
+        transition: opacity 120ms ease;
+        pointer-events: none;
+      }
+      .relation-hover:hover .relation-bubble {
+        opacity: 1;
+      }
+      .relation-bubble-box {
+        fill: #ffffff;
+        stroke: #94a3b8;
+        stroke-width: 1;
+      }
+      .relation-bubble-text {
+        fill: #0f172a;
+        font-size: 12px;
+        font-weight: 650;
+        pointer-events: none;
+      }
+      .arrow { fill: #3b82f6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow" />
+    </marker>
+  </defs>
+  
+  <g class="relation relation-line-layer">
+<path d="M 268.0 180.0 L 403.0 180.0" class="relation-line" marker-end="url(#arrow)" />
+</g>
+<g class="relation relation-line-layer">
+<path d="M 657.0 180.0 L 743.0 180.0" class="relation-line" marker-end="url(#arrow)" />
+</g>
+<g class="relation relation-line-layer">
+<path d="M 870.0 247.0 L 870.0 353.0" class="relation-line" stroke-dasharray="8 7" marker-end="url(#arrow)" />
+</g>
+  <a class="node-link" href="../examples/user.md" target="_blank">
+<g class="node" data-id="user">
+<title>user - /Users/zyc/work/skills/architecture-design/examples/user.md</title>
+<circle cx="190.0" cy="180.0" r="66" class="node-shape" style="fill: #f8fafc; stroke: #334155;" />
+<text x="190.0" y="170.0" class="node-title" text-anchor="middle">用户</text>
+<text x="190.0" y="191.0" class="node-description" text-anchor="middle">通过前端页面发起下单操作</text>
+</g>
+</a>
+<a class="node-link" href="../examples/api-gateway.md" target="_blank">
+<g class="node" data-id="gateway">
+<title>gateway - /Users/zyc/work/skills/architecture-design/examples/api-gateway.md</title>
+<rect x="415.0" y="125.0" width="230.0" height="110.0" rx="12" class="node-shape" style="fill: #f8fafc; stroke: #334155;" />
+<text x="530.0" y="170.0" class="node-title" text-anchor="middle">API 网关</text>
+<text x="530.0" y="191.0" class="node-description" text-anchor="middle">统一入口，负责鉴权、限流和路由</text>
+</g>
+</a>
+<a class="node-link" href="../examples/order-service.md" target="_blank">
+<g class="node" data-id="order">
+<title>order - /Users/zyc/work/skills/architecture-design/examples/order-service.md</title>
+<polygon points="783.0,125.0 957.0,125.0 985.0,180.0 957.0,235.0 783.0,235.0 755.0,180.0" class="node-shape" style="fill: #f5f3ff; stroke: #7c3aed;" />
+<text x="870.0" y="170.0" class="node-title" text-anchor="middle">订单服务</text>
+<text x="870.0" y="191.0" class="node-description" text-anchor="middle">处理订单创建、状态流转和查询</text>
+</g>
+</a>
+<a class="node-link" href="../examples/order-database.md" target="_blank">
+<g class="node" data-id="database">
+<title>database - /Users/zyc/work/skills/architecture-design/examples/order-database.md</title>
+<rect x="755.0" y="377.0" width="230.0" height="86.0" class="node-shape" style="fill: #f8fafc; stroke: #334155;" />
+<ellipse cx="870.0" cy="377.0" rx="115.0" ry="16" class="node-shape" style="fill: #f8fafc; stroke: #334155;" />
+<path d="M 755.0 463.0 C 755.0 485.0, 985.0 485.0, 985.0 463.0" class="node-line" style="stroke: #334155;" />
+<text x="870.0" y="410.0" class="node-title" text-anchor="middle">订单数据库</text>
+<text x="870.0" y="431.0" class="node-description" text-anchor="middle">保存订单主表、状态和审计记录</text>
+</g>
+</a>
+  <g class="relation relation-hover">
+<desc>发起下单请求</desc>
+<path d="M 268.0 180.0 L 403.0 180.0" class="relation-hitbox" />
+<path d="M 268.0 180.0 L 403.0 180.0" class="relation-hover-line" />
+<g class="relation-bubble">
+<rect x="289.3" y="166.0" width="92.4" height="31.0" rx="6" class="relation-bubble-box" />
+<text x="335.5" y="185.0" class="relation-bubble-text" text-anchor="middle">发起下单请求</text>
+</g>
+</g>
+<g class="relation relation-hover">
+<desc>鉴权后转发请求</desc>
+<path d="M 657.0 180.0 L 743.0 180.0" class="relation-hitbox" />
+<path d="M 657.0 180.0 L 743.0 180.0" class="relation-hover-line" />
+<g class="relation-bubble">
+<rect x="647.6" y="80.0" width="104.8" height="31.0" rx="6" class="relation-bubble-box" />
+<text x="700.0" y="99.0" class="relation-bubble-text" text-anchor="middle">鉴权后转发请求</text>
+</g>
+</g>
+<g class="relation relation-hover">
+<desc>读写订单数据</desc>
+<path d="M 870.0 247.0 L 870.0 353.0" class="relation-hitbox" />
+<path d="M 870.0 247.0 L 870.0 353.0" class="relation-hover-line" stroke-dasharray="8 7" />
+<g class="relation-bubble">
+<rect x="823.8" y="286.0" width="92.4" height="31.0" rx="6" class="relation-bubble-box" />
+<text x="870.0" y="305.0" class="relation-bubble-text" text-anchor="middle">读写订单数据</text>
+</g>
+</g>
+</svg>
+      </section>
+    </main>
+  </body>
+</html>

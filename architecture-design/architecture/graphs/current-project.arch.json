@@ -1,0 +1,207 @@
+{
+  "format": "arch-graph/v0.1",
+  "id": "current-project",
+  "name": "Architecture Graph 项目架构",
+  "described": "当前项目的 skill 包装层、规则层、运行时层、示例与产物层关系",
+  "objects": [
+    {
+      "id": "skill-instructions",
+      "ref": "../modules/skill-instructions.md",
+      "at": [3, 0]
+    },
+    {
+      "id": "agent-ui-metadata",
+      "ref": "../modules/agent-ui-metadata.md",
+      "at": [4, 0]
+    },
+    {
+      "id": "format-spec",
+      "ref": "../modules/format-spec.md",
+      "at": [0, 0]
+    },
+    {
+      "id": "module-kind-taxonomy",
+      "ref": "../modules/module-kind-taxonomy.md",
+      "at": [1, 0]
+    },
+    {
+      "id": "cli-orchestrator",
+      "ref": "../modules/cli-orchestrator.md",
+      "at": [0, 2]
+    },
+    {
+      "id": "parser-loader",
+      "ref": "../modules/parser-loader.md",
+      "at": [1, 2]
+    },
+    {
+      "id": "graph-model",
+      "ref": "../modules/graph-model.md",
+      "at": [2, 2]
+    },
+    {
+      "id": "diagnostics",
+      "ref": "../modules/diagnostics.md",
+      "at": [3, 2]
+    },
+    {
+      "id": "layout-engine",
+      "ref": "../modules/layout-engine.md",
+      "at": [2, 3]
+    },
+    {
+      "id": "svg-renderer",
+      "ref": "../modules/svg-renderer.md",
+      "at": [3, 3]
+    },
+    {
+      "id": "html-output",
+      "ref": "../modules/html-output.md",
+      "at": [4, 3]
+    },
+    {
+      "id": "examples-fixtures",
+      "ref": "../modules/examples-fixtures.md",
+      "at": [0, 5]
+    },
+    {
+      "id": "rendered-artifacts",
+      "ref": "../modules/rendered-artifacts.md",
+      "at": [4, 5]
+    }
+  ],
+  "groups": [
+    {
+      "id": "skill-package",
+      "ref": "../modules/skill-package.md",
+      "contains": ["skill-instructions", "agent-ui-metadata"]
+    },
+    {
+      "id": "rules-layer",
+      "ref": "../modules/rules-layer.md",
+      "contains": ["format-spec", "module-kind-taxonomy"]
+    },
+    {
+      "id": "render-runtime",
+      "ref": "../modules/render-runtime.md",
+      "contains": [
+        "cli-orchestrator",
+        "parser-loader",
+        "graph-model",
+        "diagnostics",
+        "layout-engine",
+        "svg-renderer",
+        "html-output"
+      ]
+    },
+    {
+      "id": "fixtures-output",
+      "ref": "../modules/fixtures-output.md",
+      "contains": ["examples-fixtures", "rendered-artifacts"]
+    }
+  ],
+  "relations": [
+    {
+      "from": "agent-ui-metadata",
+      "to": "skill-instructions",
+      "described": "提供 UI 展示和默认提示入口",
+      "style": "solid"
+    },
+    {
+      "from": "skill-instructions",
+      "to": "format-spec",
+      "described": "指定图结构规则来源",
+      "style": "solid"
+    },
+    {
+      "from": "skill-instructions",
+      "to": "module-kind-taxonomy",
+      "described": "指定模块分类规则来源",
+      "style": "solid"
+    },
+    {
+      "from": "skill-instructions",
+      "to": "cli-orchestrator",
+      "described": "规定渲染器命令入口",
+      "style": "dashed"
+    },
+    {
+      "from": "format-spec",
+      "to": "parser-loader",
+      "described": "定义 objects/groups/relations JSON 结构",
+      "style": "solid"
+    },
+    {
+      "from": "module-kind-taxonomy",
+      "to": "parser-loader",
+      "described": "提供 module_kind/module_form 元信息",
+      "style": "solid"
+    },
+    {
+      "from": "examples-fixtures",
+      "to": "cli-orchestrator",
+      "described": "作为入口图结构输入",
+      "style": "solid"
+    },
+    {
+      "from": "cli-orchestrator",
+      "to": "parser-loader",
+      "described": "传入入口路径",
+      "style": "solid"
+    },
+    {
+      "from": "parser-loader",
+      "to": "graph-model",
+      "described": "生成 Diagram IR",
+      "style": "solid"
+    },
+    {
+      "from": "parser-loader",
+      "to": "diagnostics",
+      "described": "记录解析告警",
+      "style": "dashed"
+    },
+    {
+      "from": "graph-model",
+      "to": "layout-engine",
+      "described": "提供对象和组合关系",
+      "style": "solid"
+    },
+    {
+      "from": "graph-model",
+      "to": "svg-renderer",
+      "described": "提供节点、组合和连线数据",
+      "style": "solid"
+    },
+    {
+      "from": "layout-engine",
+      "to": "svg-renderer",
+      "described": "提供坐标和边界",
+      "style": "solid"
+    },
+    {
+      "from": "diagnostics",
+      "to": "html-output",
+      "described": "输出 warnings 区块",
+      "style": "dashed"
+    },
+    {
+      "from": "svg-renderer",
+      "to": "html-output",
+      "described": "嵌入 SVG",
+      "style": "solid"
+    },
+    {
+      "from": "html-output",
+      "to": "rendered-artifacts",
+      "described": "写出自包含 HTML",
+      "style": "solid"
+    },
+    {
+      "from": "cli-orchestrator",
+      "to": "rendered-artifacts",
+      "described": "决定输出路径",
+      "style": "dashed"
+    }
+  ]
+}

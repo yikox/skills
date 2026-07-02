@@ -79,6 +79,8 @@ Treat renderer warnings as issues unless the user explicitly accepts a draft wit
 ## Quality Rules
 
 - Every non-trivial module has a stable slug and module doc.
+- New and migrated module docs declare `code_paths` with single ownership: every behavior-bearing path has exactly one owning module.
+- Relations follow arrow-equals-dependency, the closed `kind` vocabulary, and solid/dashed runtime semantics in the graph format reference; the graph is the authoritative source of inter-module relations.
 - Composite modules expose interfaces when external collaboration needs named endpoints.
 - Relations connect modules at the same architecture level.
 - Proposed targets are clearly separated from current baseline.

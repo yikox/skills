@@ -29,6 +29,8 @@ Check:
 - landed durable changes are reflected in architecture baseline;
 - proposed target architecture is not presented as implemented baseline;
 - graph JSON relations match module docs and same-scope relationship rules;
+- module docs declare `code_paths`; no orphan paths (behavior-bearing code owned by no module), no ghost globs (matching nothing), no overlapping claims;
+- module doc Dependencies tables are subsets of graph relations; relation `kind` values are from the closed vocabulary;
 - ADR summary rows link to ADR files;
 - old `project-memory` or `architecture-design` terminology has been migrated or archived;
 - old detailed history can be compressed without losing current state.

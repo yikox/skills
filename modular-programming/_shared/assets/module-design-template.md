@@ -4,6 +4,7 @@ described: <one sentence responsibility>
 module_form: atomic
 module_kind: function-flow
 main_subject: <primary technical subject>
+code_paths: []
 status: draft
 review_status: not-reviewed
 ---
@@ -23,6 +24,8 @@ Describe APIs, messages, files, data shape, or user-facing surfaces other module
 Describe important internal structure, state, algorithms, or flows.
 
 ## Dependencies
+
+List only relations that exist in the architecture graph; the graph is the authoritative source.
 
 | Dependency | Direction | Reason |
 | --- | --- | --- |

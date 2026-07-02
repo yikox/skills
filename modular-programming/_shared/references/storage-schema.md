@@ -83,6 +83,23 @@ Index durable design artifacts:
 - ADR: `architecture/adrs/ADR-<date>-<decision>.md`;
 - Module Change: `architecture/modules/<module>/changes/<date>-<change>.md`.
 
+## Module Frontmatter
+
+Module docs (`architecture/modules/<module>.md`) use this frontmatter:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `name` | yes | display name |
+| `described` | yes | one-sentence responsibility |
+| `module_form` | yes | `atomic` or `composite` |
+| `module_kind` | yes | see `module-kind-classification.md` |
+| `main_subject` | yes | primary technical subject (function, file, format) |
+| `code_paths` | yes for new/migrated modules | repo-relative glob list of code this module owns |
+| `status` | yes | design status vocabulary below |
+| `review_status` | yes | review status vocabulary below |
+
+`code_paths` follows single ownership: every behavior-bearing code path belongs to exactly one module (see Code Ownership in `modular-workflow-rules.md`). Existing docs without `code_paths` stay valid; `modular-audit` flags them for backfill.
+
 ## Slug Rules
 
 - Use lowercase ASCII slugs.

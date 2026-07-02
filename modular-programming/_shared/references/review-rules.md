@@ -13,6 +13,8 @@ Use these checks for requirements, PM entries, architecture docs, change designs
 - Proposed facts are marked as proposed, accepted, or implemented.
 - Status fields are synchronized across PM, design docs, and architecture index rows.
 - Open questions are explicit and not hidden in prose.
+- New or migrated module docs declare `code_paths`; claims do not overlap across modules.
+- Module doc Dependencies tables are a subset of the graph relations; relation `kind` values come from the closed vocabulary in the graph format reference.
 
 ## L3 Checks
 

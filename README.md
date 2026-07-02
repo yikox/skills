@@ -213,6 +213,20 @@ project-management.md
 
 PM 可以索引模块、设计和 ADR，但不能自己定义模块边界。模块边界必须来自 Architecture。
 
+## 模块与代码、关系语义
+
+```text
+模块文档 frontmatter code_paths 声明模块拥有的代码（glob 列表）。
+每个承载行为的代码路径属于且只属于一个模块；测试随被测模块。
+modular-change 用"变更路径 ∩ code_paths"确定性定位主模块。
+modular-audit 检查孤儿路径、幽灵 glob、重叠认领。
+
+图中箭头 = 依赖方向：A -> B 读作 A 依赖/使用 B（数据流写 described）。
+关系 kind 五词：uses / reads / writes / triggers / distributes。
+solid = 运行时依赖，dashed = 非运行时（构建、验证夹具、同步约定）。
+图是模块间关系的权威来源，模块文档 Dependencies 表是它的子集视图。
+```
+
 ## Baseline 和 Target
 
 大改动不能直接把未实现的设计写成当前事实。

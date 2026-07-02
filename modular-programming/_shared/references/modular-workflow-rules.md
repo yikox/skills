@@ -51,6 +51,17 @@ Every non-trivial request must identify:
 
 If a non-trivial request cannot be mapped to a primary module, stop before implementation planning. First create or repair the architecture baseline, or record the task as blocked by an architecture gap.
 
+When module docs declare `code_paths`, locate the primary module deterministically: intersect the paths you expect to change with each module's `code_paths`. One match = primary module; no match or multi-module ambiguity = architecture gap flow above.
+
+## Code Ownership
+
+Module docs declare owned code via frontmatter `code_paths` (repo-relative globs):
+
+- Every behavior-bearing code path belongs to exactly one module. Overlapping claims are a boundary smell: fix the mapping or split the file.
+- Tests follow the module they test; generated artifacts follow the module that produces them.
+- Repo meta files (README, LICENSE, CI config, AI collaboration docs) need no owner by default; other intentional exceptions are listed in `main-design.md` Shared Constraints.
+- `code_paths` is required for new and migrated modules. Existing docs without it stay valid; `modular-audit` flags them for backfill, plus orphan paths (owned by no module) and ghost globs (matching nothing).
+
 ## Change Levels
 
 ### L3 Architecture Change

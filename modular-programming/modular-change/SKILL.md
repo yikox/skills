@@ -26,7 +26,7 @@ Use:
 1. Read the user request and current project context.
 2. Read `architecture/main-design.md` and relevant `architecture/modules/*.md` if they exist.
 3. Decide whether the change is L0, L1, L2, or L3. For L3, tell the user and confirm before entering the architecture change path.
-4. Identify primary module and impacted modules.
+4. Identify primary module and impacted modules. When module docs declare `code_paths`, locate the primary module deterministically by intersecting the paths you expect to change with each module's `code_paths`.
 5. If a non-trivial change lacks a clear primary module, stop before implementation planning and use `modular-architecture` to repair the module map or record an architecture gap.
 6. For L1/L2/L3, use `modular-status` to record PM start before implementation work.
 7. Follow the level-specific path below.

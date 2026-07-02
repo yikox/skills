@@ -145,8 +145,27 @@ architecture/modules/<module-id>.md
 | `from` | 是 | 起点端点：对象 ID、group ID 或 `<group-id>.<interface-id>` |
 | `to` | 是 | 终点端点：对象 ID、group ID 或 `<group-id>.<interface-id>` |
 | `described` | 是 | 关系说明，默认不直接显示，鼠标悬停到关系线时以气泡显示 |
-| `style` | 否 | `solid` 或 `dashed`，默认 `solid` |
+| `kind` | 否 | 关系类型，见下方封闭词表，默认 `uses` |
+| `style` | 否 | `solid` 或 `dashed`，默认 `solid`，语义见下 |
 | `label_offset` | 否 | hover 气泡相对自动锚点的像素偏移 `[x, y]`，用于微调气泡位置 |
+
+## 关系语义
+
+**箭头 = 依赖方向**：`A -> B` 读作"A 使用/依赖 B"。数据流向与依赖方向不一致时，把流向写进 `described`，不要反转箭头。
+
+`kind` 封闭词表（五个，不扩展）：
+
+| kind | 含义 |
+| --- | --- |
+| `uses` | 泛化使用/调用（默认） |
+| `reads` | 读取对方的数据、配置或规则 |
+| `writes` | 写入对方管理的数据或产物 |
+| `triggers` | 事件、消息或调度触发 |
+| `distributes` | 打包、分发或同步对方内容 |
+
+`style` 语义：`solid` = 运行时依赖；`dashed` = 非运行时依赖（构建、验证夹具、同步约定）。
+
+**图是模块间关系的权威来源**：模块文档的 Dependencies 表必须是图中该模块关系的子集（补充原因说明）。表里出现图中没有的关系时，补图或删表行。
 
 ## 同层关系规则
 

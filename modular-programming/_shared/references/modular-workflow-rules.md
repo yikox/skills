@@ -188,6 +188,26 @@ Report-only — proceed and report, correct if the user objects:
 - baseline updates and graph re-rendering after verified implementation;
 - archiving a single completed row.
 
+## Preference Profiles
+
+`modular-init` asks the user's workflow preferences and records them in the project AI docs (`Preferences` section of the merged rules snippet). All skills honor them. When unset, use `follow-project` + `standard`.
+
+`docs-language` — language for PM, architecture, knowledge, and design docs, and for decision summaries:
+
+- `zh`: write these docs in Chinese.
+- `en`: write these docs in English.
+- `follow-project`: follow the dominant language of existing project docs.
+
+`confirmation` — adjusts the User Confirmation Points above:
+
+| Profile | Semantics |
+| --- | --- |
+| `high-touch` | All standard points, plus: give a one-line summary and confirm before L1 implementation; walk through L2/L3 designs section by section. |
+| `standard` | The User Confirmation Points above, unchanged. |
+| `low-touch` | L2 confirmation becomes report-only: send the decision summary, then implement without waiting; the user can stop at any time. Everything else stays blocking. |
+
+Safety floor: no profile may skip L3 direction acceptance, module map approval, the first write into project AI docs, or L2-to-L3 promotion.
+
 ## Design, ADR, And Plan Boundaries
 
 Use a design when describing how a change will modify the system.

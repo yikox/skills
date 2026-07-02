@@ -2,6 +2,11 @@
 
 This project uses the modular-programming workflow. Architecture docs own module boundaries; `project-management.md` (PM) owns work state and evidence.
 
+## Preferences
+
+- `docs-language`: <zh | en | follow-project> — language for PM, architecture, knowledge, and design docs, and for decision summaries.
+- `confirmation`: <high-touch | standard | low-touch> — confirmation granularity; semantics defined in the workflow's Preference Profiles. `low-touch` never skips L3 acceptance, module map approval, first AI-doc write, or L2-to-L3 promotion.
+
 ## Session Entry
 
 - At the start of a new session, read `project-management.md` and `architecture/main-design.md` before non-trivial work.

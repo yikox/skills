@@ -31,11 +31,15 @@ Use these assets for new files:
    - new project: clarify product/runtime intent enough to create an initial module map;
    - existing project: inspect code and migrate current facts before proposing changes;
    - repair: fix missing sections, stale paths, or old workflow names.
-4. Create or repair `project-management.md`, `knowledge-summary.md`, and `architecture/main-design.md`. When this introduces a new or replaced module map, present it to the user and get approval before writing baseline docs.
-5. Ensure architecture is the module source of truth. PM may index modules and tasks, but must not define module boundaries independently.
-6. For existing projects, create only a verified or explicitly inferred baseline. Record uncertain areas as migration gaps in PM.
-7. Merge `../_shared/assets/ai-rules-snippet.md` into the project's AI collaboration docs (`CLAUDE.md`, `AGENTS.md`, or equivalent): adapt paths and language to the project, merge with existing content instead of overwriting, and confirm with the user before creating or first modifying these files.
-8. Report created/updated files, module baseline status, migration gaps, and the next recommended skill.
+4. Ask the user's workflow preferences as multiple-choice questions before creating files (see Preference Profiles in `modular-workflow-rules.md`):
+   - `docs-language`: language for PM, architecture, knowledge, and design docs (`zh` / `en` / `follow-project`);
+   - `confirmation`: confirmation granularity (`high-touch` / `standard` / `low-touch`).
+   Default to `follow-project` + `standard` when the user has no preference.
+5. Create or repair `project-management.md`, `knowledge-summary.md`, and `architecture/main-design.md` in the chosen docs language. When this introduces a new or replaced module map, present it to the user and get approval before writing baseline docs.
+6. Ensure architecture is the module source of truth. PM may index modules and tasks, but must not define module boundaries independently.
+7. For existing projects, create only a verified or explicitly inferred baseline. Record uncertain areas as migration gaps in PM.
+8. Merge `../_shared/assets/ai-rules-snippet.md` into the project's AI collaboration docs (`CLAUDE.md`, `AGENTS.md`, or equivalent): fill the Preferences section with the chosen values, adapt paths and language to the project, merge with existing content instead of overwriting, and confirm with the user before creating or first modifying these files.
+9. Report created/updated files, chosen preferences, module baseline status, migration gaps, and the next recommended skill.
 
 ## Handoff
 

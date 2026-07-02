@@ -2,6 +2,11 @@
 
 本仓库使用 modular-programming 工作流（就是本仓库开发的这套 skill，dogfood）。Architecture 文档拥有模块边界；PM 记录工作状态和证据。
 
+## Preferences
+
+- `docs-language`: zh — PM、架构、知识、设计文档和要点摘要用中文（skill 正文英文是产品约定，不受此影响）。
+- `confirmation`: standard — 按 workflow-rules 的 User Confirmation Points 执行。
+
 项目记忆在仓库外：`/Users/zyc/notes/PM/skills/`
 
 - `project-management.md`：active tasks、backlog、设计索引、归档

@@ -84,6 +84,10 @@ project-management.md
 knowledge-summary.md
 ```
 
+init 会先用选择题询问工作流偏好：`docs-language`（文档语言 zh/en/follow-project）和
+`confirmation`（确认粒度 high-touch/standard/low-touch，low-touch 也不跳过 L3 接受、
+模块地图落盘等安全底线），偏好写进项目 AI 文档的 Preferences 区，后续所有 skill 遵守。
+
 模块地图草案需要用户确认后才落盘为 baseline。init 还会把工作流规则
 （`_shared/assets/ai-rules-snippet.md`）合并进项目的 `CLAUDE.md`/`AGENTS.md`
 （合并不覆盖，首次写入前先确认），让后续每个会话都自动遵守会话入口、模块门和 PM 规则。

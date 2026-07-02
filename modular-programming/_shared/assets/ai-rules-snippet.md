@@ -16,7 +16,7 @@ This project uses the modular-programming workflow. Architecture docs own module
 
 Non-trivial changes must name a primary module, impacted modules, and a level before implementation planning:
 
-- L0 trivial edit: implement and verify; PM optional.
+- L0 trivial edit: implement and verify; PM optional. Bug fixes are at least L1: reproduce first, verify the failing case after the fix, record root cause at completion.
 - L1 local change: PM start -> implement -> verify -> PM complete.
 - L2 module change: PM start -> module change design -> review -> decision summary + user confirmation -> implement -> verify -> PM complete.
 - L3 architecture change: PM start -> target design/ADR -> review -> decision summary + user acceptance -> implement -> verify -> baseline update -> PM complete.

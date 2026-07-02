@@ -79,6 +79,15 @@ Use for typo, formatting, comments, tiny docs wording, local constants, and mech
 2. Implement and verify.
 3. Update PM only when the user explicitly requested tracking, the edit belongs to an active task, or release evidence matters.
 
+## Bug Fix Routing
+
+Bug fixes follow the Bug Fix Path in `modular-workflow-rules.md`:
+
+- At least L1 (a bug fix changes behavior); reproduce or capture evidence before fixing.
+- Small localized fix in one module -> L1: PM start with symptom -> reproduce -> root cause -> fix -> verify the failing case plus existing validation -> PM complete with root cause and evidence.
+- Structural root cause or multi-step fix inside one module -> L2: the module change design must include root cause analysis.
+- Root cause in module boundaries or cross-module contracts -> confirm L3 with the user.
+
 ## Escalation Rules
 
 - If L1 grows into a multi-step refactor, promote it to L2 and record the PM update.

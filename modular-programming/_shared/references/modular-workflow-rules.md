@@ -120,6 +120,20 @@ tag module -> implementation -> verification -> optional PM/architecture update
 
 PM is optional for L0 unless the user explicitly asked for the change, the work belongs to an existing active task, or release evidence matters.
 
+## Bug Fix Path
+
+Bug fixes route through the same levels, with these specifics:
+
+- A bug fix changes behavior, so it is at least L1 — never L0 (docs-only typo fixes excepted).
+- Before fixing, reproduce the bug or capture concrete evidence (failing command, error output, user-confirmed symptom). Do not fix from guesses.
+- Choose the level by the shape of the fix, not the severity of the symptom:
+  - **L1 bug fix**: root cause is local to one module and the fix is a small localized change.
+    Flow: `PM start (symptom + suspected module) -> reproduce -> locate root cause -> fix -> verify (the failing case passes and existing validation still passes) -> PM complete (root cause + fix evidence)`.
+  - **L2 bug fix**: the fix needs multi-step restructuring inside one module, or the root cause is structural.
+    Flow: the normal L2 path; the module change design must include a root cause analysis section.
+- Record the root cause in PM completion. If it is reusable (environment trap, recurring pattern), also record it via `modular-knowledge`.
+- If the root cause reveals wrong module boundaries or cross-module contract defects, confirm promotion to L3 with the user before restructuring.
+
 ## PM Start, Update, Complete
 
 For all L1, L2, and L3 work, update `project-management.md` at the beginning and the end.

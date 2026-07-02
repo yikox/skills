@@ -22,7 +22,7 @@
 
 非平凡修改先定位主模块、影响模块和级别（模块见 main-design.md：modular-skills、shared-references、shared-assets、graph-renderer、examples、installer）：
 
-- L0 细微改：implement + verify；PM 可选。
+- L0 细微改：implement + verify；PM 可选。Bug 修复至少 L1：先复现、修后验证失败用例、完成时记根因。
 - L1 小改：PM start -> implement -> verify -> PM complete。
 - L2 模块中改：PM start -> 模块修改设计 -> review -> 要点摘要 + 用户确认 -> implement -> verify -> PM complete。
 - L3 架构大改：PM start -> target 设计/ADR -> review -> 要点摘要 + 用户接受 -> implement -> verify -> 更新 baseline -> PM complete。

@@ -165,19 +165,29 @@ def parse_front_matter(text: str) -> Tuple[Dict[str, str], str]:
     return {}, text
 
 
-def load_document_meta(path: Path, warnings: List[str]) -> Dict[str, str]:
+def load_document_meta(
+    path: Path,
+    warnings: List[str],
+    inline_fields: frozenset = frozenset(),
+) -> Dict[str, str]:
     if not path.exists():
         warnings.append(f"引用文件不存在: {path}")
         return {"name": path.stem, "described": ""}
 
     meta, _ = parse_front_matter(read_text(path))
     if "name" not in meta:
-        warnings.append(f"引用文件缺少 name: {path}")
+        if "name" not in inline_fields:
+            warnings.append(f"引用文件缺少 name: {path}")
         meta["name"] = path.stem
     if "described" not in meta:
-        warnings.append(f"引用文件缺少 described: {path}")
+        if "described" not in inline_fields:
+            warnings.append(f"引用文件缺少 described: {path}")
         meta["described"] = ""
     return meta
+
+
+def inline_meta_fields(item: Dict[str, Any]) -> frozenset:
+    return frozenset(field for field in ("name", "described") if item.get(field))
 
 
 def parse_number_pair(
@@ -286,7 +296,7 @@ def load_graph(path: Path) -> Diagram:
         source_meta: Dict[str, str] = {}
         if isinstance(item.get("ref"), str):
             ref_path = (path.parent / item["ref"]).resolve()
-            source_meta = load_document_meta(ref_path, warnings)
+            source_meta = load_document_meta(ref_path, warnings, inline_meta_fields(item))
         else:
             warnings.append(f"对象缺少 ref，将使用内联信息: {object_id}")
 
@@ -330,7 +340,7 @@ def load_graph(path: Path) -> Diagram:
         source_meta: Dict[str, str] = {}
         if isinstance(item.get("ref"), str):
             ref_path = (path.parent / item["ref"]).resolve()
-            source_meta = load_document_meta(ref_path, warnings)
+            source_meta = load_document_meta(ref_path, warnings, inline_meta_fields(item))
 
         contains = as_string_list(item.get("contains"), warnings, "contains", group_id)
         for child_id in contains:

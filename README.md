@@ -8,6 +8,7 @@
 Architecture 是模块地图和系统结构的权威来源。
 PM 记录正在做什么、做到哪一步、完成证据是什么。
 非平凡修改必须先定位主模块，否则不能直接进入实现计划。
+每次会话开始先读 project-management.md 和 architecture/main-design.md，优先接续 active task。
 ```
 
 ## 什么时候用
@@ -42,6 +43,16 @@ Use $modular-status 记录这个任务开始/完成。
 ```text
 Use $modular-knowledge 记录这个调试结论/命令/项目约定。
 ```
+
+PM 文件太长、历史淹没当前状态：
+
+```text
+Use $modular-status 归档已完成的任务和需求。
+Use $modular-audit 检查 PM 是否需要压缩，按 pm-maintenance-rules 处理。
+```
+
+完整的“请求类型 -> skill -> 产物”速查表见
+`modular-programming/_shared/references/modular-workflow-rules.md` 的 Routing Quick Reference。
 
 ## Skills 分工
 
@@ -108,11 +119,13 @@ Use $modular-audit 检查迁移结果。
 Use $modular-change 实现这个需求/修复这个 bug/重构这个模块。
 ```
 
-`modular-change` 必须先做模块门判断：
+`modular-change` 必须先过会话入口和模块门：
 
 ```text
 用户请求
--> 读取 architecture baseline
+-> 读 project-management.md（active task、阻塞、当前焦点）
+-> 读 architecture/main-design.md（模块地图）
+-> 若是已有 active task 的延续，直接接续，不开重复任务
 -> 定位 Primary Module
 -> 列出 Impacted Modules
 -> 判断 L0/L1/L2/L3
@@ -167,7 +180,18 @@ baseline architecture = 当前已实现或已接受的系统事实
 target architecture = 已提出/已评审/已接受但未必落地的目标结构
 ```
 
-L3 大改应先写 target architecture 或 ADR，评审通过后再进入实现。实现验证完成后，才能把 target 转成 baseline。
+L3 大改应先写 target architecture 或 ADR，评审通过后再进入实现。实现验证完成后，才能把 target 转成 baseline。基线更新后重新渲染受影响的架构图。
+
+## PM 归档与压缩
+
+PM 的价值是“当前状态一眼可见”。当已完成的历史开始淹没 active task 时：
+
+- 已完成/废弃的任务、需求、设计索引行，保留最终状态和证据后移入归档区；
+- `project-management.md` 超过约 25 KB、最近更新超过 8-12 条、或塞满实现细节叙述时，把旧细节移到
+  `archives/project-management-history-YYYY.md`、`knowledge-summary.md` 或架构文档；
+- 归档和压缩都不允许删除证据（ID、日期、设计路径、commit、PR、验证结果），只能移动或带链接摘要。
+
+细则见 `modular-programming/_shared/references/pm-maintenance-rules.md`。
 
 ## 常用口令
 
@@ -180,6 +204,7 @@ Use $modular-status 记录这个 L2 修改开始。
 Use $modular-status 记录这个任务完成，附验证结果。
 Use $modular-review 审核这个模块修改方案。
 Use $modular-audit 检查 PM 和 Architecture 是否漂移。
+Use $modular-status 归档已完成的任务，压缩过长的 PM 历史。
 Use $modular-knowledge 记录这个构建命令和故障结论。
 ```
 
@@ -231,9 +256,9 @@ modular-knowledge
 ```text
 modular-programming/
   _shared/
-    references/          # 模块化流程、存储结构、评审、迁移、图格式
+    references/          # 模块化流程、存储结构、评审、迁移、PM 维护、图格式
     assets/              # PM、架构、模块、变更、ADR、知识模板
-    scripts/             # 图渲染器
+    scripts/             # 图渲染器（renderer-docs/ 是渲染器自身的模块文档）
     examples/            # 可渲染示例
   modular-init/
   modular-architecture/

@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Record Knowledge"
-  short_description: "Record reusable project knowledge and lessons"
-  default_prompt: "Use $pm-record-knowledge to update knowledge-summary.md with this learning."

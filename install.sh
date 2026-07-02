@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+shared_dir="$repo_dir/modular-programming/_shared"
 dry_run=0
 
 usage() {
@@ -9,9 +10,12 @@ usage() {
 Usage:
   ./install.sh [--dry-run] [target_dir ...]
 
-Installs every skill directory in this repository into one or more agent
-skills directories. Any directory under this repository is treated as a skill
-when it contains SKILL.md.
+Installs the current modular-programming skill suite into one or more agent
+skills directories. Legacy project-memory and architecture-design skill
+names are removed from the targets.
+
+The installer also copies modular-programming/_shared to each target as
+_shared so installed modular-* skills can read ../_shared resources.
 
 Default targets:
   ~/.agents/skills
@@ -74,6 +78,17 @@ done < <(
 )
 
 deprecated_skills=(
+  architecture-design
+  pm-audit-memory
+  pm-design-requirement
+  pm-document-architecture
+  pm-groom-roadmap
+  pm-init
+  pm-migrate-memory
+  pm-record-knowledge
+  pm-record-requirement
+  pm-review-artifact
+  pm-track-status
   notes-project-memory
   project-memory-init
   project-management-memory
@@ -104,6 +119,17 @@ for target in "${targets[@]}"; do
   else
     mkdir -p "$expanded_target"
     echo "Installing to: $expanded_target"
+  fi
+
+  shared_destination="$expanded_target/_shared"
+  if [[ -d "$shared_dir" ]]; then
+    if ((dry_run)); then
+      echo "  _shared -> $shared_destination"
+    else
+      mkdir -p "$shared_destination"
+    fi
+
+    rsync "${rsync_flags[@]}" "$shared_dir/" "$shared_destination/"
   fi
 
   for skill in "${skills[@]}"; do

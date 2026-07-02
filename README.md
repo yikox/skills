@@ -224,7 +224,7 @@ modular-audit
 modular-knowledge
 ```
 
-旧的 `project-memory/` 和 `architecture-design/` 不再作为 active skills 安装。安装脚本会从目标目录清理旧的 `pm-*` 和 `architecture-design` skill 名称。
+旧的 `project-memory/` 和 `architecture-design/` 已从仓库移除（可在 git 历史中找回）。安装脚本会从目标目录清理旧的 `pm-*` 和 `architecture-design` skill 名称。
 
 ## 仓库结构
 

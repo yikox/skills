@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Document Architecture"
-  short_description: "Create and maintain modular architecture design docs"
-  default_prompt: "Use $pm-document-architecture to create or update the project's main design and module design documents."

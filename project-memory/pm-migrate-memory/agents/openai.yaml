@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Migrate Memory"
-  short_description: "Upgrade older PM notes to the current schema"
-  default_prompt: "Use $pm-migrate-memory to migrate this project's PM notes to the current pm-* schema."

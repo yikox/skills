@@ -1,4 +1,0 @@
-interface:
-  display_name: "Architecture Design"
-  short_description: "Create and maintain module architecture design docs"
-  default_prompt: "Use $architecture-design to create or revise a module architecture design for this project."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Design Requirement"
-  short_description: "Design, review, and land PM requirements"
-  default_prompt: "Use $pm-design-requirement to design, review, or mark landing for this PM requirement."

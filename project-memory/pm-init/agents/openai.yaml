@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Init"
-  short_description: "Connect PM notes, migration, and architecture docs"
-  default_prompt: "Use $pm-init to initialize project memory for this repo."

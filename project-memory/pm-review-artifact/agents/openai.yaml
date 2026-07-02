@@ -1,4 +1,0 @@
-interface:
-  display_name: "PM Review Artifact"
-  short_description: "Review PM requirements and design docs"
-  default_prompt: "Use $pm-review-artifact to review this PM requirement or design artifact before human confirmation."

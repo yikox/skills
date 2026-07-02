@@ -181,6 +181,8 @@ Blocking — do not proceed until the user confirms:
 
 When asking for L2/L3 confirmation, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks. The user should be able to decide without reading the full design.
 
+Embed the summary in the confirmation request itself — inside the question prompt or its option previews — never only in a separate earlier message. Confirmation UI may appear without the preceding text, so a detached summary is a summary the user never saw. If the summary is too long to embed, send it as its own message, wait for the user's reply, and only then ask for confirmation.
+
 Report-only — proceed and report, correct if the user objects:
 
 - PM start/update/complete records;

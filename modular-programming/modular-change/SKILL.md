@@ -48,7 +48,7 @@ PM start -> modular-architecture creates target change / ADR
 -> PM complete
 ```
 
-When asking for acceptance, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, so the user can decide without reading the full design.
+When asking for acceptance, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, so the user can decide without reading the full design. Embed the summary in the confirmation request itself, not only in a separate earlier message.
 
 ### L2 Module Change
 
@@ -58,7 +58,7 @@ Use when one module remains the owner but its internal structure or non-trivial 
 2. Create `architecture/modules/<module>/changes/<date>-<change>.md`.
 3. Include current module state, target module design, contract impact, implementation outline, validation, risks, and open questions.
 4. Run `modular-review`.
-5. Present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, then get user confirmation.
+5. Ask for user confirmation with a decision summary of 3-8 bullets covering key changes, ambiguities, and risks embedded in the confirmation request itself.
 6. Implement only after review passes and the user confirms.
 7. After implementation, update the module baseline doc if it would otherwise be stale.
 

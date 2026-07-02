@@ -62,7 +62,7 @@ Use this before implementation when a change affects module boundaries, cross-mo
 2. Write `architecture/changes/<date>-<change>.md`.
 3. Write or update `architecture/graphs/proposed/<date>-<change>.arch.json` when a visual target helps.
 4. Add `architecture/adrs/ADR-<date>-<decision>.md` only when a durable decision among meaningful alternatives exists.
-5. Run `modular-review`, then present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks; do not proceed to implementation until the target is reviewed and human-accepted.
+5. Run `modular-review`, then ask for acceptance with a decision summary of 3-8 bullets (key changes, ambiguities, risks) embedded in the request; do not proceed to implementation until the target is reviewed and human-accepted.
 
 ## Rendering
 

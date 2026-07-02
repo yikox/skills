@@ -27,7 +27,7 @@
 - L2 模块中改：PM start -> 模块修改设计 -> review -> 要点摘要 + 用户确认 -> implement -> verify -> PM complete。
 - L3 架构大改：PM start -> target 设计/ADR -> review -> 要点摘要 + 用户接受 -> implement -> verify -> 更新 baseline -> PM complete。
 
-L2/L3 请求确认前，先给用户 3-8 条要点摘要（修改重点、歧义点、风险点），不要求读完整设计。
+L2/L3 确认请求必须把 3-8 条要点摘要（修改重点、歧义点、风险点）内嵌在确认请求本身（问题文本或选项 preview 里），不能只写在弹窗前的单独消息里；不要求用户读完整设计。
 
 ## Skill Routing
 

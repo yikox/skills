@@ -21,7 +21,7 @@ Non-trivial changes must name a primary module, impacted modules, and a level be
 - L2 module change: PM start -> module change design -> review -> decision summary + user confirmation -> implement -> verify -> PM complete.
 - L3 architecture change: PM start -> target design/ADR -> review -> decision summary + user acceptance -> implement -> verify -> baseline update -> PM complete.
 
-Before asking L2/L3 confirmation, give the user a decision summary of 3-8 bullets covering key changes, ambiguities, and risks; do not require reading the full design.
+L2/L3 confirmation requests must embed a decision summary of 3-8 bullets (key changes, ambiguities, risks) in the request itself — not in a separate earlier message — so the user can decide without reading the full design.
 
 ## Skill Routing
 

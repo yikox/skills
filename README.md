@@ -8,7 +8,7 @@
 Architecture 是模块地图和系统结构的权威来源。
 PM 记录正在做什么、做到哪一步、完成证据是什么。
 非平凡修改必须先定位主模块，否则不能直接进入实现计划。
-每次会话开始先读 project-management.md 和 architecture/main-design.md，优先接续 active task。
+新会话开始先读 project-management.md 和 architecture/main-design.md；涉及 active task 时先询问用户是否接续。
 ```
 
 ## 什么时候用
@@ -84,6 +84,10 @@ project-management.md
 knowledge-summary.md
 ```
 
+模块地图草案需要用户确认后才落盘为 baseline。init 还会把工作流规则
+（`_shared/assets/ai-rules-snippet.md`）合并进项目的 `CLAUDE.md`/`AGENTS.md`
+（合并不覆盖，首次写入前先确认），让后续每个会话都自动遵守会话入口、模块门和 PM 规则。
+
 初始化成功的标准不是“写了 plan”，而是用户能看懂：
 
 - 系统有哪些模块；
@@ -123,12 +127,12 @@ Use $modular-change 实现这个需求/修复这个 bug/重构这个模块。
 
 ```text
 用户请求
--> 读 project-management.md（active task、阻塞、当前焦点）
+-> 新会话先读 project-management.md（active task、阻塞、当前焦点）
 -> 读 architecture/main-design.md（模块地图）
--> 若是已有 active task 的延续，直接接续，不开重复任务
+-> 若与 active task 相关，询问用户是否接续，不擅自接续或关闭
 -> 定位 Primary Module
 -> 列出 Impacted Modules
--> 判断 L0/L1/L2/L3
+-> 判断 L0/L1/L2/L3（L3 需先告知用户并确认）
 -> 决定是否需要 PM、设计、ADR、评审
 ```
 
@@ -138,8 +142,8 @@ Use $modular-change 实现这个需求/修复这个 bug/重构这个模块。
 
 | 级别 | 场景 | 流程 |
 | --- | --- | --- |
-| L3 大改 | 新增/拆分/合并模块，改变模块边界、跨模块契约、核心数据流、状态归属、存储、运行时、外部系统，或需要长期架构决策 | PM start -> 架构变更/ADR -> review -> 人工接受 -> plan -> implement -> verify -> 更新 baseline -> PM complete |
-| L2 中改 | 单个主模块内的重构、内部结构、文件组织、算法、状态流变化；不改变外部契约或只做兼容调整 | PM start -> 模块修改方案 -> review -> implement -> verify -> 更新模块架构 -> PM complete |
+| L3 大改 | 新增/拆分/合并模块，改变模块边界、跨模块契约、核心数据流、状态归属、存储、运行时、外部系统，或需要长期架构决策 | PM start -> 架构变更/ADR -> review -> 要点摘要 -> 人工接受 -> plan -> implement -> verify -> 更新 baseline -> PM complete |
+| L2 中改 | 单个主模块内的重构、内部结构、文件组织、算法、状态流变化；不改变外部契约或只做兼容调整 | PM start -> 模块修改方案 -> review -> 要点摘要 -> 用户确认 -> implement -> verify -> 更新模块架构 -> PM complete |
 | L1 小改 | 模块内局部行为增减，不改变边界、公共接口、核心流程 | PM start -> implement -> verify -> 必要时更新模块文档 -> PM complete |
 | L0 细微改 | typo、注释、格式、文案、局部常量、机械修改，不改变行为和模块理解 | 标记模块 -> implement -> verify；PM/架构更新可选 |
 
@@ -149,6 +153,28 @@ Use $modular-change 实现这个需求/修复这个 bug/重构这个模块。
 L1/L2/L3 必须在开头记录 PM start，结尾记录 PM complete。
 L0 默认不强制 PM，除非用户明确要求追踪、属于已有任务、或影响发布证据。
 ```
+
+## 需要用户确认的节点
+
+必须确认（阻塞，未确认不往下走）：
+
+- 新项目/迁移的初始模块地图（模块划分、边界、命名），确认后才落盘为 baseline；
+- 项目记忆存放位置；首次创建或修改 CLAUDE.md/AGENTS.md 等 AI 文档；
+- 判定为 L3 时，先告知并确认再进入架构变更流程；
+- L2 模块修改方案，实现前确认；
+- L3 target architecture / ADR 方向，review 后接受；
+- L2 升级为 L3；
+- 产品范围取舍、多个模块归属方案二选一；
+- 取消 active task、归档大量历史。
+
+请求 L2/L3 确认时，必须先给出 3-8 条要点摘要（修改重点、歧义点、风险点），让用户不读完整设计也能决策。
+
+只需报告（不阻塞，用户有异议再纠正）：
+
+- PM start/update/complete 记录；
+- L0/L1 分级；
+- 实现验证后的 baseline 更新和图渲染；
+- 归档单条已完成任务。
 
 ## Architecture 和 PM 的关系
 

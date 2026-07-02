@@ -31,17 +31,19 @@ Use:
 
 1. Clarify product/tool goal, runtime, primary workflows, state/persistence, integrations, and extension points only enough to choose module boundaries.
 2. Propose a small module map with top-level modules, composite groups, atomic modules, public interfaces, and relationships.
-3. Create `architecture/main-design.md`, `architecture/modules/*.md`, and `architecture/graphs/current-project.arch.json`.
-4. Render `architecture/rendered/current-project-architecture.html` and optional SVG.
-5. Index the architecture docs in PM through `modular-status`.
+3. Present the proposed module map to the user and adjust until approved. Do not write baseline docs before approval.
+4. Create `architecture/main-design.md`, `architecture/modules/*.md`, and `architecture/graphs/current-project.arch.json`.
+5. Render `architecture/rendered/current-project-architecture.html` and optional SVG.
+6. Index the architecture docs in PM through `modular-status`.
 
 ### Existing Project Migration
 
 1. Inspect code shape: directories, entry points, runtime paths, package metadata, tests, data/state stores, IO boundaries, generated artifacts, and docs.
 2. Identify modules from stable technical responsibilities, not just folder names.
 3. Mark facts as verified, inferred, or unclear.
-4. Create or replace the baseline architecture docs and graph.
-5. Record unclear boundaries and migration gaps in PM.
+4. Present the inferred module map to the user and adjust until approved before replacing existing baseline docs.
+5. Create or replace the baseline architecture docs and graph.
+6. Record unclear boundaries and migration gaps in PM.
 
 ### Baseline Update
 
@@ -60,7 +62,7 @@ Use this before implementation when a change affects module boundaries, cross-mo
 2. Write `architecture/changes/<date>-<change>.md`.
 3. Write or update `architecture/graphs/proposed/<date>-<change>.arch.json` when a visual target helps.
 4. Add `architecture/adrs/ADR-<date>-<decision>.md` only when a durable decision among meaningful alternatives exists.
-5. Run `modular-review`; do not proceed to implementation until the target is reviewed and human-accepted.
+5. Run `modular-review`, then present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks; do not proceed to implementation until the target is reviewed and human-accepted.
 
 ## Rendering
 

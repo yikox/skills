@@ -25,7 +25,7 @@ Use:
 
 1. Read the user request and current project context.
 2. Read `architecture/main-design.md` and relevant `architecture/modules/*.md` if they exist.
-3. Decide whether the change is L0, L1, L2, or L3.
+3. Decide whether the change is L0, L1, L2, or L3. For L3, tell the user and confirm before entering the architecture change path.
 4. Identify primary module and impacted modules.
 5. If a non-trivial change lacks a clear primary module, stop before implementation planning and use `modular-architecture` to repair the module map or record an architecture gap.
 6. For L1/L2/L3, use `modular-status` to record PM start before implementation work.
@@ -42,11 +42,13 @@ Use when the change affects module boundaries, cross-module contracts, core data
 
 ```text
 PM start -> modular-architecture creates target change / ADR
--> modular-review -> human acceptance
+-> modular-review -> decision summary (3-8 bullets) -> human acceptance
 -> implementation plan -> implement -> verify
 -> modular-architecture updates baseline
 -> PM complete
 ```
+
+When asking for acceptance, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, so the user can decide without reading the full design.
 
 ### L2 Module Change
 
@@ -56,8 +58,9 @@ Use when one module remains the owner but its internal structure or non-trivial 
 2. Create `architecture/modules/<module>/changes/<date>-<change>.md`.
 3. Include current module state, target module design, contract impact, implementation outline, validation, risks, and open questions.
 4. Run `modular-review`.
-5. Implement only after the module design is review-ready and accepted when acceptance is needed.
-6. After implementation, update the module baseline doc if it would otherwise be stale.
+5. Present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, then get user confirmation.
+6. Implement only after review passes and the user confirms.
+7. After implementation, update the module baseline doc if it would otherwise be stale.
 
 ### L1 Lightweight Module Change
 
@@ -79,7 +82,7 @@ Use for typo, formatting, comments, tiny docs wording, local constants, and mech
 ## Escalation Rules
 
 - If L1 grows into a multi-step refactor, promote it to L2 and record the PM update.
-- If L2 changes module contracts or cross-module ownership, promote it to L3.
+- If L2 changes module contracts or cross-module ownership, confirm the promotion to L3 with the user.
 - If implementation discovers the module map is wrong, pause implementation and repair architecture before continuing.
 
 ## Completion Rules

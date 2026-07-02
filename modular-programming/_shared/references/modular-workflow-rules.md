@@ -19,12 +19,14 @@ Architecture owns what the system is and how modules relate. PM owns what is hap
 
 ## Session Entry
 
-Before starting any non-trivial work in a project that uses this workflow:
+At the start of a new session (or after losing context), before any non-trivial work:
 
 1. Read `project-management.md` for active tasks, blockers, and current focus.
 2. Read `architecture/main-design.md` for the current module map.
-3. If the request continues an active task, resume that task instead of opening a duplicate.
+3. If the request appears to continue an active task, ask the user whether to resume it. Never silently resume, duplicate, or close active tasks.
 4. If PM or architecture is missing or stale, repair it with `modular-init` or `modular-audit` before large changes.
+
+Do not re-read these files on every message within the same session unless they may have changed.
 
 ## Routing Quick Reference
 
@@ -63,7 +65,8 @@ Use L3 when the change:
 Flow:
 
 ```text
-PM start -> architecture change design / ADR -> review -> human acceptance
+PM start -> architecture change design / ADR -> review
+-> decision summary (3-8 bullets) -> human acceptance
 -> implementation plan -> implementation -> verification
 -> update implemented baseline -> PM complete
 ```
@@ -82,7 +85,8 @@ Use L2 when the change:
 Flow:
 
 ```text
-PM start -> module change design -> review -> implementation
+PM start -> module change design -> review
+-> decision summary (3-8 bullets) -> user confirmation -> implementation
 -> verification -> update module architecture -> PM complete
 ```
 
@@ -161,6 +165,28 @@ Use these statuses unless the project already has equivalent terms:
 - `obsolete`: superseded.
 
 Never present proposed target architecture as implemented baseline.
+
+## User Confirmation Points
+
+Blocking — do not proceed until the user confirms:
+
+- the initial module map for a new project or migration baseline (module boundaries and names);
+- the project memory location and the first write into project AI docs (`CLAUDE.md`, `AGENTS.md`, or equivalent);
+- classifying work as L3 and entering the architecture change path;
+- an L2 module change design, before implementation;
+- an L3 target architecture or ADR direction, after review;
+- promoting L2 to L3;
+- product scope tradeoffs or choosing among materially different module ownership options;
+- cancelling active tasks or archiving large amounts of history.
+
+When asking for L2/L3 confirmation, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks. The user should be able to decide without reading the full design.
+
+Report-only — proceed and report, correct if the user objects:
+
+- PM start/update/complete records;
+- L0/L1 classification;
+- baseline updates and graph re-rendering after verified implementation;
+- archiving a single completed row.
 
 ## Design, ADR, And Plan Boundaries
 

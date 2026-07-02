@@ -18,7 +18,7 @@ Use these checks for requirements, PM entries, architecture docs, change designs
 
 - The architecture change states current baseline, target design, impact, migration path, validation, and rollback or mitigation.
 - ADR exists when a durable technical direction is chosen among meaningful alternatives.
-- Human acceptance is required before implementation.
+- Human acceptance is required before implementation, requested with a 3-8 bullet decision summary of key changes, ambiguities, and risks.
 - The current graph is not overwritten by a proposed graph unless the change is implemented.
 
 ## L2 Checks
@@ -26,6 +26,7 @@ Use these checks for requirements, PM entries, architecture docs, change designs
 - The module change belongs to one primary module.
 - External contracts are unchanged or compatibility is explained.
 - Implementation and validation are concrete enough to execute.
+- User confirmation is requested before implementation, with a 3-8 bullet decision summary of key changes, ambiguities, and risks.
 - The module baseline is updated only after implementation lands.
 
 ## L1 Checks

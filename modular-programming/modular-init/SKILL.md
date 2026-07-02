@@ -13,6 +13,7 @@ Resolve this skill directory, then read:
 
 - `../_shared/references/modular-workflow-rules.md`
 - `../_shared/references/storage-schema.md`
+- `../_shared/references/module-authoring-rules.md` when writing module docs.
 - `../_shared/references/migration-rules.md` when the project already has code, old PM docs, or old architecture docs.
 
 Use these assets for new files:

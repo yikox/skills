@@ -225,6 +225,10 @@ modular-audit 检查孤儿路径、幽灵 glob、重叠认领。
 关系 kind 五词：uses / reads / writes / triggers / distributes。
 solid = 运行时依赖，dashed = 非运行时（构建、验证夹具、同步约定）。
 图是模块间关系的权威来源，模块文档 Dependencies 表是它的子集视图。
+
+模块文档写作规范见 module-authoring-rules.md：
+顶层模块 4-9 个；契约必须具体；不复述代码；验证可执行；
+不确定事实标注 (inferred)/(unclear)；契约/依赖/约束/code_paths 变化必须同步文档。
 ```
 
 ## Baseline 和 Target

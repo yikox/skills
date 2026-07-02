@@ -14,6 +14,7 @@ Read:
 - `../_shared/references/modular-workflow-rules.md`
 - `../_shared/references/storage-schema.md`
 - `../_shared/references/architecture-graph-json-format.md` when authoring graph JSON.
+- `../_shared/references/module-authoring-rules.md` when writing or updating module docs.
 - `../_shared/references/module-kind-classification.md` when classifying modules.
 - `../_shared/references/migration-rules.md` when deriving architecture from an old project.
 

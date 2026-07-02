@@ -14,6 +14,7 @@ Use these checks for requirements, PM entries, architecture docs, change designs
 - Status fields are synchronized across PM, design docs, and architecture index rows.
 - Open questions are explicit and not hidden in prose.
 - New or migrated module docs declare `code_paths`; claims do not overlap across modules.
+- Module docs follow `module-authoring-rules.md`: concrete public contracts (or explicit "No external contract"), no code restating, executable validation, uncertain facts marked `(inferred)` or `(unclear)`.
 - Module doc Dependencies tables are a subset of the graph relations; relation `kind` values come from the closed vocabulary in the graph format reference.
 
 ## L3 Checks

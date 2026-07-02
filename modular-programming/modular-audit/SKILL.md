@@ -17,6 +17,16 @@ Read:
 - `../_shared/references/migration-rules.md`
 - `../_shared/references/pm-maintenance-rules.md` when checking archive candidates or history compression.
 
+## Scripts
+
+Start the audit by running the deterministic checker; fold its output into the report (the script covers mechanical checks, the agent covers semantic ones):
+
+```bash
+python3 <skill-dir>/scripts/check_modular_project.py <pm-root> [--repo-root <repo>] [--exclude <glob>]...
+```
+
+Pass `--repo-root` to enable code ownership checks (orphan/ghost/overlap). Add `--exclude` for the project's intentional unowned paths listed in `main-design.md` Shared Constraints. Exit code 1 means errors exist.
+
 ## Audit Checks
 
 Check:

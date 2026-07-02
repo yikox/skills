@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Audit"
+  short_description: "Audit modular workflow consistency and migration gaps"
+  default_prompt: "Use $modular-audit to check this project's modular workflow state and migration health."

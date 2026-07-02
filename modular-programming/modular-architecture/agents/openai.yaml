@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Architecture"
+  short_description: "Maintain module maps, baselines, graphs, and ADRs"
+  default_prompt: "Use $modular-architecture to create or update the project's authoritative module architecture."

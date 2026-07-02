@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Init"
+  short_description: "Set up architecture-first modular workflow"
+  default_prompt: "Use $modular-init to initialize or repair this project's modular programming workflow."

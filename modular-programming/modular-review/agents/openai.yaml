@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Review"
+  short_description: "Review module routing, designs, ADRs, and PM state"
+  default_prompt: "Use $modular-review to check this modular workflow artifact before acceptance or completion."

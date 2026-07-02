@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Status"
+  short_description: "Track PM start, progress, completion, and indexes"
+  default_prompt: "Use $modular-status to update project-management.md for modular workflow state."

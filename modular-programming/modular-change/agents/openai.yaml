@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Change"
+  short_description: "Route changes through module gate and L0-L3 flow"
+  default_prompt: "Use $modular-change to classify this request, record PM start, design if needed, implement, verify, and record completion."

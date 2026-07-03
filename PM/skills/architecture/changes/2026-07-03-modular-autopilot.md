@@ -1,8 +1,8 @@
 ---
 title: modular-autopilot 监督者技能
 level: L3
-status: proposed
-review_status: not-reviewed
+status: accepted
+review_status: reviewed
 primary_module: modular-autopilot
 impacted_modules: [modular-change, modular-audit, _shared]
 ---
@@ -78,20 +78,20 @@ impacted_modules: [modular-change, modular-audit, _shared]
 
 ## Module Impact
 
-| Module | Impact |
-| --- | --- |
-| modular-autopilot | 新增技能，本变更主体 |
-| modular-change | L2/L3 路径的 `-> implementation plan -> implement -> verify` 段落补充指引：设计接受后可移交 modular-autopilot；同时在确认步骤显式写入"确认后将设计 status 置为 accepted"（否则 autopilot 的入口门槛无从判定） |
-| modular-audit | storage schema 与检查器需认知 `plans/` 目录：布局文档补充计划文件位置；可选新增"孤儿计划"检查（PM 已完成但计划未归档/删除） |
-| _shared | `storage-schema.md` 布局补 `plans/`；`modular-workflow-rules.md` 的 Design/ADR/Plan Boundaries 一节补计划存放与生命周期规则 |
+| Module            | Impact                                                                                                                                                     |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| modular-autopilot | 新增技能，本变更主体                                                                                                                                                 |
+| modular-change    | L2/L3 路径的 `-> implementation plan -> implement -> verify` 段落补充指引：设计接受后可移交 modular-autopilot；同时在确认步骤显式写入"确认后将设计 status 置为 accepted"（否则 autopilot 的入口门槛无从判定） |
+| modular-audit     | storage schema 与检查器需认知 `plans/` 目录：布局文档补充计划文件位置；可选新增"孤儿计划"检查（PM 已完成但计划未归档/删除）                                                                              |
+| _shared           | `storage-schema.md` 布局补 `plans/`；`modular-workflow-rules.md` 的 Design/ADR/Plan Boundaries 一节补计划存放与生命周期规则                                                   |
 
 ## Alternatives
 
-| Option | Tradeoff |
-| --- | --- |
-| 自建 modular-plan 技能重造计划方法论 | 完全可控、无外部依赖，但需自行发明并长期维护 writing-plans 已打磨的质量规则（任务粒度、No Placeholders、Interfaces 块、self-review），性价比低 |
-| 直接在 modular-change 文档中固化"如何调用 superpowers"的流程 | 无新技能、改动小，但每个人工确认点仍在，无法达成"一次授权、全程自主、最后汇报"的目标 |
-| 监督者做成 agent（.claude/agents） | 概念上更像"角色"，但 subagent 无法派发 SDD 所需的下级 subagent，执行环节瘫痪，不可行 |
+| Option                                        | Tradeoff                                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 自建 modular-plan 技能重造计划方法论                     | 完全可控、无外部依赖，但需自行发明并长期维护 writing-plans 已打磨的质量规则（任务粒度、No Placeholders、Interfaces 块、self-review），性价比低 |
+| 直接在 modular-change 文档中固化"如何调用 superpowers"的流程 | 无新技能、改动小，但每个人工确认点仍在，无法达成"一次授权、全程自主、最后汇报"的目标                                                       |
+| 监督者做成 agent（.claude/agents）                   | 概念上更像"角色"，但 subagent 无法派发 SDD 所需的下级 subagent，执行环节瘫痪，不可行                                           |
 
 ## ADR Need
 
@@ -115,4 +115,4 @@ impacted_modules: [modular-change, modular-audit, _shared]
 
 ## Review Notes
 
-- Review status: not-reviewed
+- Review status: reviewed（自审通过：无占位符、章节与模板一致、状态词合法；用户于 2026-07-03 确认接受）

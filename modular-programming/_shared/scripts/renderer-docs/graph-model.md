@@ -23,7 +23,7 @@ Graph Model 是解析后的中间表示。它把 JSON 图结构和模块 Markdow
 - `GroupInterface`：复合模块对外接口，记录接口名称、描述和内部 provider 对象。
 - `Relation`：两个同层端点之间的关系，端点可以是对象、group 或 `group.interface`，包含关系说明、样式和可选气泡偏移。
 - `RouteEndpoint`：渲染阶段的通用端点结构，把对象、group、group interface 统一成可路由的边界框、中心点和 scope。
-- `Diagram`：入口文档、元信息、对象、组合、关系和 warnings。
+- `Diagram`：入口文档、元信息、对象、组合、关系、warnings，以及成员到父 group 的包含映射 `parent_by_id`（支持 group 套 group 的树形 scope）。
 
 ## 交互
 

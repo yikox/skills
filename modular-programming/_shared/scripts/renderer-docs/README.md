@@ -1,7 +1,8 @@
 # Renderer Internal Architecture
 
-Module docs for `render_modular_graph.py` (the architecture graph renderer).
-Read the relevant docs before modifying the renderer script.
+Module docs for `render_modular_graph.py` (the architecture graph renderer)
+and `serve_modular_graph.py` (the local architecture-notes browser).
+Read the relevant docs before modifying either script.
 
 | Doc | Covers |
 | --- | --- |
@@ -16,3 +17,4 @@ Read the relevant docs before modifying the renderer script.
 | render-runtime.md | end-to-end parse + layout + render pipeline |
 | cli-orchestrator.md | CLI entry and pipeline orchestration |
 | diagnostics.md | warnings and error reporting |
+| notes-server.md | local multi-project browse server (serve_modular_graph.py) |

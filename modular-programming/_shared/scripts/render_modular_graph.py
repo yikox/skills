@@ -12,7 +12,7 @@ import os
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple
 from urllib.parse import quote
 
 
@@ -106,6 +106,7 @@ class Diagram:
     groups: List[DiagramGroup]
     relations: List[Relation]
     warnings: List[str]
+    parent_by_id: Dict[str, str]
 
 
 @dataclass
@@ -253,18 +254,85 @@ def relation_endpoint_scope(
     endpoint_id: str,
     object_ids: Set[str],
     group_ids: Set[str],
-    object_parent_by_id: Dict[str, str],
+    parent_by_id: Dict[str, str],
     interface_ids_by_group: Dict[str, Set[str]],
 ) -> Optional[str]:
-    if endpoint_id in object_ids:
-        return object_parent_by_id.get(endpoint_id)
-    if endpoint_id in group_ids:
-        return None
+    if endpoint_id in object_ids or endpoint_id in group_ids:
+        return parent_by_id.get(endpoint_id)
     if "." in endpoint_id:
         group_id, interface_id = endpoint_id.rsplit(".", 1)
         if interface_id in interface_ids_by_group.get(group_id, set()):
-            return None
+            return parent_by_id.get(group_id)
     return None
+
+
+def build_containment(
+    objects: List[DiagramObject],
+    groups: List[DiagramGroup],
+    warnings: List[str],
+) -> Dict[str, str]:
+    object_ids = {item.object_id for item in objects}
+    group_ids = {item.group_id for item in groups}
+    parent_by_id: Dict[str, str] = {}
+    for group in groups:
+        for child_id in group.contains:
+            if child_id == group.group_id:
+                warnings.append(f"组合模块 {group.group_id} 不能包含自身")
+                continue
+            if child_id not in object_ids and child_id not in group_ids:
+                warnings.append(f"组合模块 {group.group_id} 包含未知成员: {child_id}")
+                continue
+            existing_parent = parent_by_id.get(child_id)
+            if existing_parent is not None and existing_parent != group.group_id:
+                warnings.append(f"成员 {child_id} 同时出现在多个组合模块: {existing_parent}, {group.group_id}")
+                continue
+            parent_by_id[child_id] = group.group_id
+    for group in groups:
+        seen = {group.group_id}
+        current = parent_by_id.get(group.group_id)
+        while current is not None:
+            if current in seen:
+                warnings.append(f"组合模块包含关系成环，已忽略 {group.group_id} 的父级链接: {current}")
+                parent_by_id.pop(group.group_id, None)
+                break
+            seen.add(current)
+            current = parent_by_id.get(current)
+    return parent_by_id
+
+
+def descendant_object_ids(
+    group_id: str,
+    groups_by_id: Dict[str, DiagramGroup],
+    object_ids: Set[str],
+) -> Set[str]:
+    result: Set[str] = set()
+    stack = [group_id]
+    visited: Set[str] = set()
+    while stack:
+        current = stack.pop()
+        if current in visited:
+            continue
+        visited.add(current)
+        group = groups_by_id.get(current)
+        if group is None:
+            continue
+        for child_id in group.contains:
+            if child_id in object_ids:
+                result.add(child_id)
+            elif child_id in groups_by_id:
+                stack.append(child_id)
+    return result
+
+
+def group_depth(group_id: str, parent_by_id: Dict[str, str]) -> int:
+    depth = 0
+    seen = {group_id}
+    current = parent_by_id.get(group_id)
+    while current is not None and current not in seen:
+        seen.add(current)
+        depth += 1
+        current = parent_by_id.get(current)
+    return depth
 
 
 def load_graph(path: Path) -> Diagram:
@@ -272,8 +340,8 @@ def load_graph(path: Path) -> Diagram:
     raw = json.loads(read_text(path))
     warnings: List[str] = []
 
-    if raw.get("format") not in {"arch-graph/v0.1", "arch-graph/v0.2"}:
-        warnings.append(f"图文件 format 不是 arch-graph/v0.1 或 arch-graph/v0.2: {raw.get('format')}")
+    if raw.get("format") not in {"arch-graph/v0.1", "arch-graph/v0.2", "arch-graph/v0.3"}:
+        warnings.append(f"图文件 format 不是 arch-graph/v0.1、v0.2 或 v0.3: {raw.get('format')}")
 
     meta = {
         "name": raw.get("name") or path.stem,
@@ -343,9 +411,6 @@ def load_graph(path: Path) -> Diagram:
             source_meta = load_document_meta(ref_path, warnings, inline_meta_fields(item))
 
         contains = as_string_list(item.get("contains"), warnings, "contains", group_id)
-        for child_id in contains:
-            if child_id not in object_ids:
-                warnings.append(f"组合模块 {group_id} 包含未知对象: {child_id}")
 
         interfaces: List[GroupInterface] = []
         seen_interface_ids = set()
@@ -376,11 +441,6 @@ def load_graph(path: Path) -> Diagram:
                 "provided_by",
                 f"{group_id}.{interface_id}",
             )
-            for provider_id in provided_by:
-                if provider_id not in object_ids:
-                    warnings.append(f"组合模块接口 {group_id}.{interface_id} 由未知对象提供: {provider_id}")
-                elif provider_id not in contains:
-                    warnings.append(f"组合模块接口 {group_id}.{interface_id} 的 provider 不在 contains 内: {provider_id}")
             interfaces.append(
                 GroupInterface(
                     interface_id=interface_id,
@@ -408,16 +468,20 @@ def load_graph(path: Path) -> Diagram:
         group.group_id: {item.interface_id for item in group.interfaces}
         for group in groups
     }
-    object_parent_by_id: Dict[str, str] = {}
+    parent_by_id = build_containment(objects, groups, warnings)
+    groups_by_id = {group.group_id: group for group in groups}
     for group in groups:
-        for child_id in group.contains:
-            if child_id not in object_ids:
-                continue
-            existing_parent = object_parent_by_id.get(child_id)
-            if existing_parent is not None and existing_parent != group.group_id:
-                warnings.append(f"对象 {child_id} 同时出现在多个组合模块: {existing_parent}, {group.group_id}")
-                continue
-            object_parent_by_id[child_id] = group.group_id
+        subtree_object_ids = descendant_object_ids(group.group_id, groups_by_id, object_ids)
+        for interface in group.interfaces:
+            for provider_id in interface.provided_by:
+                if provider_id not in object_ids:
+                    warnings.append(
+                        f"组合模块接口 {group.group_id}.{interface.interface_id} 由未知对象提供: {provider_id}"
+                    )
+                elif provider_id not in subtree_object_ids:
+                    warnings.append(
+                        f"组合模块接口 {group.group_id}.{interface.interface_id} 的 provider 不在 contains 子树内: {provider_id}"
+                    )
 
     relations: List[Relation] = []
     for item in raw.get("relations", []):
@@ -437,14 +501,14 @@ def load_graph(path: Path) -> Diagram:
                 source,
                 object_ids,
                 group_ids,
-                object_parent_by_id,
+                parent_by_id,
                 interface_ids_by_group,
             )
             target_scope = relation_endpoint_scope(
                 target,
                 object_ids,
                 group_ids,
-                object_parent_by_id,
+                parent_by_id,
                 interface_ids_by_group,
             )
             if source_scope != target_scope:
@@ -470,7 +534,15 @@ def load_graph(path: Path) -> Diagram:
             )
         )
 
-    return Diagram(path=path, meta=meta, objects=objects, groups=groups, relations=relations, warnings=warnings)
+    return Diagram(
+        path=path,
+        meta=meta,
+        objects=objects,
+        groups=groups,
+        relations=relations,
+        warnings=warnings,
+        parent_by_id=parent_by_id,
+    )
 
 
 def char_display_units(value: str) -> int:
@@ -552,6 +624,9 @@ def escape(value: str) -> str:
     return html.escape(value, quote=True)
 
 
+LinkResolver = Callable[[Optional[Path]], Optional[str]]
+
+
 def document_href(path: Optional[Path], link_base: Optional[Path]) -> Optional[str]:
     if path is None:
         return None
@@ -563,6 +638,16 @@ def document_href(path: Optional[Path], link_base: Optional[Path]) -> Optional[s
     except ValueError:
         return resolved.as_uri()
     return quote(Path(relative).as_posix(), safe="/")
+
+
+def resolve_link(
+    path: Optional[Path],
+    link_base: Optional[Path],
+    link_resolver: Optional[LinkResolver],
+) -> Optional[str]:
+    if link_resolver is not None:
+        return link_resolver(path)
+    return document_href(path, link_base)
 
 
 def wrap_svg_link(svg: str, href: Optional[str], class_name: str) -> str:
@@ -720,7 +805,13 @@ def padded_box(box: BBox, padding: float) -> BBox:
     return box[0] - padding, box[1] - padding, box[2] + padding, box[3] + padding
 
 
-def render_object(item: DiagramObject, x: float, y: float, link_base: Optional[Path] = None) -> str:
+def render_object(
+    item: DiagramObject,
+    x: float,
+    y: float,
+    link_base: Optional[Path] = None,
+    link_resolver: Optional[LinkResolver] = None,
+) -> str:
     width = NODE_WIDTH
     height = NODE_HEIGHT
     shape = item.shape
@@ -797,7 +888,7 @@ def render_object(item: DiagramObject, x: float, y: float, link_base: Optional[P
         tooltip += f" - {escape(str(item.ref))}"
     tooltip += "</title>"
     node_svg = f'<g class="node" data-id="{escape(item.object_id)}">\n{tooltip}\n{shape_svg}\n{title_svg}\n{desc_svg}\n</g>'
-    return wrap_svg_link(node_svg, document_href(item.ref, link_base), "node-link")
+    return wrap_svg_link(node_svg, resolve_link(item.ref, link_base, link_resolver), "node-link")
 
 
 def object_half_size(item: DiagramObject) -> Tuple[float, float]:
@@ -811,70 +902,61 @@ def object_box(item: DiagramObject, x: float, y: float, padding: float = 10) -> 
     return x - half_w - padding, y - half_h - padding, x + half_w + padding, y + half_h + padding
 
 
-def object_run_bounds(
-    child_ids: List[str],
+def compute_group_frames(
+    groups: List[DiagramGroup],
     positions: Dict[str, Tuple[float, float]],
     objects_by_id: Dict[str, DiagramObject],
-) -> BBox:
-    left_values = []
-    right_values = []
-    top_values = []
-    bottom_values = []
-    for child_id in child_ids:
-        x, y = positions[child_id]
-        half_w, half_h = object_half_size(objects_by_id[child_id])
-        left_values.append(x - half_w)
-        right_values.append(x + half_w)
-        top_values.append(y - half_h)
-        bottom_values.append(y + half_h)
+) -> Dict[str, List[BBox]]:
+    groups_by_id = {group.group_id: group for group in groups}
+    cache: Dict[str, Optional[BBox]] = {}
 
-    return (
-        min(left_values) - GROUP_PADDING_X,
-        min(top_values) - GROUP_PADDING_TOP,
-        max(right_values) + GROUP_PADDING_X,
-        max(bottom_values) + GROUP_PADDING_BOTTOM,
-    )
+    def bounds_of(group_id: str, stack: Set[str]) -> Optional[BBox]:
+        if group_id in cache:
+            return cache[group_id]
+        if group_id in stack:
+            return None
+        stack.add(group_id)
+        group = groups_by_id[group_id]
+        member_boxes: List[BBox] = []
+        for child_id in group.contains:
+            if child_id in positions and child_id in objects_by_id:
+                x, y = positions[child_id]
+                half_w, half_h = object_half_size(objects_by_id[child_id])
+                member_boxes.append((x - half_w, y - half_h, x + half_w, y + half_h))
+            elif child_id in groups_by_id and child_id != group_id:
+                child_bounds = bounds_of(child_id, stack)
+                if child_bounds is not None:
+                    member_boxes.append(child_bounds)
+        stack.discard(group_id)
+        if not member_boxes:
+            if group.at is None:
+                cache[group_id] = None
+                return None
+            x, y = group.at
+            cache[group_id] = (x, y, x + 280, y + 180)
+            return cache[group_id]
+        content = union_box(member_boxes)
+        cache[group_id] = (
+            content[0] - GROUP_PADDING_X,
+            content[1] - GROUP_PADDING_TOP,
+            content[2] + GROUP_PADDING_X,
+            content[3] + GROUP_PADDING_BOTTOM,
+        )
+        return cache[group_id]
 
-
-def group_frame_bounds(
-    group: DiagramGroup,
-    positions: Dict[str, Tuple[float, float]],
-    objects_by_id: Dict[str, DiagramObject],
-) -> List[BBox]:
-    contained = [child_id for child_id in group.contains if child_id in positions and child_id in objects_by_id]
-    if not contained:
-        if group.at is None:
-            return []
-        x, y = group.at
-        return [(x, y, x + 280, y + 180)]
-
-    return [object_run_bounds(contained, positions, objects_by_id)]
-
-
-def group_bounds(
-    group: DiagramGroup,
-    positions: Dict[str, Tuple[float, float]],
-    objects_by_id: Dict[str, DiagramObject],
-) -> Optional[Tuple[float, float, float, float]]:
-    frames = group_frame_bounds(group, positions, objects_by_id)
-    if not frames:
-        return None
-    frame = frames[0]
-    return (
-        frame[0],
-        frame[1],
-        frame[2],
-        frame[3],
-    )
+    frames_by_id: Dict[str, List[BBox]] = {}
+    for group in groups:
+        bounds = bounds_of(group.group_id, set())
+        frames_by_id[group.group_id] = [bounds] if bounds is not None else []
+    return frames_by_id
 
 
 def render_group(
     group: DiagramGroup,
-    positions: Dict[str, Tuple[float, float]],
-    objects_by_id: Dict[str, DiagramObject],
+    frames: List[BBox],
     link_base: Optional[Path] = None,
+    link_resolver: Optional[LinkResolver] = None,
 ) -> str:
-    frames = group_frame_bounds(group, positions, objects_by_id)
     if not frames:
         return ""
 
@@ -913,7 +995,7 @@ def render_group(
             "</g>",
         ]
     )
-    return wrap_svg_link(group_svg, document_href(group.ref, link_base), "group-link")
+    return wrap_svg_link(group_svg, resolve_link(group.ref, link_base, link_resolver), "group-link")
 
 
 def group_label_box(bounds: Tuple[float, float, float, float]) -> BBox:
@@ -1725,21 +1807,13 @@ def place_relation_label(
     return best[0], best[1], best[2]
 
 
-def object_parent_scopes(groups: List[DiagramGroup]) -> Dict[str, str]:
-    parent_by_id: Dict[str, str] = {}
-    for group in groups:
-        for child_id in group.contains:
-            parent_by_id.setdefault(child_id, group.group_id)
-    return parent_by_id
-
-
 def build_route_endpoints(
     positions: Dict[str, Point],
     objects_by_id: Dict[str, DiagramObject],
     groups: List[DiagramGroup],
     group_frames_by_id: Dict[str, List[BBox]],
+    parent_by_id: Dict[str, str],
 ) -> Dict[str, RouteEndpoint]:
-    parent_by_id = object_parent_scopes(groups)
     endpoints: Dict[str, RouteEndpoint] = {}
     for object_id, item in objects_by_id.items():
         if object_id not in positions:
@@ -1759,12 +1833,13 @@ def build_route_endpoints(
         if not frames:
             continue
         group_box = union_box(frames)
+        group_scope = parent_by_id.get(group.group_id)
         endpoints[group.group_id] = RouteEndpoint(
             endpoint_id=group.group_id,
             kind="group",
             center=box_center(group_box),
             box=group_box,
-            scope=None,
+            scope=group_scope,
             owner_object_ids=set(),
         )
         for interface in group.interfaces:
@@ -1774,24 +1849,26 @@ def build_route_endpoints(
                 kind="interface",
                 center=box_center(group_box),
                 box=group_box,
-                scope=None,
+                scope=group_scope,
                 owner_object_ids=set(),
             )
     return endpoints
 
 
-def render_svg(diagram: Diagram, link_base: Optional[Path] = None) -> str:
+def render_svg(
+    diagram: Diagram,
+    link_base: Optional[Path] = None,
+    link_resolver: Optional[LinkResolver] = None,
+) -> str:
     positions = object_positions(diagram.objects)
     objects_by_id = {item.object_id: item for item in diagram.objects}
-    group_frames_by_id = {
-        group.group_id: group_frame_bounds(group, positions, objects_by_id)
-        for group in diagram.groups
-    }
+    group_frames_by_id = compute_group_frames(diagram.groups, positions, objects_by_id)
     endpoints_by_id = build_route_endpoints(
         positions,
         objects_by_id,
         diagram.groups,
         group_frames_by_id,
+        diagram.parent_by_id,
     )
     group_bounds_values = [bounds for frames in group_frames_by_id.values() for bounds in frames]
     object_boxes_by_id = {
@@ -1839,10 +1916,17 @@ def render_svg(diagram: Diagram, link_base: Optional[Path] = None) -> str:
         view_width = 600.0
         view_height = 300.0
 
-    groups_svg = "\n".join(render_group(item, positions, objects_by_id, link_base) for item in diagram.groups)
+    ordered_groups = sorted(
+        enumerate(diagram.groups),
+        key=lambda pair: (group_depth(pair[1].group_id, diagram.parent_by_id), pair[0]),
+    )
+    groups_svg = "\n".join(
+        render_group(group, group_frames_by_id.get(group.group_id, []), link_base, link_resolver)
+        for _, group in ordered_groups
+    )
     relation_lines_svg = "\n".join(render_routed_relation_line(item) for item in routed_relations)
     objects_svg = "\n".join(
-        render_object(item, *positions[item.object_id], link_base)
+        render_object(item, *positions[item.object_id], link_base, link_resolver)
         for item in diagram.objects
         if item.object_id in positions
     )
@@ -1867,7 +1951,11 @@ def render_svg(diagram: Diagram, link_base: Optional[Path] = None) -> str:
 </svg>"""
 
 
-def render_html(diagram: Diagram, link_base: Optional[Path] = None) -> str:
+def render_html(
+    diagram: Diagram,
+    link_base: Optional[Path] = None,
+    link_resolver: Optional[LinkResolver] = None,
+) -> str:
     warning_items = "\n".join(f"<li>{escape(item)}</li>" for item in diagram.warnings)
     warnings_html = ""
     if warning_items:
@@ -2052,7 +2140,7 @@ def render_html(diagram: Diagram, link_base: Optional[Path] = None) -> str:
         <p>{escape(diagram.meta.get("described", ""))}</p>
       </header>
       <section class="canvas">
-        {render_svg(diagram, link_base)}
+        {render_svg(diagram, link_base, link_resolver)}
       </section>{warnings_html}
     </main>
   </body>

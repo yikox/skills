@@ -77,6 +77,12 @@ Resolve `<suite-dir>` as the parent directory of this skill directory.
 
 Treat renderer warnings as issues unless the user explicitly accepts a draft with known gaps.
 
+For interactive browsing across projects (graph pages linked to module docs), the user can run the local notes server; static rendering above remains the authoritative baseline artifact:
+
+```bash
+python3 <suite-dir>/_shared/scripts/serve_modular_graph.py --root <projects-root> --port 8123
+```
+
 ## Quality Rules
 
 - Every non-trivial module has a stable slug and module doc.

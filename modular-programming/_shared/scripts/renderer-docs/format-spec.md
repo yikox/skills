@@ -16,12 +16,12 @@ Format Spec 定义 Architecture Graph JSON 的文件格式。它说明 `*.arch.j
 
 ## 当前内容
 
-- `*.arch.json` 图文件使用 `format: arch-graph/v0.2`，渲染器兼容读取 v0.1。
+- `*.arch.json` 图文件使用 `format: arch-graph/v0.3`，渲染器兼容读取 v0.1 / v0.2。
 - 被引用 Markdown 模块文档使用 `name`、`described`、`module_form`、`module_kind`。
 - `objects[]` 表示节点。
-- `groups[]` 表示复合模块外框。
-- `groups[].interfaces[]` 表示复合模块对外接口，端点写作 `<group-id>.<interface-id>`。
-- `relations[]` 表示同层端点之间的有向连线和关系说明。
+- `groups[]` 表示复合模块外框；`contains` 成员可以是对象或其他 group（多层嵌套），包含关系必须成森林（无环、单父、不含自身）。
+- `groups[].interfaces[]` 表示复合模块对外接口，端点写作 `<group-id>.<interface-id>`，provider 允许来自 `contains` 子树。
+- `relations[]` 表示同层端点之间的有向连线和关系说明；scope 随包含树递归（成员属于其父 group 的 scope）。
 
 ## 与其他模块关系
 

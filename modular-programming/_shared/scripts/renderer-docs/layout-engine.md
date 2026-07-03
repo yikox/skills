@@ -20,8 +20,9 @@ Layout Engine 把 Graph Model 中的对象和组合关系转换成 SVG 坐标。
 
 - `object_positions()` 计算节点位置。
 - `object_half_size()` 提供节点半尺寸。
-- `group_frame_bounds()` / `group_bounds()` 根据 `contains` 计算复合模块的单一完整外框。
-- `build_route_endpoints()` 把对象、group 和 group interface 统一成关系路由端点；group interface 复用所属复合模块的完整边界。
+- `compute_group_frames()` 后序递归计算复合模块外框：叶子 group 由所含对象盒并集加 padding 得出，父 group 再并上子 group 外框；支持任意深度嵌套。
+- `group_depth()` 计算 group 嵌套深度，渲染时父框先画、子框后画。
+- `build_route_endpoints()` 把对象、group 和 group interface 统一成关系路由端点；group 与其 interface 的 scope 取其父 group（顶层为 None）。
 - route helpers 计算正交折线路径、端点桩线、避让轨道和 hover 气泡位置。
 
 ## 约束

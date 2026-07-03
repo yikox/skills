@@ -78,6 +78,8 @@ Append one line per autonomous ruling to `.superpowers/sdd/decision-log.md` (sam
 
 Log at minimum: plan self-approval, every plan-mandated conflict ruling, every Minor-finding deferral.
 
+`.superpowers/sdd/` is ephemeral scratch that dies with the worktree. During closeout, copy the decision log next to the archived plan (e.g. `architecture/plans/archive/<YYYY-MM-DD>-<change>-decisions.md`) so accountability survives worktree cleanup.
+
 ## Final Report
 
 Deliver these sections, in order:

@@ -143,6 +143,6 @@ Plan front matter:
 | Field | Required | Meaning |
 | --- | --- | --- |
 | `source_design` | yes | pm-root-relative path to the design the plan implements |
-| `level` | yes | `L2` or `L3`, matching the source design |
+| `level` | yes | `L2` or `L3`, matching the source design; a plan's directory must match its level (`plans/` holds L3, `modules/<module-slug>/plans/` holds L2) |
 
-Archive or delete a plan once its PM completion is recorded; `modular-audit` warns about plans whose source design is already `implemented`.
+Archive or delete a plan once its PM completion is recorded; `modular-audit` warns about plans whose source design is already `implemented`. To archive, move the plan into an `archive/` subdirectory beside it (e.g. `architecture/plans/archive/`); the checker intentionally skips archived plans.

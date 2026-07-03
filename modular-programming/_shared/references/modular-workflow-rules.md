@@ -241,4 +241,4 @@ Use a design when describing how a change will modify the system.
 
 Use an ADR when recording why a durable architecture direction was chosen among meaningful alternatives.
 
-Use an implementation plan only after the architecture or module design is accepted enough to execute. Plans are temporary execution aids, not source-of-truth architecture.
+Use an implementation plan only after the architecture or module design is accepted enough to execute. Plans are temporary execution aids, not source-of-truth architecture. Store plans under `plans/` beside the design's `changes/` directory with `source_design` and `level` front matter (see `storage-schema.md` Plan Files), and archive or delete them once PM completion is recorded.

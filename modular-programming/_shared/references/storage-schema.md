@@ -12,6 +12,8 @@ PM/<project-slug>/
     main-design.md
     changes/
       <YYYY-MM-DD>-<architecture-change>.md
+    plans/
+      <YYYY-MM-DD>-<change>-plan.md
     adrs/
       ADR-<YYYY-MM-DD>-<decision>.md
     modules/
@@ -19,6 +21,8 @@ PM/<project-slug>/
       <module-slug>/
         changes/
           <YYYY-MM-DD>-<module-change>.md
+        plans/
+          <YYYY-MM-DD>-<change>-plan.md
     graphs/
       current-project.arch.json
       proposed/
@@ -129,3 +133,16 @@ not-reviewed -> needs-review -> reviewed
 ```
 
 Use project-native status words when they already exist, but keep the meaning consistent.
+
+## Plan Files
+
+Implementation plans are temporary execution aids, not architecture. They live in `plans/` next to their design's `changes/` directory — L3 plans under `architecture/plans/`, L2 plans under `architecture/modules/<module-slug>/plans/`. Never store plans inside a `changes/` directory.
+
+Plan front matter:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `source_design` | yes | pm-root-relative path to the design the plan implements |
+| `level` | yes | `L2` or `L3`, matching the source design |
+
+Archive or delete a plan once its PM completion is recorded; `modular-audit` warns about plans whose source design is already `implemented`.

@@ -1,7 +1,7 @@
 ---
 title: modular-autopilot 监督者技能
 level: L3
-status: accepted
+status: implemented
 review_status: reviewed
 primary_module: modular-autopilot
 impacted_modules: [modular-change, modular-audit, _shared]

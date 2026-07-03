@@ -249,6 +249,28 @@ def check_designs(pm: Path) -> None:
                 error(f"[designs] {rel} review_status 非法: {meta.get('review_status')}")
 
 
+def check_plans(pm: Path) -> None:
+    arch = pm / "architecture"
+    for pattern in ["plans/*.md", "modules/*/plans/*.md"]:
+        for doc in sorted(arch.glob(pattern)):
+            meta = parse_front_matter(doc.read_text(encoding="utf-8"))
+            rel = doc.relative_to(pm).as_posix()
+            if not meta:
+                error(f"[plans] {rel} 缺少 front matter")
+                continue
+            src = meta.get("source_design")
+            if not isinstance(src, str) or not src:
+                error(f"[plans] {rel} 缺少 source_design")
+            elif not (pm / src).exists():
+                error(f"[plans] {rel} source_design 路径不存在: {src}")
+            else:
+                smeta = parse_front_matter((pm / src).read_text(encoding="utf-8"))
+                if smeta.get("status") == "implemented":
+                    warn(f"[plans] {rel} 的源设计已 implemented，计划应归档或删除")
+            if meta.get("level") not in {"L2", "L3"}:
+                error(f"[plans] {rel} level 非法: {meta.get('level')}")
+
+
 def check_pm_doc(pm: Path) -> None:
     doc = pm / "project-management.md"
     if not doc.exists():
@@ -295,6 +317,7 @@ def main() -> int:
         pairs = check_graph(graph, gp)
         check_dependencies_subset(pm, modules, pairs)
     check_designs(pm)
+    check_plans(pm)
     check_pm_doc(pm)
 
     for msg in errors:

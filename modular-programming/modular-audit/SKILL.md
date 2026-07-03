@@ -35,6 +35,7 @@ Check:
 - completed L1/L2/L3 work has PM completion evidence;
 - non-trivial backlog rows have primary module, impacted modules, and change level;
 - L2/L3 design docs are indexed and status-synchronized;
+- plan files live under `plans/` with valid `source_design` and `level`; plans whose source design is implemented are archive candidates;
 - implemented designs have evidence;
 - landed durable changes are reflected in architecture baseline;
 - proposed target architecture is not presented as implemented baseline;

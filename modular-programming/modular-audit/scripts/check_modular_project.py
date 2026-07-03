@@ -49,6 +49,12 @@ def warn(msg: str) -> None:
     warnings.append(msg)
 
 
+def _unquote(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        return value[1:-1]
+    return value
+
+
 def parse_front_matter(text: str) -> Dict[str, object]:
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
@@ -61,7 +67,7 @@ def parse_front_matter(text: str) -> Dict[str, object]:
         if re.match(r"^\s+-\s+", line) and current_list:
             meta.setdefault(current_list, [])
             if isinstance(meta[current_list], list):
-                meta[current_list].append(line.split("-", 1)[1].strip())
+                meta[current_list].append(_unquote(line.split("-", 1)[1].strip()))
             continue
         m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
         if m:
@@ -71,7 +77,7 @@ def parse_front_matter(text: str) -> Dict[str, object]:
                 meta[key] = []
             elif value.startswith("[") and value.endswith("]"):
                 inner = value[1:-1].strip()
-                meta[key] = [v.strip() for v in inner.split(",") if v.strip()]
+                meta[key] = [_unquote(v.strip()) for v in inner.split(",") if v.strip()]
                 current_list = None
             else:
                 meta[key] = value
@@ -180,7 +186,7 @@ def load_graph(pm: Path) -> Tuple[Optional[dict], Optional[Path]]:
 
 
 def check_graph(graph: dict, gp: Path) -> List[Tuple[str, str]]:
-    if graph.get("format") not in {"arch-graph/v0.1", "arch-graph/v0.2"}:
+    if graph.get("format") not in {"arch-graph/v0.1", "arch-graph/v0.2", "arch-graph/v0.3"}:
         error(f"[graph] format 非法: {graph.get('format')}")
     endpoints = set()
     for obj in graph.get("objects", []):

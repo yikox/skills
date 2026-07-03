@@ -43,12 +43,15 @@ Use when the change affects module boundaries, cross-module contracts, core data
 ```text
 PM start -> modular-architecture creates target change / ADR
 -> modular-review -> decision summary (3-8 bullets) -> human acceptance
+-> set design status: accepted
 -> implementation plan -> implement -> verify
 -> modular-architecture updates baseline
 -> PM complete
 ```
 
 When asking for acceptance, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks, so the user can decide without reading the full design. Embed the summary in the confirmation request itself, not only in a separate earlier message.
+
+On acceptance, set the design front matter to `status: accepted`. From that point the user may hand the design to `modular-autopilot`, which runs implementation planning, subagent execution, and closeout autonomously and reports back; otherwise continue with the steps above.
 
 ### L2 Module Change
 
@@ -58,8 +61,8 @@ Use when one module remains the owner but its internal structure or non-trivial 
 2. Create `architecture/modules/<module>/changes/<date>-<change>.md`.
 3. Include current module state, target module design, contract impact, implementation outline, validation, risks, and open questions.
 4. Run `modular-review`.
-5. Ask for user confirmation with a decision summary of 3-8 bullets covering key changes, ambiguities, and risks embedded in the confirmation request itself.
-6. Implement only after review passes and the user confirms.
+5. Ask for user confirmation with a decision summary of 3-8 bullets covering key changes, ambiguities, and risks embedded in the confirmation request itself. On confirmation, set the design front matter to `status: accepted`.
+6. Implement only after review passes and the user confirms. Alternatively, hand the accepted design to `modular-autopilot` for autonomous execution and closeout.
 7. After implementation, update the module baseline doc if it would otherwise be stale.
 
 ### L1 Lightweight Module Change

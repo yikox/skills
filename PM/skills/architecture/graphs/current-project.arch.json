@@ -47,6 +47,13 @@
       "kind": "distributes",
       "described": "把技能套件（连同 _shared 规则、模板、脚本）同步到各 agent skills 目录",
       "style": "dashed"
+    },
+    {
+      "from": "audit-checker",
+      "to": "shared-references",
+      "kind": "reads",
+      "described": "启动时解析 vocab.md 受控词表清单驱动校验",
+      "style": "solid"
     }
   ]
 }

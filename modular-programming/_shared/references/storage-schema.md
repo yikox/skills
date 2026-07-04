@@ -120,6 +120,8 @@ Module docs (`architecture/modules/<module>.md`) use this frontmatter:
 
 ## Status Vocabulary
 
+The enforced enumerated values for `design_status` and `review_status` have a single source of truth in `vocab.md` (parsed by audit-checker); the flows below only explain their ordering and meaning. Requirement/task statuses are descriptive and not machine-enforced.
+
 Requirement/task statuses:
 
 ```text

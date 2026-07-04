@@ -325,5 +325,43 @@ class CheckModularProjectGraphTests(unittest.TestCase):
         self.assertIn("0 error", result.stdout)
 
 
+class VocabSingleSourceTests(unittest.TestCase):
+    """受控词表以 _shared/references/vocab.md 为单一事实源，缺失时回退内置默认。"""
+
+    def load_module(self):
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("chk_vocab", SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_real_manifest_matches_builtin_fallback(self) -> None:
+        # 仓库内真实 vocab.md 解析结果必须与内置 fallback 完全一致，
+        # 否则说明清单与 checker 已漂移。
+        m = self.load_module()
+        v = m.load_vocab(m.VOCAB_PATH)
+        for name, expected in m._FALLBACK_VOCAB.items():
+            self.assertEqual(v[name], expected, f"vocab.md 的 {name} 与内置默认不一致")
+
+    def test_manifest_drives_vocabulary(self) -> None:
+        # 证明校验词表来自清单而非硬编码：清单里加入假词即被采纳。
+        m = self.load_module()
+        tmp = Path(tempfile.mktemp(suffix=".md"))
+        self.addCleanup(lambda: tmp.exists() and tmp.unlink())
+        tmp.write_text("## module_kind\n`fake-kind`, `function-flow`\n", encoding="utf-8")
+        v = m.load_vocab(tmp)
+        self.assertIn("fake-kind", v["module_kind"])
+        # 清单未列出的词表回退默认值
+        self.assertEqual(v["review_status"], m._FALLBACK_VOCAB["review_status"])
+
+    def test_missing_manifest_falls_back_and_warns(self) -> None:
+        m = self.load_module()
+        before = len(m.warnings)
+        v = m.load_vocab(Path("/no/such/vocab.md"))
+        self.assertEqual(v["module_form"], m._FALLBACK_VOCAB["module_form"])
+        self.assertGreater(len(m.warnings), before)
+
+
 if __name__ == "__main__":
     unittest.main()

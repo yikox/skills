@@ -35,7 +35,7 @@ review_status: reviewed
 ## Shared Constraints
 
 - 运行时依赖仅 Python 3 标准库与 bash；不引入第三方包。
-- 规则文本（shared-references）与检查器硬编码词表（audit-checker）必须同一变更内同步。
+- 受控词表以 shared-references 的 `vocab.md` 为单一事实源，audit-checker 启动时解析（不再硬编码）；drift-guard 测试保证 vocab.md 与检查器内置 fallback 一致。
 - 无主路径（不属于任何模块的 behavior-bearing 之外内容）：`docs/**`（superpowers 流程存档）、`PM/**`（本仓库自身的项目记忆）。
 - 本仓库自身用 modular 工作流管理，docs-language 为 `zh`，confirmation 档位为 `standard`。
 

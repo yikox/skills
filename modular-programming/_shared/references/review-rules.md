@@ -15,7 +15,7 @@ Use these checks for requirements, PM entries, architecture docs, change designs
 - Open questions are explicit and not hidden in prose.
 - New or migrated module docs declare owned `code_paths`; ownership claims do not overlap across modules. `shared_paths` and `ignored_paths` are documented exceptions, not owners.
 - Module docs follow `module-authoring-rules.md`: concrete public contracts (or explicit "No external contract"), no code restating, executable validation, uncertain facts marked `(inferred)` or `(unclear)`.
-- When graph artifacts exist, module doc Dependencies tables are a subset of the graph relations; relation `kind` values come from the closed vocabulary in the graph format reference.
+- When graph artifacts exist, module doc Dependencies tables are a subset of the graph relations; relation `kind` values come from the closed vocabulary in `vocab.md` (the single source of truth, described in the graph format reference).
 
 ## L3 Checks
 

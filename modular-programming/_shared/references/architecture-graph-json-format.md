@@ -155,6 +155,8 @@ architecture/modules/<module-id>.md
 
 **箭头 = 依赖方向**：`A -> B` 读作"A 使用/依赖 B"。数据流向与依赖方向不一致时，把流向写进 `described`，不要反转箭头。
 
+`kind` 与 `style` 的合法值以 `vocab.md`（`relation_kind` / `relation_style`，audit-checker 强制）为单一事实源；下表只解释含义。
+
 `kind` 封闭词表（五个，不扩展）：
 
 | kind | 含义 |

@@ -25,18 +25,6 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-MODULE_FORMS = {"atomic", "composite"}
-MODULE_KINDS = {
-    "layout-style", "function-flow", "interface-object", "data-state",
-    "event-message", "config-rule", "resource-file", "adapter-io", "utility-support",
-}
-RELATION_KINDS = {"uses", "reads", "writes", "triggers", "distributes"}
-RELATION_STYLES = {"solid", "dashed"}
-DESIGN_STATUSES = {"draft", "proposed", "accepted", "implemented", "obsolete"}
-REVIEW_STATUSES = {"not-reviewed", "needs-review", "reviewed"}
-REQUIRED_MODULE_FIELDS = ["name", "described", "module_form", "module_kind", "status", "review_status"]
-DEFAULT_EXCLUDES = ["README*", "LICENSE*", "CLAUDE.md", "AGENTS.md", ".git/**", ".github/**"]
-
 errors: List[str] = []
 warnings: List[str] = []
 
@@ -47,6 +35,66 @@ def error(msg: str) -> None:
 
 def warn(msg: str) -> None:
     warnings.append(msg)
+
+
+# 受控词表内置默认值（fallback）。单一事实源是 _shared/references/vocab.md；
+# load_vocab() 在启动时用清单覆盖这些默认值，解析失败时回退到这里并告警。
+_FALLBACK_VOCAB = {
+    "module_form": {"atomic", "composite"},
+    "module_kind": {
+        "layout-style", "function-flow", "interface-object", "data-state",
+        "event-message", "config-rule", "resource-file", "adapter-io", "utility-support",
+    },
+    "relation_kind": {"uses", "reads", "writes", "triggers", "distributes"},
+    "relation_style": {"solid", "dashed"},
+    "design_status": {"draft", "proposed", "accepted", "implemented", "obsolete"},
+    "review_status": {"not-reviewed", "needs-review", "reviewed"},
+}
+
+# vocab.md 相对本脚本的位置：<root>/modular-audit/scripts/ 与 <root>/_shared/ 同层
+# （仓库内 <root>=modular-programming，安装后 <root>=目标 skills 目录），故上溯三级到 <root>。
+VOCAB_PATH = Path(__file__).resolve().parents[2] / "_shared" / "references" / "vocab.md"
+_TOKEN_RE = re.compile(r"`([^`]+)`")
+
+
+def load_vocab(path: Path = VOCAB_PATH) -> Dict[str, set]:
+    """解析 vocab.md 得到受控词表；任何缺失/异常都回退到 _FALLBACK_VOCAB 并告警。"""
+    result = {k: set(v) for k, v in _FALLBACK_VOCAB.items()}
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        warn(f"[vocab] 未找到词表清单 {path}，回退内置默认词表")
+        return result
+    parsed: Dict[str, set] = {}
+    current: Optional[str] = None
+    for line in text.splitlines():
+        # 任何二级标题都结束上一节：命中词表名则开始收集，否则置空，
+        # 避免非词表小节（如“解析约定”）里的反引号 token 泄漏到上一词表。
+        if line.startswith("## "):
+            name = line[3:].strip()
+            current = name if name in _FALLBACK_VOCAB else None
+            continue
+        if current in _FALLBACK_VOCAB:
+            tokens = _TOKEN_RE.findall(line)
+            if tokens:
+                parsed.setdefault(current, set()).update(tokens)
+    for name in _FALLBACK_VOCAB:
+        if parsed.get(name):
+            result[name] = parsed[name]
+        else:
+            warn(f"[vocab] 清单缺少词表 `{name}`，该项回退内置默认值")
+    return result
+
+
+_VOCAB = load_vocab()
+MODULE_FORMS = _VOCAB["module_form"]
+MODULE_KINDS = _VOCAB["module_kind"]
+RELATION_KINDS = _VOCAB["relation_kind"]
+RELATION_STYLES = _VOCAB["relation_style"]
+DESIGN_STATUSES = _VOCAB["design_status"]
+REVIEW_STATUSES = _VOCAB["review_status"]
+REQUIRED_MODULE_FIELDS = ["name", "described", "module_form", "module_kind", "status", "review_status"]
+DEFAULT_EXCLUDES = ["README*", "LICENSE*", "CLAUDE.md", "AGENTS.md", ".git/**", ".github/**"]
 
 
 def _unquote(value: str) -> str:

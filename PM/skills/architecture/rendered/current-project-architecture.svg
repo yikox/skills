@@ -1,4 +1,4 @@
-<svg class="diagram" style="min-width: 1222px;" viewBox="-7 -37 1222 702" role="img" aria-labelledby="diagram-title diagram-desc">
+<svg class="diagram" style="min-width: 1222px;" viewBox="-7 -37 1222 774" role="img" aria-labelledby="diagram-title diagram-desc">
   <title id="diagram-title">skills 仓库架构</title>
   <desc id="diagram-desc">modular-programming 技能套件：规则层（技能入口、共享规则、模板）、运行时工具（检查器、图渲染）与分发脚本</desc>
   <defs>
@@ -122,6 +122,9 @@
 <g class="relation relation-line-layer">
 <path d="M 305.0 180.0 L 415.0 180.0" class="relation-line relation-line-outer" stroke-dasharray="8 7" marker-end="url(#arrow-outer)" />
 </g>
+<g class="relation relation-line-layer">
+<path d="M 870.0 475.0 L 870.0 498.0 L 190.0 498.0 L 190.0 475.0" class="relation-line relation-line-outer" marker-end="url(#arrow-outer)" />
+</g>
   <a class="node-link" href="../modules/installer.md" target="_blank">
 <g class="node" data-id="installer">
 <title>installer - /Users/zyc/work/skills/PM/skills/architecture/modules/installer.md</title>
@@ -137,7 +140,7 @@
 <path d="M 415.0 125.0 H 625.0 L 645.0 145.0 V 235.0 H 415.0 Z" class="node-shape" style="fill: #f8fafc; stroke: #475569;" />
 <path d="M 625.0 125.0 V 145.0 H 645.0" class="node-line" style="stroke: #475569;" />
 <text x="530.0" y="160.0" class="node-title" text-anchor="middle">Workflow Skills</text>
-<text x="530.0" y="181.0" class="node-description" text-anchor="middle">八个 modular-*</text>
+<text x="530.0" y="181.0" class="node-description" text-anchor="middle">九个 modular-*</text>
 <text x="530.0" y="199.0" class="node-description" text-anchor="middle">技能入口文档，定义架构优先...</text>
 </g>
 </a>
@@ -146,7 +149,7 @@
 <title>graph-tooling - /Users/zyc/work/skills/PM/skills/architecture/modules/graph-tooling.md</title>
 <polygon points="783.0,125.0 957.0,125.0 985.0,180.0 957.0,235.0 783.0,235.0 755.0,180.0" class="node-shape" style="fill: #f5f3ff; stroke: #7c3aed;" />
 <text x="870.0" y="160.0" class="node-title" text-anchor="middle">Graph Tooling</text>
-<text x="870.0" y="181.0" class="node-description" text-anchor="middle">架构图 JSON</text>
+<text x="870.0" y="181.0" class="node-description" text-anchor="middle">高级架构图 JSON</text>
 <text x="870.0" y="199.0" class="node-description" text-anchor="middle">的渲染器与本地预览服务</text>
 </g>
 </a>
@@ -225,6 +228,16 @@
 <text x="360.0" y="54.0" class="relation-bubble-text" text-anchor="middle">把技能套件（连同 _shared</text>
 <text x="360.0" y="69.0" class="relation-bubble-text" text-anchor="middle">规则、模板、脚本）同步到各 agent</text>
 <text x="360.0" y="84.0" class="relation-bubble-text" text-anchor="middle">skills 目录</text>
+</g>
+</g>
+<g class="relation relation-hover">
+<desc>启动时解析 vocab.md 受控词表清单驱动校验</desc>
+<path d="M 870.0 475.0 L 870.0 498.0 L 190.0 498.0 L 190.0 475.0" class="relation-hitbox" />
+<path d="M 870.0 475.0 L 870.0 498.0 L 190.0 498.0 L 190.0 475.0" class="relation-hover-line relation-hover-line-outer" />
+<g class="relation-bubble">
+<rect x="459.0" y="510.5" width="142.0" height="46.0" rx="6" class="relation-bubble-box" />
+<text x="530.0" y="529.5" class="relation-bubble-text" text-anchor="middle">启动时解析 vocab.md</text>
+<text x="530.0" y="544.5" class="relation-bubble-text" text-anchor="middle">受控词表清单驱动校验</text>
 </g>
 </g>
 </svg>

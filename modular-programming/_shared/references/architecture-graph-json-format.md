@@ -155,6 +155,8 @@ architecture/modules/<module-id>.md
 
 **箭头 = 依赖方向**：`A -> B` 读作"A 使用/依赖 B"。数据流向与依赖方向不一致时，把流向写进 `described`，不要反转箭头。
 
+`kind` 与 `style` 的合法值以 `vocab.md`（`relation_kind` / `relation_style`，audit-checker 强制）为单一事实源；下表只解释含义。
+
 `kind` 封闭词表（五个，不扩展）：
 
 | kind | 含义 |
@@ -167,7 +169,7 @@ architecture/modules/<module-id>.md
 
 `style` 语义：`solid` = 运行时依赖；`dashed` = 非运行时依赖（构建、验证夹具、同步约定）。
 
-**图是模块间关系的权威来源**：模块文档的 Dependencies 表必须是图中该模块关系的子集（补充原因说明）。表里出现图中没有的关系时，补图或删表行。
+**维护图时，图是模块间关系的权威可视化来源**：模块文档的 Dependencies 表必须是图中该模块关系的子集（补充原因说明）。表里出现图中没有的关系时，补图或删表行。未维护图的项目以 `main-design.md` 和模块文档为默认事实来源。
 
 ## 同层关系规则
 

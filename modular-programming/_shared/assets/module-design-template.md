@@ -15,6 +15,10 @@ review_status: not-reviewed
 
 Describe what this module owns.
 
+## Non-Goals
+
+Describe what this module deliberately does not own when the boundary is easy to confuse.
+
 ## Public Contract
 
 Describe APIs, messages, files, data shape, or user-facing surfaces other modules rely on.
@@ -25,7 +29,7 @@ Describe important internal structure, state, algorithms, or flows.
 
 ## Dependencies
 
-List only relations that exist in the architecture graph; the graph is the authoritative source.
+List durable dependencies. When the project maintains an architecture graph, keep this table as a subset of graph relations.
 
 | Dependency | Direction | Reason |
 | --- | --- | --- |

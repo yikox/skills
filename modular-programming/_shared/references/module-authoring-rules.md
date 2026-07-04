@@ -12,15 +12,25 @@ Use these rules when writing or updating `architecture/modules/*.md`. They defin
 
 **Responsibility** — at most 3 sentences. What the module owns, not how it works. If you cannot state it without "and also", consider splitting.
 
+**Non-Goals** — when a boundary is easy to confuse, name what this module deliberately does not own. This can be a short bullet list instead of a full section when obvious.
+
 **Public Contract** — the surfaces other modules actually depend on: function signatures, file formats, CLI arguments, directory conventions, message shapes. Be concrete enough that a consumer could code against it. If nothing external depends on this module, write "No external contract" explicitly — do not leave the section vague.
 
 **Internal Design** — only what someone must know before reading the code: key structures, state, non-obvious flows, where the internal docs live. Do not restate code line by line; link deeper material instead.
 
-**Dependencies** — a subset of the architecture graph relations, plus reasons. The graph is authoritative (see the graph format reference).
+**Dependencies** — durable module dependencies plus reasons. When a project maintains architecture graphs, this table must be a subset of graph relations and the graph is the authoritative visual source (see the graph format reference).
 
 **Constraints** — only constraints that cannot be derived from the code: compatibility promises, environment limits, performance floors, conventions with external reasons.
 
 **Validation** — executable commands or concrete checks that prove the module works. "Run the tests" is too vague; give the command and the expected signal.
+
+Default module docs should answer five questions before adding more detail:
+
+1. What does it own?
+2. What does it not own?
+3. How do other modules use it?
+4. What does it depend on, and who depends on it?
+5. What must not be broken when changing it?
 
 ## Fact Confidence
 
@@ -31,9 +41,10 @@ Mark uncertain statements inline as `(inferred)` or `(unclear)`; unmarked statem
 Update the module doc in the same change when any of these shift:
 
 - public contract (signatures, formats, CLI, conventions others rely on);
-- dependencies (graph relations touching this module);
+- dependencies (module relations touching this module; also the graph relations when a graph is maintained);
 - constraints;
-- `code_paths` ownership.
+- `code_paths` ownership;
+- `shared_paths` or `ignored_paths` exceptions.
 
 Pure internal implementation changes do not force a doc update. When in doubt: would the current doc mislead the next change? If yes, update.
 

@@ -1,0 +1,5 @@
+2026-07-04T08:47:09Z | intake: skip ADR for modular-architect | alternatives and rationale recorded in design Acceptance Summary; role boundary lives in both SKILL descriptions
+2026-07-04T08:47:09Z | intake: commit uncommitted working tree to main before worktree | design builds on uncommitted lightweight-workflow baseline; user authorized at intake
+2026-07-04T08:52:05Z | plan self-approved | boundaries within declared impact (workflow-skills/shared-references/shared-assets); all design Validation items have plan verification steps; Global Constraints carries contract rules verbatim
+2026-07-04T09:07:19Z | closeout: stop short of implemented-closeout, deliver pending-merge report | code is on unmerged branch feat/modular-architect; hardened autopilot policy treats a passing branch as NOT landed evidence — design stays accepted, baselines not updated, PM not marked complete until user merges
+2026-07-04T09:07:19Z | closeout: do not self-merge to main | autopilot final-report contract hands merge/push/PR commands to the user; local merge left as user action

@@ -78,6 +78,16 @@ Keep these visible in `project-management.md`:
 
 Do not remove stable IDs, dates, design paths, release URLs, commit SHAs, tags, PR links, blocker evidence, or user-confirmed implementation evidence.
 
+## Lightweight PM Pattern
+
+Routine L1 work should not make the PM file noisy. Prefer a single outcome-oriented note in `Recent Updates` when future context needs it:
+
+```markdown
+- 2026-07-04 - 修复 checker 对 group interface provider 越界未拦截的问题；验证 `python3 -m unittest discover -s modular-programming/modular-audit/tests` 通过。
+```
+
+Use `Active Tasks` for L1 only when the work crosses sessions, carries notable risk or release evidence, is part of an existing active task, or the user explicitly asks for tracking.
+
 ## Move Or Condense
 
 Move or summarize these:

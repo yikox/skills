@@ -5,7 +5,7 @@ description: Initialize or repair an architecture-first modular programming work
 
 # Modular Init
 
-Use this skill to install the modular programming workflow into a project. The goal is to create a usable module map and project memory structure before normal development work begins.
+Use this skill to install the modular programming workflow into a project. The goal is to create a usable lightweight module map and project memory structure before normal development work begins.
 
 ## Required References
 
@@ -36,11 +36,12 @@ Use these assets for new files:
    - `docs-language`: language for PM, architecture, knowledge, and design docs (`zh` / `en` / `follow-project`);
    - `confirmation`: confirmation granularity (`high-touch` / `standard` / `low-touch`).
    Default to `follow-project` + `standard` when the user has no preference.
-5. Create or repair `project-management.md`, `knowledge-summary.md`, and `architecture/main-design.md` in the chosen docs language. When this introduces a new or replaced module map, present it to the user and get approval before writing baseline docs.
+5. Create or repair `project-management.md`, `knowledge-summary.md`, `architecture/main-design.md`, and `architecture/modules/*.md` in the chosen docs language. When this introduces a new or replaced module map, present it to the user and get approval before writing baseline docs.
 6. Ensure architecture is the module source of truth. PM may index modules and tasks, but must not define module boundaries independently.
 7. For existing projects, create only a verified or explicitly inferred baseline. Record uncertain areas as migration gaps in PM.
-8. Merge `../_shared/assets/ai-rules-snippet.md` into the project's AI collaboration docs (`CLAUDE.md`, `AGENTS.md`, or equivalent): fill the Preferences section with the chosen values, adapt paths and language to the project, merge with existing content instead of overwriting, and confirm with the user before creating or first modifying these files.
-9. Report created/updated files, chosen preferences, module baseline status, migration gaps, and the next recommended skill.
+8. Do not create architecture graphs by default. Offer graph rendering only as an advanced visualization option when the user wants diagrams or the project explicitly uses graph review.
+9. Merge `../_shared/assets/ai-rules-snippet.md` into the project's AI collaboration docs (`CLAUDE.md`, `AGENTS.md`, or equivalent): fill the Preferences section with the chosen values, adapt paths and language to the project, merge with existing content instead of overwriting, and confirm with the user before creating or first modifying these files.
+10. Report created/updated files, chosen preferences, module baseline status, migration gaps, and the next recommended skill.
 
 ## Handoff
 

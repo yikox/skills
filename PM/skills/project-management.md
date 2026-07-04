@@ -1,6 +1,6 @@
 # skills 仓库 Modular Programming
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 
 ## Overview
 
@@ -11,15 +11,16 @@ Last updated: 2026-07-03
 
 | Field | Value |
 | --- | --- |
-| Version | main @ 2026-07-03 |
-| State | 基线已建立，8 技能 + 共享层 + 工具层稳定 |
-| Current focus | modular-autopilot 落地后的演练验证 |
+| Version | main @ 2026-07-04 |
+| State | 轻量默认模块化工作流已落地到源码；安装副本待同步 |
+| Current focus | 后续可运行 `./install.sh` 同步已安装 skills；modular-autopilot 演练仍待执行 |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-07-04 | 新增高级角色技能 modular-architect（模块化架构师）+ 方法论/评估共享参考 | workflow-skills | shared-references, shared-assets | L3 | accepted; autopilot executing | 设计已接受：architecture/changes/2026-07-04-modular-architect-skill.md；autopilot 托管执行中 |
 
 ## Requirements / Change Backlog
 
@@ -39,6 +40,8 @@ Last updated: 2026-07-03
 | Module | architecture/modules/graph-tooling.md | implemented | reviewed |  |
 | Module | architecture/modules/installer.md | implemented | reviewed |  |
 | Architecture Change | architecture/changes/2026-07-03-modular-autopilot.md | implemented | reviewed | 计划已归档至 plans/archive/ |
+| Architecture Change | architecture/changes/2026-07-04-lightweight-default-workflow.md | implemented | reviewed | 计划已归档至 plans/archive/；图作为高级功能 |
+| Architecture Change | architecture/changes/2026-07-04-modular-architect-skill.md | accepted | reviewed | 模块化架构师高级角色；autopilot 执行中 |
 | ADR | architecture/adrs/ADR-2026-07-03-autopilot-as-main-session-skill.md | accepted | reviewed |  |
 
 ## Roadmap
@@ -57,12 +60,15 @@ Last updated: 2026-07-03
 
 - 确定性检查：`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 退出码 0。
 - check_plans fixture 验证：坏计划（缺 source_design / level 非法 / 越界路径 / 目录级别不匹配）全部拦截，正例与归档件静默。
+- 2026-07-03 审计跟进修复验证：`python3 -m unittest discover -s modular-programming/modular-audit/tests`、`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**'`、三个 Python 脚本 py_compile、架构图渲染、`./install.sh --dry-run`、`git diff --check` 全部通过。
+- 2026-07-04 轻量默认工作流验证：`python3 -m unittest discover -s modular-programming/modular-audit/tests`、`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**'`、三个 Python 脚本 py_compile、高级架构图渲染、`./install.sh --dry-run`、`git diff --check` 全部通过。
 
 ## Blockers and Risks
 
 | Risk / Blocker | Impact | Mitigation / Status |
 | --- | --- | --- |
 | superpowers 插件升级可能改变 writing-plans/SDD 行为 | autopilot 衔接点失效 | 插件升级后重跑演练（设计 Risks 节） |
+| 已安装 skill 副本尚未同步本次源码修复 | Codex/Claude/agents 目录仍加载旧版，直到安装脚本运行 | `./install.sh --dry-run` 已确认待同步内容；实际 `./install.sh` 因权限/额度审批限制未执行 |
 
 ## ADR Summary
 
@@ -76,15 +82,21 @@ Last updated: 2026-07-03
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |
+| 2026-07-04 | 轻量默认模块化工作流改造（L3） | implemented in source; install pending | 共享规则、技能入口、模板、README、checker 与 PM baseline 已更新；最终验证见 Testing and Validation |
+| 2026-07-03 | 审计跟进修复：autopilot 收尾语义、8 技能曝光、复合图校验 | implemented in source; install pending | 新增 checker unittest；modular-audit 0 error/0 warning；py_compile、架构图渲染、install dry-run、diff-check 通过；实际安装因审批额度限制未执行 |
 | 2026-07-03 | modular-autopilot 监督者技能（L3） | implemented | commits 7e55bf5..fa0b54b + e128077 收尾 + 77b70c2 加固；SDD 每任务双评审 + 最终全分支评审 Ready to merge；checker fixture 全绿 |
 
 ### Design Archive
 
 | Type | Path | Final Status | Notes |
 | --- | --- | --- | --- |
+| Plan | architecture/plans/archive/2026-07-04-lightweight-default-workflow-plan.md | implemented | L3 轻量默认工作流改造计划 |
 | Plan | architecture/plans/archive/2026-07-03-modular-autopilot-plan.md | implemented | 随设计 implemented 归档 |
 
 ## Recent Updates
 
 - 2026-07-03 - 初始化本仓库 modular 项目记忆（模块地图 6 模块、图、PM、知识文档）。
 - 2026-07-03 - modular-autopilot 技能合入 main；check_plans 加固（路径越界、目录级别匹配）。
+- 2026-07-03 - 修复审计发现：autopilot 未落地不标 implemented、README/AI snippet/openai.yaml 补齐 8 技能曝光、audit-checker 增加 group/interface/scope 校验与 unittest；安装同步待审批可用后运行。
+- 2026-07-04 - 落地轻量默认模块化工作流：L1 PM 减重、诊断模式、硬化 L1/L2/L3、图降为高级可视化、默认事实源改为 main-design + modules。
+- 2026-07-04 - 评审后修复：checker 例外 glob（shared/ignored_paths）加幽灵检查、v0.3 结构校验对 v0.1/v0.2 老图降级为 warning；audit SKILL/Routing Quick Reference/module-authoring-rules 补齐"图可选、L1 减重"漏改；验证 `python3 -m unittest discover -s modular-programming/modular-audit/tests`（7 tests OK）与自审计 0 error/0 warning。

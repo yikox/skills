@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Architect"
+  short_description: "Assess modularity and co-design modular refactoring or new-project proposals"
+  default_prompt: "Use $modular-architect to assess this project's modularity and discuss a staged modularization proposal with me."

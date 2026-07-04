@@ -38,5 +38,6 @@ Internal or advanced entries:
 
 - `modular-architecture`: module maps, ADRs, baseline updates, and optional graph visualization.
 - `modular-autopilot`: advanced autonomous execution for accepted and reviewed L2/L3 designs.
+- `modular-architect`: advanced advisory role for modularity assessment, legacy refactoring proposals, and new-project modular design discussion; proposals only, never implementation.
 - `modular-status`: PM start/update/complete/archive when explicit tracking is needed.
 - `modular-review`: check designs, ADRs, PM rows, and maintained graphs.

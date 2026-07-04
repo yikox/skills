@@ -20,7 +20,7 @@ Last updated: 2026-07-04
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-07-04 | 新增高级角色技能 modular-architect（模块化架构师）+ 方法论/评估共享参考 | workflow-skills | shared-references, shared-assets | L3 | accepted; autopilot executing | 设计已接受：architecture/changes/2026-07-04-modular-architect-skill.md；autopilot 托管执行中 |
+| 2026-07-04 | 新增高级角色技能 modular-architect（模块化架构师）+ 方法论/评估共享参考 | workflow-skills | shared-references, shared-assets | L3 | source-complete; pending merge | 分支 feat/modular-architect 四任务全绿、终审 Ready to merge；design 仍为 accepted，待用户合并后更新 baseline 并标 implemented；见 plans/2026-07-04-modular-architect-decisions.md |
 
 ## Requirements / Change Backlog
 

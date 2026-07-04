@@ -32,6 +32,8 @@ PM/<project-slug>/
       current-project-architecture.svg
 ```
 
+The default AI-readable baseline is `architecture/main-design.md` plus `architecture/modules/*.md`. `graphs/` and `rendered/` are optional advanced visualization directories; create them only when the project uses graph review, a user asks for diagrams, or an advanced skill needs them.
+
 ## PM Sections
 
 Prefer these sections for new `project-management.md` files. Preserve equivalent existing headings when repairing an old project.
@@ -51,7 +53,7 @@ Prefer these sections for new `project-management.md` files. Preserve equivalent
 
 ## Active Task Fields
 
-Use a table or concise bullets that capture:
+Use a table or concise bullets for active L2/L3 work, and for L1 only when it crosses sessions, carries release/risk evidence, belongs to an active task, or the user explicitly wants tracking. Capture:
 
 - date;
 - task;
@@ -63,7 +65,7 @@ Use a table or concise bullets that capture:
 
 ## Backlog Fields
 
-Use a backlog row when the user states a requirement or change that is not yet implemented:
+Use a backlog row when the user states a non-trivial requirement or change that is not yet implemented:
 
 - stable ID;
 - date;
@@ -87,6 +89,8 @@ Index durable design artifacts:
 - ADR: `architecture/adrs/ADR-<date>-<decision>.md`;
 - Module Change: `architecture/modules/<module>/changes/<date>-<change>.md`.
 
+Graph JSON and rendered diagrams are optional advanced visualization artifacts. Index them only when a project actively uses graph review or a specific change/design needs visual communication. `main-design.md` and module docs remain sufficient for the default AI workflow.
+
 ## Module Frontmatter
 
 Module docs (`architecture/modules/<module>.md`) use this frontmatter:
@@ -99,10 +103,13 @@ Module docs (`architecture/modules/<module>.md`) use this frontmatter:
 | `module_kind` | yes | see `module-kind-classification.md` |
 | `main_subject` | yes | primary technical subject (function, file, format) |
 | `code_paths` | yes for new/migrated modules | repo-relative glob list of code this module owns |
+| `shared_paths` | no | repo-relative globs this module uses or documents but does not exclusively own |
+| `ignored_paths` | no | repo-relative globs intentionally outside module ownership, with explanation in main-design Shared Constraints |
 | `status` | yes | design status vocabulary below |
 | `review_status` | yes | review status vocabulary below |
 
 `code_paths` follows single ownership: every behavior-bearing code path belongs to exactly one module (see Code Ownership in `modular-workflow-rules.md`). Existing docs without `code_paths` stay valid; `modular-audit` flags them for backfill.
+`shared_paths` and `ignored_paths` do not grant ownership; they document exceptions such as shared utilities, framework glue, integration tests, generated output, or repo-level configuration.
 
 ## Slug Rules
 

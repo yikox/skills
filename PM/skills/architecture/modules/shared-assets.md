@@ -13,7 +13,7 @@ review_status: reviewed
 
 ## Responsibility
 
-拥有八个文档模板（PM、知识、主设计、模块设计、模块/架构变更、ADR、AI 规则片段）与图渲染示例夹具（examples 下的模块文档和 `nested-overview.arch.json`）。
+拥有八个文档模板（PM、知识、主设计、模块设计、模块/架构变更、ADR、AI 规则片段）与高级图渲染示例夹具（examples 下的模块文档和 `nested-overview.arch.json`）。
 
 ## Public Contract
 

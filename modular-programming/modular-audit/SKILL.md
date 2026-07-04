@@ -31,17 +31,17 @@ Pass `--repo-root` to enable code ownership checks (orphan/ghost/overlap). Add `
 
 Check:
 
-- every active L1/L2/L3 task has PM start information;
-- completed L1/L2/L3 work has PM completion evidence;
+- every active L2/L3 task and tracked L1 task has PM start information;
+- completed L2/L3 work and tracked L1 work has PM completion evidence;
 - non-trivial backlog rows have primary module, impacted modules, and change level;
 - L2/L3 design docs are indexed and status-synchronized;
 - plan files live under `plans/` with valid `source_design` and `level`; plans whose source design is implemented are archive candidates;
 - implemented designs have evidence;
 - landed durable changes are reflected in architecture baseline;
 - proposed target architecture is not presented as implemented baseline;
-- graph JSON relations match module docs and same-scope relationship rules;
-- module docs declare `code_paths`; no orphan paths (behavior-bearing code owned by no module), no ghost globs (matching nothing), no overlapping claims;
-- module doc Dependencies tables are subsets of graph relations; relation `kind` values are from the closed vocabulary;
+- graph JSON relations match module docs and same-scope relationship rules when graph artifacts exist;
+- module docs declare owned `code_paths`; no orphan paths (behavior-bearing code owned by no module), no ghost globs (matching nothing), no overlapping ownership claims; `shared_paths` / `ignored_paths` are documented non-owner exceptions;
+- when graph artifacts exist, module doc Dependencies tables are subsets of graph relations and relation `kind` values are from the closed vocabulary;
 - ADR summary rows link to ADR files;
 - old `project-memory` or `architecture-design` terminology has been migrated or archived;
 - old detailed history can be compressed without losing current state.

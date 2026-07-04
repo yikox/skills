@@ -20,7 +20,7 @@ Read:
 
 1. Identify the artifact type: PM row, architecture baseline, architecture change, ADR, module doc, module change, graph, or completion evidence.
 2. Read the linked PM row, architecture docs, module docs, and design index entries needed for traceability.
-3. Check module gate, change level, impacted modules, status sync, baseline/target separation, review status, and open questions.
+3. Check module gate, change level, impacted modules, status sync, baseline/target separation, review status, lightweight-PM fit, and open questions.
 4. Fix clear mechanical defects such as missing paths, stale index status, broken local links, or missing review labels.
 5. Record human questions for ambiguous module ownership, scope, architecture direction, product tradeoffs, or acceptance decisions.
 6. Mark review `reviewed` only when no blocking issue remains.

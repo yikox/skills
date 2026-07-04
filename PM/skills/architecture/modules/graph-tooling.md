@@ -1,6 +1,6 @@
 ---
 name: Graph Tooling
-described: 架构图 JSON 的渲染器与本地预览服务
+described: 高级架构图 JSON 的渲染器与本地预览服务
 module_form: atomic
 module_kind: function-flow
 main_subject: render_modular_graph.py
@@ -13,7 +13,7 @@ review_status: reviewed
 
 ## Responsibility
 
-拥有 `render_modular_graph.py`（把 `*.arch.json` 渲染为 HTML/SVG）、`serve_modular_graph.py`（本地预览与笔记服务）及 renderer-docs 内部文档。
+拥有高级可视化能力：`render_modular_graph.py`（把 `*.arch.json` 渲染为 HTML/SVG）、`serve_modular_graph.py`（本地预览与笔记服务）及 renderer-docs 内部文档。默认 AI 工作流不要求项目创建或维护图。
 
 ## Public Contract
 
@@ -29,7 +29,7 @@ review_status: reviewed
 
 | Dependency | Direction | Reason |
 | --- | --- | --- |
-| workflow-skills | in | modular-architecture 技能触发渲染 |
+| workflow-skills | in | modular-architecture 高级可视化模式触发渲染 |
 
 ## Constraints
 

@@ -155,6 +155,7 @@ def check_ownership(modules: Dict[str, Dict[str, object]], repo: Path, excludes:
         if f.is_file() and not any(part.startswith(".") for part in f.relative_to(repo).parts)
     ]
     claims: Dict[str, List[str]] = {}
+    documented_non_owner_globs: List[str] = []
     for slug, meta in modules.items():
         for g in meta.get("code_paths") or []:
             matched = [f for f in all_files if glob_match(f, g)]
@@ -162,13 +163,19 @@ def check_ownership(modules: Dict[str, Dict[str, object]], repo: Path, excludes:
                 error(f"[ownership] 幽灵 glob：{slug} 的 {g} 匹配不到任何文件")
             for f in matched:
                 claims.setdefault(f, []).append(slug)
+        for field in ("shared_paths", "ignored_paths"):
+            for g in meta.get(field) or []:
+                if not any(glob_match(f, g) for f in all_files):
+                    warn(f"[ownership] 幽灵例外 glob：{slug} 的 {field} {g} 匹配不到任何文件")
+                documented_non_owner_globs.append(g)
     for f, owners in sorted(claims.items()):
         if len(set(owners)) > 1:
             error(f"[ownership] 重叠认领：{f} 属于 {sorted(set(owners))}")
+    exception_globs = DEFAULT_EXCLUDES + excludes + documented_non_owner_globs
     for f in all_files:
         if f in claims:
             continue
-        if any(glob_match(f, g) for g in DEFAULT_EXCLUDES + excludes):
+        if any(glob_match(f, g) for g in exception_globs):
             continue
         warn(f"[ownership] 孤儿路径：{f} 未被任何模块认领")
 
@@ -176,7 +183,6 @@ def check_ownership(modules: Dict[str, Dict[str, object]], repo: Path, excludes:
 def load_graph(pm: Path) -> Tuple[Optional[dict], Optional[Path]]:
     gp = pm / "architecture" / "graphs" / "current-project.arch.json"
     if not gp.exists():
-        warn("[graph] current-project.arch.json 不存在")
         return None, None
     try:
         return json.loads(gp.read_text(encoding="utf-8")), gp
@@ -186,27 +192,139 @@ def load_graph(pm: Path) -> Tuple[Optional[dict], Optional[Path]]:
 
 
 def check_graph(graph: dict, gp: Path) -> List[Tuple[str, str]]:
-    if graph.get("format") not in {"arch-graph/v0.1", "arch-graph/v0.2", "arch-graph/v0.3"}:
-        error(f"[graph] format 非法: {graph.get('format')}")
+    fmt = graph.get("format")
+    if fmt not in {"arch-graph/v0.1", "arch-graph/v0.2", "arch-graph/v0.3"}:
+        error(f"[graph] format 非法: {fmt}")
+    # v0.3 引入的结构约束（contains 森林、interface provider 子树、同层 scope）
+    # 对仍在白名单内的 v0.1/v0.2 老图降级为 warning，避免旧图直接从通过变成 exit 1。
+    structural = error if fmt == "arch-graph/v0.3" else warn
     endpoints = set()
+    object_ids = set()
+    group_ids = set()
+    group_docs: Dict[str, dict] = {}
+    contains_by_group: Dict[str, List[str]] = {}
+    interface_groups: Dict[str, str] = {}
+    parent_by_member: Dict[str, str] = {}
+
+    def add_endpoint(endpoint_id: object, label: str) -> Optional[str]:
+        if not isinstance(endpoint_id, str) or not endpoint_id:
+            error(f"[graph] {label} 缺少有效 id")
+            return None
+        if endpoint_id in endpoints:
+            error(f"[graph] 重复端点 id: {endpoint_id}")
+        endpoints.add(endpoint_id)
+        return endpoint_id
+
     for obj in graph.get("objects", []):
-        endpoints.add(obj.get("id"))
+        obj_id = add_endpoint(obj.get("id"), "对象")
+        if obj_id:
+            object_ids.add(obj_id)
         ref = obj.get("ref")
         if ref and not (gp.parent / ref).resolve().exists():
             error(f"[graph] 对象 {obj.get('id')} 的 ref 不存在: {ref}")
     for grp in graph.get("groups", []):
-        endpoints.add(grp.get("id"))
-        for itf in grp.get("interfaces", []) or []:
-            endpoints.add(f"{grp.get('id')}.{itf.get('id')}")
+        group_id = add_endpoint(grp.get("id"), "组合")
+        if group_id:
+            group_ids.add(group_id)
+            group_docs[group_id] = grp
         ref = grp.get("ref")
         if ref and not (gp.parent / ref).resolve().exists():
             error(f"[graph] 组合 {grp.get('id')} 的 ref 不存在: {ref}")
+
+    all_node_ids = object_ids | group_ids
+    for group_id, grp in group_docs.items():
+        contains = grp.get("contains")
+        if not isinstance(contains, list) or not all(isinstance(member, str) for member in contains):
+            structural(f"[graph] 组合 {group_id} 缺少有效 contains 字符串数组")
+            contains_by_group[group_id] = []
+        else:
+            contains_by_group[group_id] = contains
+        for member in contains_by_group[group_id]:
+            if member not in all_node_ids:
+                structural(f"[graph] 组合 {group_id} contains 未知成员: {member}")
+                continue
+            if member == group_id:
+                structural(f"[graph] 组合 {group_id} 不能包含自身")
+                continue
+            if member in parent_by_member:
+                structural(f"[graph] 成员 {member} 被多个 group 包含: {parent_by_member[member]}, {group_id}")
+                continue
+            parent_by_member[member] = group_id
+
+    visiting: List[str] = []
+    visited = set()
+
+    def visit_group(group_id: str) -> None:
+        if group_id in visited:
+            return
+        if group_id in visiting:
+            cycle = " -> ".join(visiting[visiting.index(group_id):] + [group_id])
+            structural(f"[graph] group contains 成环: {cycle}")
+            return
+        visiting.append(group_id)
+        for member in contains_by_group.get(group_id, []):
+            if member in group_ids:
+                visit_group(member)
+        visiting.pop()
+        visited.add(group_id)
+
+    for group_id in sorted(group_ids):
+        visit_group(group_id)
+
+    def collect_subtree_objects(group_id: str, seen: Optional[set] = None) -> set:
+        if seen is None:
+            seen = set()
+        if group_id in seen:
+            return set()
+        seen.add(group_id)
+        result = set()
+        for member in contains_by_group.get(group_id, []):
+            if member in object_ids:
+                result.add(member)
+            elif member in group_ids:
+                result.update(collect_subtree_objects(member, seen))
+        return result
+
+    for group_id, grp in group_docs.items():
+        subtree_objects = collect_subtree_objects(group_id)
+        for itf in grp.get("interfaces", []) or []:
+            interface_id = itf.get("id")
+            if not isinstance(interface_id, str) or not interface_id or "." in interface_id:
+                structural(f"[graph] 组合 {group_id} interface id 非法: {interface_id}")
+                continue
+            endpoint_id = f"{group_id}.{interface_id}"
+            add_endpoint(endpoint_id, f"组合 {group_id} interface")
+            interface_groups[endpoint_id] = group_id
+            providers = itf.get("provided_by") or []
+            if not isinstance(providers, list) or not all(isinstance(provider, str) for provider in providers):
+                structural(f"[graph] interface {endpoint_id} provided_by 必须是字符串数组")
+                continue
+            for provider in providers:
+                if provider not in object_ids:
+                    structural(f"[graph] interface {endpoint_id} provider 不存在或不是对象: {provider}")
+                elif provider not in subtree_objects:
+                    structural(f"[graph] interface {endpoint_id} provider {provider} 不在 {group_id} 的 contains 子树内")
+
+    endpoint_scope: Dict[str, Optional[str]] = {}
+    for object_id in object_ids:
+        endpoint_scope[object_id] = parent_by_member.get(object_id)
+    for group_id in group_ids:
+        endpoint_scope[group_id] = parent_by_member.get(group_id)
+    for endpoint_id, group_id in interface_groups.items():
+        endpoint_scope[endpoint_id] = parent_by_member.get(group_id)
+
+    def scope_name(endpoint_id: str) -> str:
+        scope = endpoint_scope.get(endpoint_id)
+        return "top" if scope is None else scope
+
     pairs: List[Tuple[str, str]] = []
     for rel in graph.get("relations", []):
         frm, to = rel.get("from"), rel.get("to")
         for end in (frm, to):
             if end not in endpoints:
                 error(f"[graph] 关系端点不存在: {end}")
+        if frm in endpoints and to in endpoints and endpoint_scope.get(frm) != endpoint_scope.get(to):
+            structural(f"[graph] 关系 {frm}->{to} 跨 scope：{scope_name(frm)} -> {scope_name(to)}")
         if rel.get("kind") is not None and rel["kind"] not in RELATION_KINDS:
             error(f"[graph] 关系 {frm}->{to} kind 非法: {rel['kind']}（五词表：{sorted(RELATION_KINDS)}）")
         if rel.get("style") is not None and rel["style"] not in RELATION_STYLES:
@@ -237,7 +355,7 @@ def check_dependencies_subset(pm: Path, modules: Dict[str, Dict[str, object]], p
                 warn(f"[consistency] {slug}.md Dependencies 行 Direction 非法：{direction}")
                 continue
             if not ok:
-                error(f"[consistency] {slug}.md 依赖表有图中不存在的关系：{slug} {direction} {dep}（图为权威，补图或删表行）")
+                error(f"[consistency] {slug}.md 依赖表有图中不存在的关系：{slug} {direction} {dep}（维护图为权威可视化来源，补图或删表行）")
 
 
 def check_designs(pm: Path) -> None:

@@ -19,7 +19,7 @@ review_status: reviewed
 
 - 每个技能目录 `modular-programming/<skill>/SKILL.md`，front matter 含 `name` 与 `description`（含中英触发词）。
 - 技能间交接协议：modular-change 是日常入口，按 L0-L3 路由到其他技能；modular-autopilot 接手已接受设计的自主执行。
-- `agents/openai.yaml`（modular-architecture、modular-change）为 OpenAI 兼容入口的附属配置。
+- 每个技能的 `agents/openai.yaml` 为 OpenAI 兼容入口的附属配置。
 
 ## Internal Design
 
@@ -33,7 +33,7 @@ review_status: reviewed
 | shared-references | out | 技能执行时读取共享工作流规则 |
 | shared-assets | out | 技能创建文件时读取模板 |
 | audit-checker | out | modular-audit 技能触发确定性检查脚本 |
-| graph-tooling | out | modular-architecture 技能触发图渲染 |
+| graph-tooling | out | modular-architecture 的高级可视化模式触发图渲染 |
 
 ## Constraints
 

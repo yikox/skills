@@ -1,11 +1,11 @@
 ---
 name: modular-status
-description: Maintain `project-management.md` for the modular programming workflow. Use when starting, updating, completing, archiving, or summarizing L1/L2/L3 work; recording active tasks, requirements, change backlog rows, modular design indexes, ADR summaries, validation evidence, blockers, risks, roadmap, milestones, or Chinese requests such as 记录进行中, 完成记录, PM 更新, 项目状态, 设计索引, 归档.
+description: Maintain `project-management.md` for the modular programming workflow. Use when starting, updating, completing, archiving, or summarizing tracked work; recording active tasks, requirements, change backlog rows, modular design indexes, ADR summaries, validation evidence, blockers, risks, roadmap, milestones, or Chinese requests such as 记录进行中, 完成记录, PM 更新, 项目状态, 设计索引, 归档.
 ---
 
 # Modular Status
 
-Use this skill to keep project management state aligned with the architecture-first modular workflow. PM records work lifecycle and evidence; it does not define module boundaries.
+Use this skill to keep project management state aligned with the architecture-first modular workflow. PM records current state and durable evidence; it does not define module boundaries and should not become a transcript.
 
 ## Required References
 
@@ -21,7 +21,9 @@ Use:
 
 ## PM Start
 
-For L1/L2/L3, update `Active Tasks` or the local equivalent before or near the beginning of implementation/design work.
+For L2/L3, update `Active Tasks` or the local equivalent before or near the beginning of design/implementation work.
+
+For L1, use Active Tasks only when the work crosses sessions, carries notable risk or release evidence, belongs to an existing active task, or the user explicitly wants tracking. Otherwise skip PM start.
 
 Record:
 
@@ -57,6 +59,8 @@ When work completes, update PM with:
 - whether architecture baseline changed.
 
 Then remove, mark done, or archive stale active-task rows according to the document's style.
+
+For untracked L1 work, prefer a single concise `Recent Updates` bullet only when the result is useful future context. Do not add archive rows for routine L1 work.
 
 ## Backlog And Design Index
 

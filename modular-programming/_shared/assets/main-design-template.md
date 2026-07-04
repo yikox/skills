@@ -16,10 +16,12 @@ Describe the system boundary, runtime environment, users, and external dependenc
 | --- | --- | --- | --- | --- |
 | <module-slug> | atomic | function-flow |  | draft |
 
-## Architecture Graph
+## Advanced Architecture Graph
 
-- Source: `architecture/graphs/current-project.arch.json`
-- Rendered: `architecture/rendered/current-project-architecture.html`
+Optional advanced visualization. `main-design.md` plus `architecture/modules/*.md` is sufficient for the default AI workflow.
+
+- Source: `architecture/graphs/current-project.arch.json` (optional)
+- Rendered: `architecture/rendered/current-project-architecture.html` (optional)
 
 ## Cross-Module Flow
 

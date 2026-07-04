@@ -12,7 +12,7 @@ Create a trustworthy architecture-first baseline before planning refactors. Migr
 2. Infer current modules from technical ownership boundaries, not just folder names.
 3. Mark each module fact as `verified`, `inferred`, or `unclear`.
 4. Write `architecture/main-design.md` and `architecture/modules/*.md`, including `code_paths` for each module (single ownership; see Code Ownership in `modular-workflow-rules.md`).
-5. Render or update the architecture graph.
+5. Create or update the architecture graph only when the user wants visualization or the project uses graph review.
 6. Move old TODOs, requirements, active work, and known bugs into PM rows with primary module, impacted modules, and change level.
 7. Record migration gaps in PM instead of silently guessing.
 

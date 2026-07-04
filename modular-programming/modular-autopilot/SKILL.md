@@ -5,7 +5,7 @@ description: Supervise autonomous execution of an accepted L2/L3 change design t
 
 # Modular Autopilot
 
-Act as the supervising role between "design accepted" and "change landed". Ask the user for exactly one confirmation at intake; afterwards run planning, execution, and closeout autonomously, log every decision made on the user's behalf, and deliver a final report. Never push, open PRs, or take any externally visible action — put the recommended commands in the report instead.
+Act as the advanced supervising role between "design accepted" and "change landed". Use this only when the user explicitly wants hands-off execution for an accepted and reviewed L2/L3 design. Ask the user for exactly one confirmation at intake; afterwards run planning, execution, and closeout autonomously, log every decision made on the user's behalf, and deliver a final report. Never push, open PRs, or take any externally visible action — put the recommended commands in the report instead.
 
 ## Hard Dependencies
 
@@ -51,13 +51,15 @@ Send the user an intake report: findings, suggestions, and a short outline of ho
 ## Phase 4: Closeout
 
 1. Collect verification evidence against the design's Validation section: SDD ledger, commit range, test output, review verdicts.
-2. Update module/architecture baselines and re-render affected graphs (see `modular-architecture` Baseline Update).
-3. Mark the design `status: implemented`.
-4. Record PM completion with evidence via `modular-status`.
-5. Run modular-audit's deterministic checker as a drift self-check; fold findings into the report.
-6. Deliver the final report.
+2. Confirm the implementation has landed in the main workspace before changing baseline facts: the worktree branch is merged locally, a commit/PR already contains the code, or the user explicitly confirms the code is outside the reachable workspace and landed. A passing worktree branch is not landed evidence by itself.
+3. If the code is not landed yet, stop short of implemented closeout: leave the design at `status: accepted`, do not update module/architecture baselines, do not record PM completion, and deliver a pending-merge report with the exact merge/push/PR commands for the user to run.
+4. After landed evidence exists, update module/architecture baselines and re-render affected graphs (see `modular-architecture` Baseline Update).
+5. Mark the design `status: implemented`.
+6. Record PM completion with evidence via `modular-status`.
+7. Run modular-audit's deterministic checker as a drift self-check; fold findings into the report.
+8. Deliver the final report.
 
-When the PM directory lives inside the code repository, perform all modular doc updates (baseline, PM, design status) in the main workspace — never inside the worktree, where they would strand on an unmerged branch. The report then recommends the merge command; note in the PM record that the code merge is pending user action.
+When the PM directory lives inside the code repository, perform all modular doc updates (baseline, PM, design status) in the main workspace after the implementation has landed there — never inside the worktree, where they would strand on an unmerged branch.
 
 ## Hard Stops
 

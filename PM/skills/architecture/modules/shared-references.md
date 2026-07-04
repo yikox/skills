@@ -13,13 +13,13 @@ review_status: reviewed
 
 ## Responsibility
 
-拥有全部技能共同遵循的规则文档：modular-workflow-rules（分级/路由/确认档位）、storage-schema（项目记忆布局与状态词表）、review-rules、migration-rules、module-authoring-rules、module-kind-classification、pm-maintenance-rules、architecture-graph-json-format。
+拥有全部技能共同遵循的规则文档：modular-workflow-rules（轻量默认、分级/路由/确认档位）、storage-schema（项目记忆布局与状态词表）、review-rules、migration-rules、module-authoring-rules、module-kind-classification、pm-maintenance-rules、architecture-graph-json-format。
 
 ## Public Contract
 
 - 技能以 `../_shared/references/<file>.md` 相对路径引用；文件名即契约，改名属于 L3 变更。
 - storage-schema 定义的目录布局与 front matter 字段（模块字段、计划 `source_design`/`level`、状态词表）被 audit-checker 以代码形式强制。
-- architecture-graph-json-format 定义 `arch-graph/v0.3`，是 graph-tooling 的输入契约。
+- architecture-graph-json-format 定义 `arch-graph/v0.3`，是高级 graph-tooling 的输入契约。
 
 ## Internal Design
 

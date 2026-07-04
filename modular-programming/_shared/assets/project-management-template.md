@@ -19,13 +19,13 @@ Last updated: <YYYY-MM-DD>
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| <YYYY-MM-DD> |  | unknown |  | L1 | in-progress |  |
+
+Use this section for active L2/L3 work and tracked L1 work only. Routine same-session L1 work should usually appear, if at all, as a concise Recent Updates bullet after verification.
 
 ## Requirements / Change Backlog
 
 | ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Design Path / Next Step |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-YYYYMMDD-short-slug | <YYYY-MM-DD> |  | unknown |  | L1 |  |  | needs-clarification |  |  |
 
 ## Modular Design Index
 

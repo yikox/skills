@@ -8,14 +8,14 @@ review_status: reviewed
 
 ## Scope
 
-本仓库是 modular-programming 技能套件的源仓库：八个 modular-* 工作流技能、共享规则与模板、确定性审计脚本、高级架构图渲染工具，以及把套件分发到各 agent skills 目录（`~/.claude/skills` 等）的安装脚本。运行环境为支持 SKILL.md 技能协议的 agent（Claude Code / Codex 等）+ Python 3 标准库 + bash。无外部服务依赖。
+本仓库是 modular-programming 技能套件的源仓库：九个 modular-* 工作流技能、共享规则与模板、确定性审计脚本、高级架构图渲染工具，以及把套件分发到各 agent skills 目录（`~/.claude/skills` 等）的安装脚本。运行环境为支持 SKILL.md 技能协议的 agent（Claude Code / Codex 等）+ Python 3 标准库 + bash。无外部服务依赖。
 
 ## Module Map
 
 | Module | Form | Kind | Responsibility | Status |
 | --- | --- | --- | --- | --- |
-| workflow-skills | atomic | config-rule | 八个技能入口 SKILL.md，定义工作流执行规则 | implemented |
-| shared-references | atomic | config-rule | 跨技能共享的规则语料（工作流/存储/评审/图格式） | implemented |
+| workflow-skills | atomic | config-rule | 九个技能入口 SKILL.md，定义工作流执行规则 | implemented |
+| shared-references | atomic | config-rule | 跨技能共享的规则语料（工作流/存储/评审/图格式/模块化方法论与评估） | implemented |
 | shared-assets | atomic | resource-file | 文档模板与渲染示例夹具 | implemented |
 | audit-checker | atomic | function-flow | 项目记忆一致性的确定性检查脚本 | implemented |
 | graph-tooling | atomic | function-flow | 高级架构图 JSON 渲染器与本地预览服务 | implemented |

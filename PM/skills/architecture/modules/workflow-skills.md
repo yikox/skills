@@ -1,6 +1,6 @@
 ---
 name: Workflow Skills
-described: 八个 modular-* 技能入口文档，定义架构优先工作流的全部执行规则
+described: 九个 modular-* 技能入口文档，定义架构优先工作流的全部执行规则
 module_form: atomic
 module_kind: config-rule
 main_subject: SKILL.md 技能入口文档
@@ -13,12 +13,12 @@ review_status: reviewed
 
 ## Responsibility
 
-拥有八个技能入口（init / change / status / architecture / review / knowledge / audit / autopilot）的 SKILL.md 文档。它们是 agent 消费的工作流规则入口，定义各技能的触发条件、工作流步骤与交接关系。
+拥有九个技能入口（init / change / status / architecture / review / knowledge / audit / autopilot / architect）的 SKILL.md 文档。它们是 agent 消费的工作流规则入口，定义各技能的触发条件、工作流步骤与交接关系。
 
 ## Public Contract
 
 - 每个技能目录 `modular-programming/<skill>/SKILL.md`，front matter 含 `name` 与 `description`（含中英触发词）。
-- 技能间交接协议：modular-change 是日常入口，按 L0-L3 路由到其他技能；modular-autopilot 接手已接受设计的自主执行。
+- 技能间交接协议：modular-change 是日常入口，按 L0-L3 路由到其他技能；modular-autopilot 接手已接受设计的自主执行；modular-architect 是高级顾问角色，只产出评估/重构/设计方案，不落盘不实现。
 - 每个技能的 `agents/openai.yaml` 为 OpenAI 兼容入口的附属配置。
 
 ## Internal Design
@@ -42,7 +42,7 @@ review_status: reviewed
 
 ## Validation
 
-- `./install.sh --dry-run` 应列出全部八个技能目录。
+- `./install.sh --dry-run` 应列出全部九个技能目录。
 - `grep -c "^name:" modular-programming/*/SKILL.md` 每个文件恰好 1。
 
 ## Review Notes

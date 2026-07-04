@@ -1,6 +1,6 @@
 ---
 name: Shared References
-described: 跨技能共享的规则语料：工作流规则、存储 schema、评审/迁移/维护规则、图格式
+described: 跨技能共享的规则语料：工作流规则、存储 schema、评审/迁移/维护规则、图格式、模块化方法论与评估
 module_form: atomic
 module_kind: config-rule
 main_subject: _shared/references 规则文档
@@ -13,7 +13,7 @@ review_status: reviewed
 
 ## Responsibility
 
-拥有全部技能共同遵循的规则文档：modular-workflow-rules（轻量默认、分级/路由/确认档位）、storage-schema（项目记忆布局与状态词表）、review-rules、migration-rules、module-authoring-rules、module-kind-classification、pm-maintenance-rules、architecture-graph-json-format。
+拥有全部技能共同遵循的规则文档：modular-workflow-rules（轻量默认、分级/路由/确认档位）、storage-schema（项目记忆布局与状态词表）、review-rules、migration-rules、module-authoring-rules、module-kind-classification、pm-maintenance-rules、architecture-graph-json-format，以及 modular-architect 的方法论语料 modular-methodology 与评估语料 modular-assessment。
 
 ## Public Contract
 

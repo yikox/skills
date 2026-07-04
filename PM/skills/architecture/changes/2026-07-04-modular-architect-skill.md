@@ -1,7 +1,7 @@
 ---
 title: 新增高级角色技能 modular-architect（模块化架构师）
 level: L3
-status: accepted
+status: implemented
 review_status: reviewed
 primary_module: workflow-skills
 impacted_modules: [shared-references, shared-assets]

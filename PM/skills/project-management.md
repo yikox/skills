@@ -12,15 +12,14 @@ Last updated: 2026-07-04
 | Field | Value |
 | --- | --- |
 | Version | main @ 2026-07-04 |
-| State | 轻量默认模块化工作流已落地到源码；安装副本待同步 |
-| Current focus | 后续可运行 `./install.sh` 同步已安装 skills；modular-autopilot 演练仍待执行 |
+| State | 9 技能（含高级角色 modular-architect）+ 共享层稳定；安装副本待同步 |
+| Current focus | 运行 `./install.sh` 同步已安装 skills；modular-autopilot 演练仍待执行 |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-07-04 | 新增高级角色技能 modular-architect（模块化架构师）+ 方法论/评估共享参考 | workflow-skills | shared-references, shared-assets | L3 | source-complete; pending merge | 分支 feat/modular-architect 四任务全绿、终审 Ready to merge；design 仍为 accepted，待用户合并后更新 baseline 并标 implemented；见 plans/2026-07-04-modular-architect-decisions.md |
 
 ## Requirements / Change Backlog
 
@@ -41,7 +40,7 @@ Last updated: 2026-07-04
 | Module | architecture/modules/installer.md | implemented | reviewed |  |
 | Architecture Change | architecture/changes/2026-07-03-modular-autopilot.md | implemented | reviewed | 计划已归档至 plans/archive/ |
 | Architecture Change | architecture/changes/2026-07-04-lightweight-default-workflow.md | implemented | reviewed | 计划已归档至 plans/archive/；图作为高级功能 |
-| Architecture Change | architecture/changes/2026-07-04-modular-architect-skill.md | accepted | reviewed | 模块化架构师高级角色；autopilot 执行中 |
+| Architecture Change | architecture/changes/2026-07-04-modular-architect-skill.md | implemented | reviewed | 模块化架构师高级角色；merge 22c98e8；计划已归档 |
 | ADR | architecture/adrs/ADR-2026-07-03-autopilot-as-main-session-skill.md | accepted | reviewed |  |
 
 ## Roadmap
@@ -82,6 +81,7 @@ Last updated: 2026-07-04
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |
+| 2026-07-04 | 新增高级角色 modular-architect（模块化架构师）+ 方法论/评估共享参考（L3） | implemented in source; install pending | autopilot 托管执行；SDD 四任务全绿 + 终审 Ready to merge；merge 22c98e8；baseline（main-design/workflow-skills/shared-references）已更新；checker 0 error、unittest OK、install dry-run 见新技能；决策日志见 plans/archive/2026-07-04-modular-architect-decisions.md |
 | 2026-07-04 | 轻量默认模块化工作流改造（L3） | implemented in source; install pending | 共享规则、技能入口、模板、README、checker 与 PM baseline 已更新；最终验证见 Testing and Validation |
 | 2026-07-03 | 审计跟进修复：autopilot 收尾语义、8 技能曝光、复合图校验 | implemented in source; install pending | 新增 checker unittest；modular-audit 0 error/0 warning；py_compile、架构图渲染、install dry-run、diff-check 通过；实际安装因审批额度限制未执行 |
 | 2026-07-03 | modular-autopilot 监督者技能（L3） | implemented | commits 7e55bf5..fa0b54b + e128077 收尾 + 77b70c2 加固；SDD 每任务双评审 + 最终全分支评审 Ready to merge；checker fixture 全绿 |
@@ -90,6 +90,8 @@ Last updated: 2026-07-04
 
 | Type | Path | Final Status | Notes |
 | --- | --- | --- | --- |
+| Plan | architecture/plans/archive/2026-07-04-modular-architect-skill-plan.md | implemented | L3 模块化架构师技能实现计划 |
+| Decisions | architecture/plans/archive/2026-07-04-modular-architect-decisions.md | implemented | autopilot 决策日志 + SDD 执行记录 |
 | Plan | architecture/plans/archive/2026-07-04-lightweight-default-workflow-plan.md | implemented | L3 轻量默认工作流改造计划 |
 | Plan | architecture/plans/archive/2026-07-03-modular-autopilot-plan.md | implemented | 随设计 implemented 归档 |
 
@@ -100,3 +102,4 @@ Last updated: 2026-07-04
 - 2026-07-03 - 修复审计发现：autopilot 未落地不标 implemented、README/AI snippet/openai.yaml 补齐 8 技能曝光、audit-checker 增加 group/interface/scope 校验与 unittest；安装同步待审批可用后运行。
 - 2026-07-04 - 落地轻量默认模块化工作流：L1 PM 减重、诊断模式、硬化 L1/L2/L3、图降为高级可视化、默认事实源改为 main-design + modules。
 - 2026-07-04 - 评审后修复：checker 例外 glob（shared/ignored_paths）加幽灵检查、v0.3 结构校验对 v0.1/v0.2 老图降级为 warning；audit SKILL/Routing Quick Reference/module-authoring-rules 补齐"图可选、L1 减重"漏改；验证 `python3 -m unittest discover -s modular-programming/modular-audit/tests`（7 tests OK）与自审计 0 error/0 warning。
+- 2026-07-04 - 新增第 9 个技能 modular-architect（模块化架构师，高级顾问角色，只提案不实现）+ modular-methodology/modular-assessment 两个共享参考；autopilot 托管执行 SDD 四任务全绿，merge 22c98e8，baseline 与 PM 已同步。

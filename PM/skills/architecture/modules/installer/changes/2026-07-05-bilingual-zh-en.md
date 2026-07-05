@@ -1,7 +1,7 @@
 ---
 title: 中英双语版本（语言分层 + install 语言参数）
 level: L2
-status: accepted
+status: implemented
 review_status: reviewed
 primary_module: installer
 impacted_modules: [workflow-skills, shared-references, shared-assets, audit-checker, graph-tooling]
@@ -130,3 +130,11 @@ skills/                              # 仓库根（已叫 skills）
 - 接受设计并开始实现（status: accepted）。
 - install 缺 lang → 报 usage 非零退出（不设隐式默认）。
 - 翻译边界：只翻散文；`*.py` 与 vocab/front-matter 机器 token 保持英文单源。
+
+## Implementation（2026-07-05/06）
+
+- 结构层 commit `7cf18d3`：git mv → en/、zh 骨架、install.sh 语言参数、README_EN、baseline 更新。
+- 翻译 commit `03d55f3`：6 个并行 subagent 完成 zh 散文中文化（39 文件：9 SKILL + 10 openai.yaml + 20 _shared；narrator 等本已中文的文件跳过）。
+- 意外发现（已记入 baseline Scope）：en/ 实为中英混合（历史 docs-language=zh），非纯英文源。若需 en/ 纯英文化，属后续独立工作。
+- token 完整性验证全绿：机器 token 无中文污染；vocab.md 及全部 `*.py`/`*.arch.json` 在 en/zh 逐字一致；`install zh --dry-run` 10 技能；zh 渲染器可渲染示例；en 版 checker 自审计 0/0；`git diff --check` 干净。
+- 未完成：实际 `./install.sh <lang>` 同步到 `~/.claude/skills` 等因权限/额度未运行（历史一贯 pending，dry-run 已验证）。

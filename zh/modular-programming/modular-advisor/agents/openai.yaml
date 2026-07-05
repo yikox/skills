@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Advisor"
+  short_description: "评估模块化程度，协同设计模块化重构或新项目提案"
+  default_prompt: "用 $modular-advisor 评估本项目的模块化程度，并与我讨论一个分阶段的模块化提案。"

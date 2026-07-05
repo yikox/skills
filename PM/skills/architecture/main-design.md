@@ -8,7 +8,9 @@ review_status: reviewed
 
 ## Scope
 
-本仓库是 modular-programming 技能套件的源仓库：九个 modular-* 工作流技能、共享规则与模板、确定性审计脚本、高级架构图渲染工具，以及把套件分发到各 agent skills 目录（`~/.claude/skills` 等）的安装脚本。运行环境为支持 SKILL.md 技能协议的 agent（Claude Code / Codex 等）+ Python 3 标准库 + bash。无外部服务依赖。
+本仓库是 modular-programming 技能套件的源仓库：十个 modular-* 工作流技能、共享规则与模板、确定性审计脚本、高级架构图渲染工具，以及把套件分发到各 agent skills 目录（`~/.claude/skills` 等）的安装脚本。运行环境为支持 SKILL.md 技能协议的 agent（Claude Code / Codex 等）+ Python 3 标准库 + bash。无外部服务依赖。
+
+套件按语言分层为 `<lang>/modular-programming/`（`lang` ∈ {en, zh}）。`en/` 为主/源，本 baseline 与 `code_paths` 均以 `en/` 描述；`zh/` 是 `en/` 的中文翻译镜像，结构逐目录对等，不单独维护 baseline。可执行代码（`*.py`）与受控词表 token 保持英文单源，两语言目录内容一致（详见 Shared Constraints）。安装脚本按语言参数从对应目录分发。
 
 ## Module Map
 
@@ -36,7 +38,8 @@ review_status: reviewed
 
 - 运行时依赖仅 Python 3 标准库与 bash；不引入第三方包。
 - 受控词表以 shared-references 的 `vocab.md` 为单一事实源，audit-checker 启动时解析（不再硬编码）；drift-guard 测试保证 vocab.md 与检查器内置 fallback 一致。
-- 无主路径（不属于任何模块的 behavior-bearing 之外内容）：`docs/**`（superpowers 流程存档）、`PM/**`（本仓库自身的项目记忆）。
+- 无主路径（不属于任何模块的 behavior-bearing 之外内容）：`docs/**`（superpowers 流程存档）、`PM/**`（本仓库自身的项目记忆）、`zh/**`（`en/**` 的中文翻译镜像，随 en 模块同步，不单独建模块）。
+- 语言镜像约束：`zh/modular-programming` 与 `en/modular-programming` 逐目录对等；只翻译散文，`*.py` 脚本与 vocab/front-matter 的机器 token（module_form/module_kind/relation_kind/status 等取值）保持英文单源，两语言目录逐字一致，否则 audit-checker 对 zh 失效。
 - 本仓库自身用 modular 工作流管理，docs-language 为 `zh`，confirmation 档位为 `standard`。
 
 ## Open Questions

@@ -2,20 +2,22 @@
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-shared_dir="$repo_dir/modular-programming/_shared"
 dry_run=0
 
 usage() {
   cat <<'USAGE'
 Usage:
-  ./install.sh [--dry-run] [target_dir ...]
+  ./install.sh <lang> [--dry-run] [target_dir ...]
 
-Installs the current modular-programming skill suite into one or more agent
-skills directories. Legacy project-memory and architecture-design skill
-names are removed from the targets.
+Installs one language edition of the modular-programming skill suite into one
+or more agent skills directories. The first positional argument selects the
+language and is required:
 
-The installer also copies modular-programming/_shared to each target as
-_shared so installed modular-* skills can read ../_shared resources.
+  <lang>   zh | en   (source is <lang>/modular-programming/)
+
+Legacy project-memory and architecture-design skill names are removed from the
+targets. The installer also copies <lang>/modular-programming/_shared to each
+target as _shared so installed modular-* skills can read ../_shared resources.
 
 Default targets:
   ~/.agents/skills
@@ -23,13 +25,13 @@ Default targets:
   ~/.claude/skills
 
 Examples:
-  ./install.sh
-  ./install.sh --dry-run
-  ./install.sh ~/.codex/skills ~/.claude/skills ~/my-agent/skills
+  ./install.sh en
+  ./install.sh zh --dry-run
+  ./install.sh en ~/.codex/skills ~/.claude/skills ~/my-agent/skills
 USAGE
 }
 
-targets=()
+positional=()
 while (($#)); do
   case "$1" in
     -h|--help)
@@ -43,7 +45,7 @@ while (($#)); do
     --)
       shift
       while (($#)); do
-        targets+=("$1")
+        positional+=("$1")
         shift
       done
       ;;
@@ -53,12 +55,37 @@ while (($#)); do
       exit 2
       ;;
     *)
-      targets+=("$1")
+      positional+=("$1")
       shift
       ;;
   esac
 done
 
+if ((${#positional[@]} == 0)); then
+  echo "Missing required <lang> (zh|en)." >&2
+  usage >&2
+  exit 2
+fi
+
+lang="${positional[0]}"
+case "$lang" in
+  zh|en) ;;
+  *)
+    echo "Invalid <lang>: $lang (expected zh|en)." >&2
+    usage >&2
+    exit 2
+    ;;
+esac
+
+src_dir="$repo_dir/$lang/modular-programming"
+shared_dir="$src_dir/_shared"
+
+if [[ ! -d "$src_dir" ]]; then
+  echo "Source not found: $src_dir" >&2
+  exit 1
+fi
+
+targets=("${positional[@]:1}")
 if ((${#targets[@]} == 0)); then
   targets=(
     "$HOME/.agents/skills"
@@ -71,10 +98,7 @@ skills=()
 while IFS= read -r -d '' skill_file; do
   skills+=("$(dirname "$skill_file")")
 done < <(
-  find "$repo_dir" \
-    -path "$repo_dir/.git" -prune -o \
-    -path "$repo_dir/.git/*" -prune -o \
-    -name SKILL.md -type f -print0
+  find "$src_dir" -name SKILL.md -type f -print0
 )
 
 deprecated_skills=(
@@ -99,7 +123,7 @@ deprecated_skills=(
 )
 
 if ((${#skills[@]} == 0)); then
-  echo "No skills found in $repo_dir" >&2
+  echo "No skills found in $src_dir" >&2
   exit 1
 fi
 

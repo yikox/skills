@@ -4,7 +4,7 @@ described: 高级架构图 JSON 的渲染器与本地预览服务
 module_form: atomic
 module_kind: function-flow
 main_subject: render_modular_graph.py
-code_paths: ["modular-programming/_shared/scripts/**"]
+code_paths: ["en/modular-programming/_shared/scripts/**"]
 status: implemented
 review_status: reviewed
 ---
@@ -23,7 +23,7 @@ review_status: reviewed
 
 ## Internal Design
 
-- 见 `modular-programming/_shared/scripts/renderer-docs/` 内部文档。
+- 见 `en/modular-programming/_shared/scripts/renderer-docs/` 内部文档。
 
 ## Dependencies
 
@@ -37,7 +37,7 @@ review_status: reviewed
 
 ## Validation
 
-- `python3 modular-programming/_shared/scripts/render_modular_graph.py modular-programming/_shared/examples/nested-overview.arch.json -o /tmp/t.html` 退出码 0。
+- `python3 en/modular-programming/_shared/scripts/render_modular_graph.py en/modular-programming/_shared/examples/nested-overview.arch.json -o /tmp/t.html` 退出码 0。
 
 ## Review Notes
 

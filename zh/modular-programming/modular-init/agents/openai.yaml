@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Init"
+  short_description: "搭建架构优先的模块化工作流"
+  default_prompt: "用 $modular-init 初始化或修复本项目的模块化编程工作流。"

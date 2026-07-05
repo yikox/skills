@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Narrator"
+  short_description: "只读地调查一个项目并用通俗语言讲解"
+  default_prompt: "用 $modular-narrator 讲解这个项目是做什么的、又是怎么运作的。"

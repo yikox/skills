@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Review"
+  short_description: "评审模块路由、设计、ADR 与 PM 状态"
+  default_prompt: "用 $modular-review 在验收或完成前检查这份模块化工作流产物。"

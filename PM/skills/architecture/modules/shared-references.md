@@ -4,7 +4,7 @@ described: 跨技能共享的规则语料：工作流规则、存储 schema、�
 module_form: atomic
 module_kind: config-rule
 main_subject: _shared/references 规则文档
-code_paths: ["modular-programming/_shared/references/**"]
+code_paths: ["en/modular-programming/_shared/references/**"]
 status: implemented
 review_status: reviewed
 ---
@@ -40,7 +40,7 @@ review_status: reviewed
 
 ## Validation
 
-- `python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 无 error（schema 与检查器一致的间接证据）。
+- `python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 无 error（schema 与检查器一致的间接证据）。
 
 ## Review Notes
 

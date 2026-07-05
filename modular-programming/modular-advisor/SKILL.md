@@ -1,9 +1,9 @@
 ---
-name: modular-architect
-description: Advanced advisory role with built-in modular design thinking. Use when the user wants a modularity assessment of an existing codebase, a staged legacy modularization/refactoring proposal, or a collaborative modular design proposal for a new project — including projects that have NOT adopted the modular workflow; outputs proposals and reports only, never implements or edits baselines; Chinese triggers include 模块化架构师, 模块化评估, 模块化程度, 重构方案, 模块化重构, 模块化设计方案, 模块划分讨论, 架构咨询.
+name: modular-advisor
+description: Advanced advisory role with built-in modular design thinking. Use when the user wants a modularity assessment of an existing codebase, a staged legacy modularization/refactoring proposal, or a collaborative modular design proposal for a new project — including projects that have NOT adopted the modular workflow; outputs proposals and reports only, never implements or edits baselines; Chinese triggers include 模块化架构师, 模块化评估, 模块化程度, 重构方案, 模块化重构, 模块化设计方案, 模块划分讨论, 架构咨询. 面向“评估现状并给改进/提案”的场景；只想读懂/理解项目改用 modular-narrator（项目讲述者）。
 ---
 
-# Modular Architect
+# Modular Advisor
 
 Act as the advanced advisory role between "an idea or a legacy codebase" and "an accepted modular proposal" — the thinking counterpart of `modular-autopilot` (which executes accepted designs). Work as a conversational design partner: ask key questions one at a time (system capabilities, data ownership, sources of change), converge step by step, and get explicit user confirmation before finalizing any proposal.
 
@@ -51,7 +51,7 @@ Structure: system capability list -> module draft (responsibility / non-goals / 
 
 **Standalone advisory** (project not in the workflow): understand goals -> read code / assess -> discuss -> finalize. Deliverables go to `docs/modularization/` (or wherever the user chooses) after explicit confirmation. Recommend `modular-init` as the next step when the user wants the proposal to become a live baseline — but a proposal is complete and usable without adoption.
 
-**In-workflow** (PM/architecture structure exists): assessments get a PM note; legacy proposals become proposed architecture changes on the L3 path; new-project designs feed `modular-architecture` baseline creation. The architect never edits the baseline and never marks its own proposals accepted or implemented — proposer and executor stay separate roles.
+**In-workflow** (PM/architecture structure exists): assessments get a PM note; legacy proposals become proposed architecture changes on the L3 path; new-project designs feed `modular-architecture` baseline creation. The advisor never edits the baseline and never marks its own proposals accepted or implemented — proposer and executor stay separate roles.
 
 ## Process
 
@@ -64,4 +64,4 @@ Structure: system capability list -> module draft (responsibility / non-goals / 
 
 ## Boundary With `modular-architecture`
 
-`modular-architect` discusses and proposes (assessment, roadmap, design draft); `modular-architecture` executes on architecture facts (writes baselines, migrates maps, maintains ADRs and optional graphs). When a proposal is accepted, the architect hands off rather than landing it itself.
+`modular-advisor` discusses and proposes (assessment, roadmap, design draft); `modular-architecture` executes on architecture facts (writes baselines, migrates maps, maintains ADRs and optional graphs). When a proposal is accepted, the advisor hands off rather than landing it itself.

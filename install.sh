@@ -95,6 +95,7 @@ deprecated_skills=(
   project-knowledge-memory
   pm-architecture-docs
   pm-requirement-to-design
+  modular-architect
 )
 
 if ((${#skills[@]} == 0)); then

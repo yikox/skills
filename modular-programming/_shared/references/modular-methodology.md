@@ -1,6 +1,6 @@
 # Modular Methodology
 
-Use this corpus when reasoning about module boundaries: proposing a new-project modular design, planning legacy modularization, or judging whether a split is real modularization or just file shuffling. `modular-architect` treats this as its core thinking material; other skills may cite specific sections.
+Use this corpus when reasoning about module boundaries: proposing a new-project modular design, planning legacy modularization, or judging whether a split is real modularization or just file shuffling. `modular-advisor` treats this as its core thinking material; other skills may cite specific sections.
 
 Modularization is not splitting code into files. It is dividing responsibility, controlling dependencies, and defining stable contracts so each module can be independently understood, tested, changed, and replaced. The end goal is containing change propagation, not increasing module count.
 

@@ -43,6 +43,7 @@ Do not re-read these files on every message within the same session unless they 
 | Record start/progress/completion/archive for tracked work | `modular-status` | L2/L3, tracked L1 | PM rows and evidence; concise notes for untracked L1 |
 | Hands-off execution of an accepted, reviewed L2/L3 design | `modular-autopilot` | L2-L3 | intake confirmation, decision log, final report |
 | Modularity assessment, refactoring proposal, modular design discussion | `modular-architect` | - | assessment report; staged refactoring proposal; new-project design proposal |
+| Understand or explain an existing project, plain-language, read-only | `modular-narrator` | - | conversational explanation only; no files produced |
 | Check a design, ADR, PM row, or graph | `modular-review` | - | review notes, fixes, open questions |
 | Consistency check or legacy migration | `modular-audit` | - | audit report, migration gaps |
 | Save reusable commands/facts/lessons | `modular-knowledge` | - | knowledge-summary entries |

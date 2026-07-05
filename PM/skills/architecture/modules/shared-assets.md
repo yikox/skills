@@ -4,7 +4,7 @@ described: 技能创建文件时使用的文档模板与示例夹具
 module_form: atomic
 module_kind: resource-file
 main_subject: _shared/assets 模板文件
-code_paths: ["modular-programming/_shared/assets/**", "modular-programming/_shared/examples/**"]
+code_paths: ["en/modular-programming/_shared/assets/**", "en/modular-programming/_shared/examples/**"]
 status: implemented
 review_status: reviewed
 ---

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Autopilot"
+  short_description: "Execute accepted L2/L3 designs with one intake confirmation"
+  default_prompt: "Use $modular-autopilot to intake-review an accepted and reviewed L2/L3 design, then plan, execute, verify, and close out with a decision log."

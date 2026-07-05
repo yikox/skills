@@ -1,0 +1,68 @@
+{
+  "format": "arch-graph/v0.3",
+  "id": "nested-overview",
+  "name": "嵌套复合模块示例",
+  "described": "优化组件内嵌套缓存子系统，演示 group 套 group 的两层复合结构",
+  "objects": [
+    {
+      "id": "inference-api",
+      "ref": "./inference-api.md",
+      "at": [0, 0]
+    },
+    {
+      "id": "scheduler",
+      "ref": "./scheduler.md",
+      "at": [1, 0]
+    },
+    {
+      "id": "cache-index",
+      "ref": "./cache-index.md",
+      "at": [1, 1]
+    },
+    {
+      "id": "cache-store",
+      "ref": "./cache-store.md",
+      "at": [2, 1]
+    }
+  ],
+  "groups": [
+    {
+      "id": "optimization",
+      "ref": "./optimization-components.md",
+      "contains": ["scheduler", "cache"],
+      "interfaces": [
+        {
+          "id": "accelerate",
+          "name": "加速入口",
+          "described": "对外提供推理加速能力",
+          "provided_by": ["scheduler", "cache-index"]
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "ref": "./cache-subsystem.md",
+      "contains": ["cache-index", "cache-store"]
+    }
+  ],
+  "relations": [
+    {
+      "from": "inference-api",
+      "to": "optimization.accelerate",
+      "described": "请求推理加速",
+      "style": "solid"
+    },
+    {
+      "from": "scheduler",
+      "to": "cache",
+      "described": "查询与写入缓存子系统",
+      "style": "solid"
+    },
+    {
+      "from": "cache-index",
+      "to": "cache-store",
+      "described": "读写缓存条目",
+      "style": "solid"
+    }
+  ]
+}

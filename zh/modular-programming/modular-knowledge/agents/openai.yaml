@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Knowledge"
+  short_description: "Record reusable project commands, facts, and lessons"
+  default_prompt: "Use $modular-knowledge to update knowledge-summary.md with reusable project knowledge."

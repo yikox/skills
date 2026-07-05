@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modular Narrator"
+  short_description: "Investigate a project read-only and explain it in plain language"
+  default_prompt: "Use $modular-narrator to explain what this project does and how it works."

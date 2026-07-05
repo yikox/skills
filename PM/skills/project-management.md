@@ -11,15 +11,16 @@ Last updated: 2026-07-04
 
 | Field | Value |
 | --- | --- |
-| Version | main @ 2026-07-04 |
-| State | 9 技能（含高级角色 modular-architect）+ 共享层稳定；vocab.md 单一事实源与 module-kinds 分片已落地；安装副本待同步 |
-| Current focus | 运行 `./install.sh` 同步已安装 skills；modular-autopilot 演练仍待执行 |
+| Version | main @ 2026-07-05 |
+| State | 10 技能 + 共享层稳定；已按语言分层为 `en/`（源/主）+ `zh/`（镜像）；install.sh 支持 zh/en 语言参数；zh 散文翻译待做（当前为 en 英文副本） |
+| Current focus | 完成 zh 全量散文翻译；运行 `./install.sh <lang>` 同步已安装 skills；modular-autopilot 演练仍待执行 |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-07-05 | 中英双语版本：目录改为 `<lang>/modular-programming/`，install.sh 加 zh/en 语言参数，补 README_EN | installer | workflow-skills, shared-references, shared-assets, audit-checker, graph-tooling | L2 | in-progress | 设计已接受；结构层实现中（搬迁/install/README_EN/baseline），zh 翻译滚动进行 |
 
 ## Requirements / Change Backlog
 
@@ -44,6 +45,7 @@ Last updated: 2026-07-04
 | ADR | architecture/adrs/ADR-2026-07-03-autopilot-as-main-session-skill.md | accepted | reviewed |  |
 | Architecture Change | architecture/changes/2026-07-04-vocab-single-source.md | implemented | reviewed | 评估痛点 1；L3；vocab.md 单一事实源，checker 清单驱动 + fallback |
 | Module Change | architecture/modules/shared-references/changes/2026-07-04-split-module-kind-classification.md | implemented | reviewed | 评估痛点 3；L2；主文件保留为索引，9 类分片到 module-kinds/ |
+| Module Change | architecture/modules/installer/changes/2026-07-05-bilingual-zh-en.md | accepted | reviewed | L2 中英双语；语言分层 `<lang>/modular-programming/` + install 语言参数；实现中 |
 
 ## Roadmap
 
@@ -59,11 +61,12 @@ Last updated: 2026-07-04
 
 ## Testing and Validation
 
-- 确定性检查：`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 退出码 0。
+- 确定性检查（en 版 checker，须豁免 zh 镜像）：`python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**' --exclude 'zh/**'` 退出码 0。
 - check_plans fixture 验证：坏计划（缺 source_design / level 非法 / 越界路径 / 目录级别不匹配）全部拦截，正例与归档件静默。
 - 2026-07-03 审计跟进修复验证：`python3 -m unittest discover -s modular-programming/modular-audit/tests`、`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**'`、三个 Python 脚本 py_compile、架构图渲染、`./install.sh --dry-run`、`git diff --check` 全部通过。
 - 2026-07-04 轻量默认工作流验证：`python3 -m unittest discover -s modular-programming/modular-audit/tests`、`python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**'`、三个 Python 脚本 py_compile、高级架构图渲染、`./install.sh --dry-run`、`git diff --check` 全部通过。
 - 2026-07-04 vocab 单一事实源 + 拆分验证：checker 0 error/0 warning；unittest 10 tests OK（含 3 个新 vocab drift-guard）；三脚本 py_compile；图重渲染含新 `audit-checker reads shared-references` 边；`./install.sh --dry-run` 覆盖 vocab.md 与 module-kinds/；`git diff --check` 干净；9 个 kind 分片与原文逐行 diff 零漂移；主动破坏 vocab.md（删 `composite`）触发 drift-guard 测试失败、还原后恢复。
+- 2026-07-05 中英双语结构层验证（L2）：`git mv modular-programming en/modular-programming`（82 rename，历史保留）+ `cp` 生成 zh 骨架；install.sh 加语言参数——`./install.sh`（缺 lang）与 `./install.sh fr`（非法）退出码 2，`./install.sh en/zh --dry-run` 各 10 技能 + `_shared` 退出码 0；en 版 checker 自审计（`--exclude 'zh/**'`）0 error/0 warning，6 模块；unittest 10 OK；zh 三脚本 py_compile OK；`git diff --check` 干净。**注：zh 目录当前为 en 英文副本，散文翻译尚未进行（下一阶段）。**
 
 ## Blockers and Risks
 
@@ -109,3 +112,4 @@ Last updated: 2026-07-04
 - 2026-07-04 - 评审后修复：checker 例外 glob（shared/ignored_paths）加幽灵检查、v0.3 结构校验对 v0.1/v0.2 老图降级为 warning；audit SKILL/Routing Quick Reference/module-authoring-rules 补齐"图可选、L1 减重"漏改；验证 `python3 -m unittest discover -s modular-programming/modular-audit/tests`（7 tests OK）与自审计 0 error/0 warning。
 - 2026-07-04 - 新增第 9 个技能 modular-architect（模块化架构师，高级顾问角色，只提案不实现）+ modular-methodology/modular-assessment 两个共享参考；autopilot 托管执行 SDD 四任务全绿，merge 22c98e8，baseline 与 PM 已同步。
 - 2026-07-04 - modular-architect 评估本仓库（成熟度 High），据痛点 1/3 出两份变更设计并经 modular-review（补图更新步骤）→ 用户接受（设计 1 方案 A、不补 ADR）→ 落地：vocab.md 单一事实源（L3，checker 清单驱动 + fallback + drift-guard 测试）与 module-kind-classification 拆分（L2，索引 + module-kinds/ 分片）；checker 0/0、unittest 10 OK、render/install dry-run/diff-check 通过；install 同步待运行。
+- 2026-07-05 - 中英双语版本（L2，主模块 installer）：目录改为 `<lang>/modular-programming/`（en 源/主、zh 镜像），install.sh 加必填语言参数（zh|en），README 补 README_EN 并双向链接，baseline（main-design Scope/Shared Constraints、installer 契约、各模块 code_paths 加 en/ 前缀）已更新；结构层验证全绿（见 Testing and Validation）。**待办：zh 散文全量翻译（代码与 vocab/front-matter token 保持英文单源）；install 同步待运行。**

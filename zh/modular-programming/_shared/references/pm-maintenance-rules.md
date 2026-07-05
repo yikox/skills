@@ -1,26 +1,26 @@
-# PM Maintenance Rules
+# PM 维护规则
 
-Use these rules when archiving finished PM rows (`modular-status`) or when auditing and compressing an oversized `project-management.md` (`modular-audit`). The goal is a PM file where current state is visible at a glance without losing traceability.
+在归档已完成的 PM 行（`modular-status`）或审计并压缩过大的 `project-management.md`（`modular-audit`）时使用这些规则。目标是一份能一眼看清当前状态、又不丢失可追溯性的 PM 文件。
 
-## Archive Principles
+## 归档原则
 
-- Archive is a location or section, not a lifecycle status.
-- Keep the final lifecycle status visible, such as `implemented`, `obsolete`, or the project's equivalent wording.
-- Preserve dates, requirement IDs, design paths, commits, PRs, release notes, or user-confirmed evidence.
-- Prefer moving rows to an archive section over deleting them.
-- Do not archive anything whose next action is still active, blocked, or unclear.
+- 归档是一个位置或小节，而非一种生命周期状态。
+- 保留最终生命周期状态可见，如 `implemented`、`obsolete` 或项目的等价措辞。
+- 保留日期、需求 ID、设计路径、提交、PR、发布说明，或用户确认的证据。
+- 优先把行移入归档小节，而非删除它们。
+- 不要归档任何下一步动作仍处于进行中、阻塞或不明状态的内容。
 
-## Archive Candidates
+## 归档候选
 
-- Active tasks marked done/completed after the outcome is summarized in Recent Updates or a release/milestone section.
-- Requirement rows marked `implemented` with implementation evidence or explicit user confirmation.
-- Requirement rows marked `obsolete` with a brief reason.
-- Design index rows marked `implemented` or `obsolete`.
-- Stale rows identified by `modular-audit` and confirmed by evidence or the user.
+- 结果已在 Recent Updates 或某个发布/里程碑小节中总结后，被标记为 done/completed 的进行中任务。
+- 标记为 `implemented` 且带有实现证据或明确用户确认的需求行。
+- 标记为 `obsolete` 且带有简短原因的需求行。
+- 标记为 `implemented` 或 `obsolete` 的设计索引行。
+- 被 `modular-audit` 识别出并经证据或用户确认的陈旧行。
 
-## What Not To Archive
+## 不要归档什么
 
-Do not archive rows with these active statuses unless the user explicitly cancels them:
+除非用户明确取消，否则不要归档处于以下进行中状态的行：
 
 - `needs-clarification`
 - `ready-for-design`
@@ -31,90 +31,90 @@ Do not archive rows with these active statuses unless the user explicitly cancel
 - `blocked`
 - `needs-review`
 
-Keep `architecture/main-design.md` and module baseline docs indexed in the Modular Design Index. Archive only change design index rows by default.
+在 Modular Design Index 中保持 `architecture/main-design.md` 与模块基线文档被索引。默认只归档变更设计索引行。
 
-## Archive Sections
+## 归档小节
 
-Use existing section names when present. Otherwise add only the archive sections needed:
+存在时使用既有的小节名。否则只添加所需的归档小节：
 
 - `Requirements Archive` / `需求归档`
 - `Design Archive` / `设计归档`
 - `Task Archive` / `任务归档`
 
-For small projects, a single `Archive` / `归档` section with compact tables is enough.
+对小型项目，一个带紧凑表格的 `Archive` / `归档` 小节就够了。
 
-## Design File Movement
+## 设计文件移动
 
-Do not move design files by default. Moving files can break PM links and future agent context.
+默认不要移动设计文件。移动文件可能破坏 PM 链接与未来的 agent 上下文。
 
-If the user explicitly asks to move old design files:
+如果用户明确要求移动旧的设计文件：
 
-1. Move them to a stable archive path such as `architecture/modules/<module>/changes/archive/`.
-2. Update every PM path, requirement row, module doc link, and design cross-reference.
-3. Run `modular-audit` after the move.
+1. 把它们移到稳定的归档路径，如 `architecture/modules/<module>/changes/archive/`。
+2. 更新每一处 PM 路径、需求行、模块文档链接与设计交叉引用。
+3. 移动后运行 `modular-audit`。
 
-## Compression Triggers
+## 压缩触发条件
 
-Recommend compression when one or more are true:
+当满足以下一项或多项时，建议压缩：
 
-- `project-management.md` is hard to scan because current state is buried under history.
-- The file is larger than about 25 KB, or a single line/update is longer than about 1,000 characters.
-- `Recent Updates` / `最近更新` has more than 8-12 entries or contains implementation/debug narratives.
-- `Milestones` / `里程碑` repeats release notes that already live in release pages, design docs, commits, or `knowledge-summary.md`.
-- Old completed work dominates the file while active tasks, blockers, requirements, and next steps are small.
+- `project-management.md` 因当前状态被历史淹没而难以浏览。
+- 文件大于约 25 KB，或单行/单条更新长于约 1,000 字符。
+- `Recent Updates` / `最近更新` 有超过 8-12 条条目，或包含实现/调试叙述。
+- `Milestones` / `里程碑` 重复了已存在于发布页面、设计文档、提交或 `knowledge-summary.md` 中的发布说明。
+- 旧的已完成工作占据了文件主体，而进行中任务、阻塞项、需求与下一步却很少。
 
-## Preserve In Main File
+## 在主文件中保留
 
-Keep these visible in `project-management.md`:
+在 `project-management.md` 中保持以下内容可见：
 
-- project overview and current status;
-- current version, latest release status, and active blocker;
-- active tasks, current focus, and next concrete steps;
-- open risks and blockers;
-- requirements backlog and modular design index;
-- active roadmap/todo items;
-- recent 5-8 updates as concise outcome-oriented bullets;
-- links to archive/history files where details moved.
+- 项目概览与当前状态；
+- 当前版本、最新发布状态与活跃阻塞项；
+- 进行中任务、当前焦点与下一步具体步骤；
+- 待解风险与阻塞项；
+- 需求待办清单与模块化设计索引；
+- 活跃的路线图/待办项；
+- 最近 5-8 条以结果为导向的简洁要点更新；
+- 指向细节已迁出的归档/历史文件的链接。
 
-Do not remove stable IDs, dates, design paths, release URLs, commit SHAs, tags, PR links, blocker evidence, or user-confirmed implementation evidence.
+不要移除稳定 ID、日期、设计路径、发布 URL、提交 SHA、标签、PR 链接、阻塞证据，或用户确认的实现证据。
 
-## Lightweight PM Pattern
+## 轻量 PM 模式
 
-Routine L1 work should not make the PM file noisy. Prefer a single outcome-oriented note in `Recent Updates` when future context needs it:
+常规 L1 工作不应让 PM 文件变得嘈杂。当未来上下文需要时，优先在 `Recent Updates` 中放一条以结果为导向的说明：
 
 ```markdown
 - 2026-07-04 - 修复 checker 对 group interface provider 越界未拦截的问题；验证 `python3 -m unittest discover -s modular-programming/modular-audit/tests` 通过。
 ```
 
-Use `Active Tasks` for L1 only when the work crosses sessions, carries notable risk or release evidence, is part of an existing active task, or the user explicitly asks for tracking.
+仅当工作跨会话、携带显著风险或发布证据、属于某个既有进行中任务，或用户明确要求跟踪时，才对 L1 使用 `Active Tasks`。
 
-## Move Or Condense
+## 移动或精简
 
-Move or summarize these:
+移动或总结以下内容：
 
-- older `Recent Updates` details;
-- long per-release implementation narratives;
-- detailed debugging root causes and test logs;
-- repeated CI/build/release procedure notes;
-- lessons learned that are reusable across future work;
-- completed active task details already represented in milestones, release notes, design docs, or commits.
+- 较旧的 `Recent Updates` 细节；
+- 冗长的逐次发布实现叙述；
+- 详细的调试根因与测试日志；
+- 重复的 CI/构建/发布流程说明；
+- 可在未来工作中复用的经验教训；
+- 已在里程碑、发布说明、设计文档或提交中体现的已完成进行中任务细节。
 
-Use the destination that preserves future usefulness:
+选择能保留未来有用性的目的地：
 
-- `knowledge-summary.md`: reusable commands, root causes, testing/deploy workflows, environment constraints, conventions, and lessons.
-- `architecture/...`: durable architecture facts, module boundaries, design decisions, and implemented design updates.
-- `archives/project-management-history-YYYY.md`: historical PM update details that are not current state but should remain traceable.
-- Release pages, changelogs, commits, or PRs: external evidence already exists; keep only a compact pointer in PM.
+- `knowledge-summary.md`：可复用命令、根因、测试/部署工作流、环境约束、约定与经验。
+- `architecture/...`：持久的架构事实、模块边界、设计决策与已实现的设计更新。
+- `archives/project-management-history-YYYY.md`：非当前状态、但应保持可追溯的历史 PM 更新细节。
+- 发布页面、变更日志、提交或 PR：外部证据已存在；在 PM 中只保留一个紧凑的指针。
 
-## Archive File Format
+## 归档文件格式
 
-When moving detailed history out of the main file, create or append to:
+在把详细历史移出主文件时，创建或追加到：
 
 ```text
 archives/project-management-history-YYYY.md
 ```
 
-Use this shape:
+使用这种形态：
 
 ```markdown
 # Project Management History YYYY
@@ -124,14 +124,14 @@ Compressed on: YYYY-MM-DD
 
 ## YYYY-MM
 
-- YYYY-MM-DD - Original detailed update or a faithful condensed version.
+- YYYY-MM-DD - 原始的详细更新，或其忠实的精简版本。
 ```
 
-Preserve enough detail to recover why a decision was made. Do not move secrets or temporary scratch content.
+保留足够的细节，以便还原某个决策为何做出。不要移动机密或临时草稿内容。
 
-## Main File Compression Pattern
+## 主文件压缩模式
 
-Replace long entries with compact bullets:
+用紧凑的要点替换冗长的条目：
 
 ```markdown
 ## 最近更新
@@ -140,7 +140,7 @@ Replace long entries with compact bullets:
 - 2026-06-24 - 完成列表块块内子块渲染并合并到 main，设计见 `architecture/modules/editor/changes/2026-06-24-block-subblock-rendering.md`。
 ```
 
-Compress current-status sections to the facts a future agent needs first:
+把当前状态小节压缩到未来 agent 首先需要的事实：
 
 ```markdown
 - Current version: 0.4.11; local macOS dmg exists.
@@ -149,30 +149,30 @@ Compress current-status sections to the facts a future agent needs first:
 - Current focus: editor and AI conversation experience.
 ```
 
-For `Milestones` / `里程碑`, keep version/date/outcome only. Put implementation details in compact Recent Updates notes, design docs, or archive history.
+对 `Milestones` / `里程碑`，只保留版本/日期/结果。把实现细节放进紧凑的 Recent Updates 说明、设计文档或归档历史。
 
-## Compression Procedure
+## 压缩流程
 
-1. Read `project-management.md`, `knowledge-summary.md`, relevant architecture docs, and any existing `archives/project-management-history-*.md`.
-2. Identify current-state sections versus historical sections.
-3. Build a preservation checklist:
-   - current version and release status;
-   - active blockers and risks;
-   - active tasks and next steps;
-   - open requirements and accepted designs;
-   - latest useful updates;
-   - all links/IDs/evidence that must remain reachable.
-4. Draft the compressed main file in the same language and heading style as the existing PM.
-5. Move older details to archive/history files or knowledge/design docs as appropriate.
-6. Add compact pointers from `project-management.md` to any archive/history file.
-7. Run `modular-review` on the changed PM afterwards.
-8. Report before/after size, sections compressed, archive files created/updated, and any facts intentionally left in main.
+1. 阅读 `project-management.md`、`knowledge-summary.md`、相关架构文档，以及任何既有的 `archives/project-management-history-*.md`。
+2. 区分当前状态小节与历史小节。
+3. 建立一份保留清单：
+   - 当前版本与发布状态；
+   - 活跃阻塞项与风险；
+   - 进行中任务与下一步；
+   - 待解需求与已接受设计；
+   - 最新的有用更新；
+   - 所有必须保持可达的链接/ID/证据。
+4. 用与既有 PM 相同的语言与标题风格起草压缩后的主文件。
+5. 酌情把较旧的细节移入归档/历史文件或知识/设计文档。
+6. 从 `project-management.md` 向任何归档/历史文件添加紧凑指针。
+7. 之后对改动过的 PM 运行 `modular-review`。
+8. 报告压缩前后大小、被压缩的小节、创建/更新的归档文件，以及有意保留在主文件中的任何事实。
 
-## Safety Rules
+## 安全规则
 
-- Do not compress by deleting evidence. Move or summarize with a link.
-- Do not compress unresolved blockers, active requirements, active tasks, active design docs, or current focus into archive-only history.
-- Do not rewrite project meaning or status while summarizing.
-- Do not mark work complete, accepted, obsolete, or implemented as part of compression unless evidence already supports it.
-- Prefer small section-level edits over full rewrites.
-- Ask the user before moving large amounts of history if the request was only an audit, not an explicit compression request.
+- 不要通过删除证据来压缩。用链接来移动或总结。
+- 不要把未解决的阻塞项、活跃需求、进行中任务、活跃设计文档或当前焦点压缩进只在归档中的历史。
+- 总结时不要改写项目的含义或状态。
+- 除非证据已支撑，否则不要把工作标记为完成、接受、废弃或已实现作为压缩的一部分。
+- 优先小范围的小节级编辑，而非整体重写。
+- 如果请求只是审计、而非明确的压缩请求，在移动大量历史前先询问用户。

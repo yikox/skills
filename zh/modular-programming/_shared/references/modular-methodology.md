@@ -1,53 +1,53 @@
-# Modular Methodology
+# 模块化方法论
 
-Use this corpus when reasoning about module boundaries: proposing a new-project modular design, planning legacy modularization, or judging whether a split is real modularization or just file shuffling. `modular-advisor` treats this as its core thinking material; other skills may cite specific sections.
+在推理模块边界时使用这套语料：提出新项目的模块化设计、规划老项目的模块化，或判断一次拆分是真正的模块化还是只是搬文件。`modular-advisor` 把它当作核心思考素材；其它技能可以引用具体小节。
 
-Modularization is not splitting code into files. It is dividing responsibility, controlling dependencies, and defining stable contracts so each module can be independently understood, tested, changed, and replaced. The end goal is containing change propagation, not increasing module count.
+模块化不是把代码拆成文件。它是划分职责、控制依赖、定义稳定契约，从而让每个模块都能被独立理解、测试、修改与替换。终极目标是遏制变更传播，而不是增加模块数量。
 
-## Core Mindset
+## 核心心法
 
-1. **Divide responsibility before dividing code.** First decide what capabilities the system has, who owns each, which belong together, and who owns which data. Splitting one big file into many files that still share global state and call each other's internals is not modularization.
-2. **A module is a complete capability**, not a code-type bucket. Prefer capability modules (task scheduling, model loading, cache management) over type-only layers (controllers/services/utils); layer inside a module when needed.
-3. **High cohesion, low coupling.** Inside a module everything serves one goal; between modules only necessary, explicit dependencies remain. Changing internals must not ripple outward; replacing a module must not rewrite the system.
-4. **Expose capability, hide implementation** (information hiding, Parnas 1972: a module hides one design decision likely to change). Outsiders may know what a module does, how to call it, inputs, outputs, and errors — never its classes, storage, algorithms, or internal state.
-5. **Dependencies must be explicit and controlled**: mostly one-directional, few, declared (not fetched via globals or implicit imports), replaceable, acyclic.
-6. **Every piece of core data has exactly one owning module.** Others read or request changes through the owner's contract. Shared mutable data across modules is the fastest path to inconsistent state (the bounded-context rule from DDD: one authoritative owner per model).
-7. **Modules collaborate through contracts** — public interfaces, input/output shapes, error definitions, state constraints, call ordering, event formats — never through each other's internals. Prefer data coupling; treat shared-global (common) coupling and reach-into-internals (content) coupling as defects (structured-design coupling scale).
-8. **Composition over mutual penetration.** Cross-module flows are orchestrated by the application layer that composes modules; a module must not remote-control the internals of its peers.
-9. **Not finer is better.** Over-splitting produces long call chains, interface explosion, and debugging pain. A module should be independently understandable yet express a complete responsibility.
-10. **The goal is controlling change**: one requirement touches few modules; swapping a technical implementation leaves business logic alone; one module's failure does not cascade; new features come from composing or extending.
+1. **先分职责，再分代码。** 先决定系统有哪些能力、每项由谁拥有、哪些应归在一起、哪些数据归谁所有。把一个大文件拆成许多仍共享全局状态、互相调用内部的文件，不是模块化。
+2. **模块是一项完整能力**，不是按代码类型划分的桶。优先使用能力模块（任务调度、模型加载、缓存管理），而非仅按类型分的层（controllers/services/utils）；需要时在模块内部再分层。
+3. **高内聚、低耦合。** 模块内部一切服务于一个目标；模块之间只保留必要、显式的依赖。改动内部不得向外扩散；替换一个模块不得重写系统。
+4. **暴露能力、隐藏实现**（信息隐藏，Parnas 1972：一个模块隐藏一项可能会变的设计决策）。外部可以知道模块做什么、如何调用、输入、输出与错误——但绝不知道它的类、存储、算法或内部状态。
+5. **依赖必须显式且受控**：大体单向、数量少、显式声明（不通过全局或隐式导入获取）、可替换、无环。
+6. **每一份核心数据都恰好有一个拥有它的模块。** 其它模块通过所有者的契约读取或请求变更。跨模块共享可变数据是通往状态不一致的最快路径（DDD 的限界上下文规则：每个模型有一个权威所有者）。
+7. **模块通过契约协作**——公共接口、输入/输出形态、错误定义、状态约束、调用顺序、事件格式——绝不通过彼此的内部。优先数据耦合；把共享全局（common）耦合与深入内部（content）耦合视为缺陷（结构化设计的耦合等级）。
+8. **组合优于相互穿透。** 跨模块流程由组合各模块的应用层来编排；一个模块不得远程操控其同级的内部。
+9. **并非越细越好。** 过度拆分会产生长调用链、接口爆炸与调试痛苦。一个模块应当既能被独立理解，又能表达一项完整职责。
+10. **目标是控制变更**：一个需求只触及少数模块；替换某项技术实现不影响业务逻辑；一个模块的故障不会连锁扩散；新功能来自组合或扩展。
 
-## New Project Design Rules
+## 新项目设计规则
 
-1. **List system capabilities first** (e.g. request intake, task management, scheduling, model management, inference, cache, storage, monitoring). Capabilities seed the module map — never start from file-type directories.
-2. **Define each module's boundary**: what it owns, what it explicitly does NOT own, the data it owns, its public contract, its declared dependencies, its error surface. "Not responsible for" prevents boundary creep.
-3. **Set dependency direction early** (dependency inversion: high-level policy never depends on low-level detail; both depend on abstractions). Interface layer -> application layer -> business modules -> abstract capabilities <- infrastructure implementations. Core business must not depend on concrete frameworks.
-4. **Separate business rules from technical implementation.** Business modules state the capability they need; infrastructure modules implement it. Swapping the database or cache must not rewrite business rules.
-5. **One assembly entry point** creates infrastructure objects, chooses implementations, injects dependencies, and boots the app. Modules never construct their own external dependencies.
-6. **Keep public contracts small and stable.** Do not export internals for convenience; contract surface is coupling surface.
-7. **No global mutable state**: no global connections, caches, config objects, or user context. Globals make dependencies invisible and break testing and initialization order.
-8. **Meet real needs first, extract abstractions later.** No factories/plugin systems/registries while there is exactly one implementation. Extract the abstraction when the second real implementation arrives (YAGNI).
-9. **Every module must be testable in isolation** — external dependencies replaceable, no full-system boot required. Untestable usually means over-dependent or badly bounded.
-10. **Standardize cross-module communication** (direct call, events, queue, RPC, state query) — pick the allowed set once; don't let each module improvise.
-11. **Guard the commons.** `common`/`shared`/`utils`/`core` directories become boundary-less landfills; admit only genuinely generic, stable, business-free code. Business rules live in their business module.
-12. **Establish architecture constraints early**: forbid business-to-infrastructure direct access, cross-module internal imports, cycles, low-level-depends-on-high-level; back them with tooling where possible.
+1. **先列系统能力**（例如请求接入、任务管理、调度、模型管理、推理、缓存、存储、监控）。能力孕育模块地图——绝不要从按文件类型划分的目录开始。
+2. **定义每个模块的边界**：它拥有什么、明确不拥有什么、它拥有的数据、它的公共契约、它声明的依赖、它的错误面。“不负责什么”能防止边界蔓延。
+3. **尽早设定依赖方向**（依赖倒置：高层策略绝不依赖低层细节；两者都依赖抽象）。接口层 -> 应用层 -> 业务模块 -> 抽象能力 <- 基础设施实现。核心业务不得依赖具体框架。
+4. **把业务规则与技术实现分离。** 业务模块声明它需要的能力；基础设施模块实现它。替换数据库或缓存不得重写业务规则。
+5. **一个装配入口**创建基础设施对象、选择实现、注入依赖并启动应用。模块绝不自行构造它们的外部依赖。
+6. **保持公共契约小而稳定。** 不要为图方便而导出内部；契约面就是耦合面。
+7. **无全局可变状态**：没有全局连接、缓存、配置对象或用户上下文。全局使依赖不可见，并破坏测试与初始化顺序。
+8. **先满足真实需求，之后再提取抽象。** 只有一个实现时不要工厂/插件系统/注册表。当第二个真实实现出现时再提取抽象（YAGNI）。
+9. **每个模块都必须能被隔离测试**——外部依赖可替换，无需启动整个系统。无法测试通常意味着依赖过多或边界划分糟糕。
+10. **标准化跨模块通信**（直接调用、事件、队列、RPC、状态查询）——一次性选定允许的集合；不要让每个模块各行其是。
+11. **看守公共区。** `common`/`shared`/`utils`/`core` 目录会变成无边界的垃圾场；只接纳真正通用、稳定、无业务的代码。业务规则住在它们的业务模块里。
+12. **尽早确立架构约束**：禁止业务直连基础设施、跨模块内部导入、成环、低层依赖高层；尽可能用工具支撑它们。
 
-## Legacy Refactoring Rules
+## 老项目重构规则
 
-1. **Do not move directories first.** First map call graphs, data flow, state mutation sites, globals, shared objects, cycles, infrastructure calls, and high-risk core flows. Moving files without a dependency map relocates the mess.
-2. **Establish a behavior baseline before refactoring**: core-flow tests, key input/output samples, performance baseline, error behavior, logs, production metrics. Without it you cannot tell whether behavior changed.
-3. **Identify boundaries opportunistically, not perfectly.** Peel off the easy capabilities first (config, logging, cache, storage, process management, external service access); refine boundaries iteratively.
-4. **Wrap before replacing.** Put a seam (interface) around direct database/cache/filesystem/third-party calls; route new code through it; replace the implementation only after call sites stabilize.
-5. **Migrate one module at a time, full loop each**: confirm responsibility -> define contract -> move implementation -> update callers -> add tests -> delete old logic -> re-check dependencies -> commit independently.
-6. **Replace progressively** (strangler-fig migration, Fowler): keep the old path, build the new module, shift a slice of traffic, verify equivalence, widen coverage, then delete the old path. No big-bang rewrites.
-7. **Eliminate hidden dependencies first**: globals, singletons, statics, implicit init, cross-module shared caches, direct env reads, import-time side effects. Convert them to explicit parameters.
-8. **Settle data ownership early.** If several modules mutate the same data, decide the owner, who may write, who may only read, which interface mediates writes, and how changes are announced. Boundaries stay unstable until ownership is settled.
-9. **Treat cycles as responsibility confusion**, not import puzzles. Fix by extracting the shared capability, lifting the flow to the application layer, decoupling via events, redrawing boundaries, or merging over-split modules — never just lazy imports.
-10. **Keep external behavior stable; separate refactoring commits from feature commits.** Changing logic, contract semantics, and data shapes at once makes failures undiagnosable.
-11. **Watch performance.** Modularization adds call layers, conversions, serialization. Benchmark critical paths before and after; balance maintainability against hot-path cost.
-12. **Delete old code at each milestone** — old entry points, duplicated helpers, temporary adapters, dead compatibility layers. Two coexisting structures are worse than one bad one.
-13. **Prevent regression after refactoring**: import-path restrictions, no cross-module internal access, cycle checks, commons limits, data-ownership rules, "new code goes into a named module". Without constraints the mess grows back.
+1. **不要先搬目录。** 先梳理调用图、数据流、状态修改点、全局、共享对象、环、基础设施调用与高风险核心流程。没有依赖图就搬文件，只是把混乱换个地方。
+2. **重构前建立行为基线**：核心流程测试、关键输入/输出样本、性能基线、错误行为、日志、生产指标。没有它你无法判断行为是否变了。
+3. **机会主义地识别边界，而非追求完美。** 先剥离容易的能力（配置、日志、缓存、存储、进程管理、外部服务访问）；迭代式地打磨边界。
+4. **先包裹，再替换。** 在直连数据库/缓存/文件系统/第三方调用外面加一道缝（接口）；让新代码走它；只有在调用点稳定后才替换实现。
+5. **一次迁移一个模块，每个走完整闭环**：确认职责 -> 定义契约 -> 迁移实现 -> 更新调用方 -> 加测试 -> 删除旧逻辑 -> 重新检查依赖 -> 独立提交。
+6. **渐进式替换**（绞杀榕迁移，Fowler）：保留旧路径、构建新模块、切一小片流量、验证等价、扩大覆盖，然后删除旧路径。不做一次性大重写。
+7. **先消除隐藏依赖**：全局、单例、静态、隐式初始化、跨模块共享缓存、直接读环境变量、导入期副作用。把它们转为显式参数。
+8. **尽早确定数据归属。** 如果多个模块修改同一份数据，决定所有者、谁可写、谁只可读、哪个接口中介写入，以及变更如何通告。归属未定之前，边界始终不稳定。
+9. **把环视为职责混乱**，而非导入难题。通过提取共享能力、把流程上提到应用层、用事件解耦、重画边界，或合并过度拆分的模块来修复——绝不只是懒加载导入。
+10. **保持对外行为稳定；把重构提交与功能提交分开。** 同时改逻辑、契约语义与数据形态会让故障无法诊断。
+11. **关注性能。** 模块化会增加调用层、转换、序列化。对关键路径前后做基准测试；在可维护性与热路径成本之间权衡。
+12. **在每个里程碑删除旧代码**——旧入口点、重复的辅助函数、临时适配器、失效的兼容层。两套并存的结构比一套糟糕的结构更糟。
+13. **重构后防止回归**：导入路径限制、禁止跨模块内部访问、环检查、公共区限额、数据归属规则、“新代码进入某个具名模块”。没有约束，混乱会重新长回来。
 
-## Attribution
+## 出处
 
-Supplemented concepts and their sources: information hiding (D. L. Parnas, *On the Criteria to Be Used in Decomposing Systems into Modules*, 1972); coupling/cohesion scale (structured design, Constantine & Myers); dependency inversion (R. C. Martin); strangler-fig progressive replacement (M. Fowler); bounded contexts and data ownership (E. Evans, *Domain-Driven Design*).
+补充的概念及其来源：信息隐藏（D. L. Parnas，*On the Criteria to Be Used in Decomposing Systems into Modules*，1972）；耦合/内聚等级（结构化设计，Constantine & Myers）；依赖倒置（R. C. Martin）；绞杀榕渐进式替换（M. Fowler）；限界上下文与数据归属（E. Evans，*Domain-Driven Design*）。

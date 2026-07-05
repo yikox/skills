@@ -1,57 +1,57 @@
-# Module Authoring Rules
+# 模块撰写规则
 
-Use these rules when writing or updating `architecture/modules/*.md`. They define what deserves a module doc and what a good one contains. Frontmatter schema is in `storage-schema.md`; kind taxonomy is in `module-kind-classification.md`.
+在撰写或更新 `architecture/modules/*.md` 时使用这些规则。它们定义什么值得写一份模块文档，以及一份好文档包含什么。front matter schema 见 `storage-schema.md`；kind 分类法见 `module-kind-classification.md`。
 
-## Granularity
+## 粒度
 
-- Aim for 4-9 top-level modules. Fewer usually means boundaries are hidden; more usually means implementation details leaked into the map.
-- An atomic module is one technical responsibility that can be understood and verified independently. Anything smaller is internal implementation: describe it inside its owner's Internal Design, do not give it a doc.
-- Use a composite module when outsiders only need the whole but the parts are strongly related inside. A composite with one child, or children that never collaborate, is a boundary smell.
+- 目标是 4-9 个顶层模块。更少通常意味着边界被隐藏；更多通常意味着实现细节泄漏进了地图。
+- 一个原子模块是一项能被独立理解与验证的技术职责。比它更小的都是内部实现：在其所有者的 Internal Design 中描述，不要单独给它一份文档。
+- 当外部只需要整体、而内部各部分强相关时，使用组合模块。只有一个子模块的组合模块，或者从不协作的子模块，是一种边界坏味道。
 
-## Section Rules
+## 小节规则
 
-**Responsibility** — at most 3 sentences. What the module owns, not how it works. If you cannot state it without "and also", consider splitting.
+**Responsibility**——至多 3 句。写模块拥有什么，而非它如何工作。如果不用“并且还”就说不清楚，考虑拆分。
 
-**Non-Goals** — when a boundary is easy to confuse, name what this module deliberately does not own. This can be a short bullet list instead of a full section when obvious.
+**Non-Goals**——当边界容易混淆时，指明这个模块有意不拥有什么。在显而易见时，这可以是一个简短的要点列表，而非完整小节。
 
-**Public Contract** — the surfaces other modules actually depend on: function signatures, file formats, CLI arguments, directory conventions, message shapes. Be concrete enough that a consumer could code against it. If nothing external depends on this module, write "No external contract" explicitly — do not leave the section vague.
+**Public Contract**——其它模块实际依赖的那些面：函数签名、文件格式、CLI 参数、目录约定、消息形态。要具体到消费者能据此编码。如果没有任何外部依赖这个模块，就明确写 "No external contract"——不要让这一节含糊。
 
-**Internal Design** — only what someone must know before reading the code: key structures, state, non-obvious flows, where the internal docs live. Do not restate code line by line; link deeper material instead.
+**Internal Design**——只写在读代码之前必须知道的内容：关键结构、状态、非显而易见的流程、内部文档在哪里。不要逐行复述代码；改为链接到更深入的材料。
 
-**Dependencies** — durable module dependencies plus reasons. When a project maintains architecture graphs, this table must be a subset of graph relations and the graph is the authoritative visual source (see the graph format reference).
+**Dependencies**——持久的模块依赖及其原因。当项目维护架构图时，这张表必须是图关系的子集，且图是权威的可视化来源（见图格式参考）。
 
-**Constraints** — only constraints that cannot be derived from the code: compatibility promises, environment limits, performance floors, conventions with external reasons.
+**Constraints**——只写无法从代码推导出的约束：兼容性承诺、环境限制、性能下限、有外部原因的约定。
 
-**Validation** — executable commands or concrete checks that prove the module works. "Run the tests" is too vague; give the command and the expected signal.
+**Validation**——证明模块可用的可执行命令或具体检查。“跑测试”太含糊；给出命令与预期信号。
 
-Default module docs should answer five questions before adding more detail:
+默认的模块文档在添加更多细节之前应回答五个问题：
 
-1. What does it own?
-2. What does it not own?
-3. How do other modules use it?
-4. What does it depend on, and who depends on it?
-5. What must not be broken when changing it?
+1. 它拥有什么？
+2. 它不拥有什么？
+3. 其它模块如何使用它？
+4. 它依赖什么，谁依赖它？
+5. 改动它时什么不能被破坏？
 
-## Fact Confidence
+## 事实置信度
 
-Mark uncertain statements inline as `(inferred)` or `(unclear)`; unmarked statements are treated as `verified`. Never present a guess as fact — review treats disguised guesses as defects. This applies to all module docs, not only migration output.
+把不确定的陈述就地标注为 `(inferred)` 或 `(unclear)`；未标注的陈述被视为 `verified`。绝不要把猜测当作事实呈现——评审把伪装的猜测视为缺陷。这适用于所有模块文档，不只是迁移输出。
 
-## Update Triggers
+## 更新触发条件
 
-Update the module doc in the same change when any of these shift:
+当以下任一项发生变化时，在同一次变更中更新模块文档：
 
-- public contract (signatures, formats, CLI, conventions others rely on);
-- dependencies (module relations touching this module; also the graph relations when a graph is maintained);
-- constraints;
-- `code_paths` ownership;
-- `shared_paths` or `ignored_paths` exceptions.
+- 公共契约（签名、格式、CLI、他人依赖的约定）；
+- 依赖（触及本模块的模块关系；维护图时也包括图关系）；
+- 约束；
+- `code_paths` 归属；
+- `shared_paths` 或 `ignored_paths` 例外。
 
-Pure internal implementation changes do not force a doc update. When in doubt: would the current doc mislead the next change? If yes, update.
+纯内部实现变更不强制更新文档。拿不准时：当前文档会误导下一次变更吗？如果会，就更新。
 
-## Length Guidance
+## 篇幅建议
 
-Target 30-80 lines per module doc. A doc that keeps growing past that is a signal: split the module, or move detail into code comments or linked internal docs.
+每份模块文档目标 30-80 行。持续超出这个范围的文档是一个信号：拆分模块，或把细节移入代码注释或链接的内部文档。
 
-## Kind Templates
+## Kind 模板
 
-Start from `module-design-template.md`. When the module kind's main design subject needs dedicated sections (e.g. `function-flow` steps and sequencing, `data-state` state machines, `layout-style` regions), pull those sections in from the kind's template in `module-kind-classification.md`. Keep the generic sections; kind sections are additions, not replacements.
+从 `module-design-template.md` 起步。当模块 kind 的主设计主题需要专门小节时（例如 `function-flow` 的步骤与时序、`data-state` 的状态机、`layout-style` 的区域），从 `module-kind-classification.md` 中该 kind 的模板拉入这些小节。保留通用小节；kind 小节是补充，而非替换。

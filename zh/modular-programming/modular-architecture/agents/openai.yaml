@@ -1,4 +1,4 @@
 interface:
   display_name: "Modular Architecture"
-  short_description: "Maintain module maps, baselines, graphs, and ADRs"
-  default_prompt: "Use $modular-architecture to create or update the project's authoritative module architecture."
+  short_description: "维护模块地图、基线、关系图与 ADR"
+  default_prompt: "用 $modular-architecture 创建或更新本项目的权威模块架构。"

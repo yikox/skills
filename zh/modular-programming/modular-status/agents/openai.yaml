@@ -1,4 +1,4 @@
 interface:
   display_name: "Modular Status"
-  short_description: "Track PM start, progress, completion, and indexes"
-  default_prompt: "Use $modular-status to update project-management.md for modular workflow state."
+  short_description: "跟踪 PM 启动、进度、完成与各类索引"
+  default_prompt: "用 $modular-status 更新 project-management.md 中的模块化工作流状态。"

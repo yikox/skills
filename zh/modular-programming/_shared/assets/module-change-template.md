@@ -9,34 +9,34 @@ impacted_modules: []
 
 # <Module Change>
 
-## Request
+## 需求
 
-Summarize the requested module change.
+概括所请求的模块变更。
 
-## Current Module State
+## 当前模块状态
 
-Describe the current module behavior or structure.
+描述模块当前的行为或结构。
 
-## Target Module Design
+## 目标模块设计
 
-Describe the intended internal structure or behavior after the change.
+描述变更后预期的内部结构或行为。
 
-## Contract Impact
+## 契约影响
 
-State whether external contracts change. If yes, explain compatibility.
+说明外部契约是否变化。若变化，解释兼容性。
 
-## Implementation Outline
+## 实施要点
 
-Give enough structure for implementation planning without writing temporary task minutiae.
+给出足以支撑实现规划的结构，但不要写入临时的任务琐碎细节。
 
-## Validation
-
-- 
-
-## Risks
+## 验证
 
 - 
 
-## Review Notes
+## 风险
+
+- 
+
+## 评审记录
 
 - Review status: not-reviewed

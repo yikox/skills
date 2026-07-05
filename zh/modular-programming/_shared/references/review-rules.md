@@ -1,51 +1,51 @@
-# Modular Review Rules
+# 模块化评审规则
 
-Use these checks for requirements, PM entries, architecture docs, change designs, ADRs, graphs, and implementation completion evidence.
+对需求、PM 条目、架构文档、变更设计、ADR、图以及实现完成证据使用这些检查项。
 
-## Universal Checks
+## 通用检查
 
-- The artifact names a primary module for every non-trivial change.
-- Impacted modules are listed separately from the primary module.
-- The change level is present and justified.
-- PM start exists for L2/L3 work, and for L1 only when it is explicitly tracked.
-- PM completion evidence exists before tracked active tasks are closed.
-- Baseline architecture and target architecture are not mixed.
-- Proposed facts are marked as proposed, accepted, or implemented.
-- Status fields are synchronized across PM, design docs, and architecture index rows.
-- Open questions are explicit and not hidden in prose.
-- New or migrated module docs declare owned `code_paths`; ownership claims do not overlap across modules. `shared_paths` and `ignored_paths` are documented exceptions, not owners.
-- Module docs follow `module-authoring-rules.md`: concrete public contracts (or explicit "No external contract"), no code restating, executable validation, uncertain facts marked `(inferred)` or `(unclear)`.
-- When graph artifacts exist, module doc Dependencies tables are a subset of the graph relations; relation `kind` values come from the closed vocabulary in `vocab.md` (the single source of truth, described in the graph format reference).
+- 产物为每个非平凡变更指明了一个主模块。
+- 受影响模块与主模块分开列出。
+- 变更级别已给出且有理由支撑。
+- L2/L3 工作有 PM 开始记录，L1 仅在被明确跟踪时才有。
+- 在关闭被跟踪的进行中任务之前，已有 PM 完成证据。
+- 基线架构与目标架构未被混淆。
+- 提案性事实被标注为 proposed、accepted 或 implemented。
+- 状态字段在 PM、设计文档与架构索引行之间保持同步。
+- 待解问题是显式的，未隐藏在散文中。
+- 新的或迁移的模块文档声明了所拥有的 `code_paths`；归属声明在各模块间不重叠。`shared_paths` 与 `ignored_paths` 是有记录的例外，而非归属。
+- 模块文档遵循 `module-authoring-rules.md`：具体的公共契约（或明确写 "No external contract"）、不复述代码、可执行的验证、不确定事实标注 `(inferred)` 或 `(unclear)`。
+- 当存在图产物时，模块文档的 Dependencies 表是图关系的子集；关系的 `kind` 取值来自 `vocab.md` 中的封闭词表（单一事实源，在图格式参考中有描述）。
 
-## L3 Checks
+## L3 检查
 
-- The architecture change states current baseline, target design, impact, migration path, validation, and rollback or mitigation.
-- ADR exists only when a durable technical direction is chosen among meaningful alternatives.
-- Human acceptance is required before implementation, requested with a 3-8 bullet decision summary of key changes, ambiguities, and risks.
-- The current graph is not overwritten by a proposed graph unless the change is implemented.
+- 架构变更陈述了当前基线、目标设计、影响、迁移路径、验证，以及回滚或缓解措施。
+- 仅当在若干有意义的备选方案中选定某个持久技术方向时才存在 ADR。
+- 实现前需要人工接受，并附一份涵盖关键变更、歧义与风险的 3-8 条要点决策摘要。
+- 除非变更已实现，否则当前图不会被提案图覆写。
 
-## L2 Checks
+## L2 检查
 
-- The module change belongs to one primary module.
-- External contracts are unchanged or compatibility is explained.
-- Implementation and validation are concrete enough to execute.
-- User confirmation is requested before implementation, with a 3-8 bullet decision summary of key changes, ambiguities, and risks.
-- The module baseline is updated only after implementation lands.
+- 模块变更归属于一个主模块。
+- 对外契约不变，或已解释其兼容性。
+- 实现与验证足够具体，可供执行。
+- 实现前请求用户确认，并附一份涵盖关键变更、歧义与风险的 3-8 条要点决策摘要。
+- 模块基线仅在实现落地之后才更新。
 
-## L1 Checks
+## L1 检查
 
-- PM start and completion exist only for tracked L1 work; otherwise a concise completion/update note is enough when durable evidence matters.
-- The change is local to one module.
-- A full design document is not required unless risk or ambiguity grows.
-- The module doc is updated when the behavior or constraint would otherwise be stale.
+- 仅被跟踪的 L1 工作才有 PM 开始与完成记录；否则当持久证据重要时，一条简洁的完成/更新说明就够了。
+- 变更局限于一个模块。
+- 除非风险或歧义增大，否则不需要完整的设计文档。
+- 当行为或约束否则会变陈旧时，更新模块文档。
 
-## Completion Evidence
+## 完成证据
 
-Acceptable implementation evidence includes:
+可接受的实现证据包括：
 
-- commit hash;
-- PR or issue link;
-- changed file summary plus verification command;
-- user confirmation when code is outside the agent's reachable workspace.
+- 提交哈希；
+- PR 或 issue 链接；
+- 变更文件摘要加验证命令；
+- 当代码位于 agent 可触达工作区之外时的用户确认。
 
-Do not mark a design implemented just because it was written or accepted.
+不要仅因为设计被写出或被接受，就把它标记为已实现。

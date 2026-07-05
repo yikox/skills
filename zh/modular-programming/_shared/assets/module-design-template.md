@@ -11,38 +11,38 @@ review_status: not-reviewed
 
 # <Module Name>
 
-## Responsibility
+## 职责
 
-Describe what this module owns.
+描述这个模块负责什么。
 
-## Non-Goals
+## 非目标
 
-Describe what this module deliberately does not own when the boundary is easy to confuse.
+当边界容易混淆时，描述这个模块有意不负责的部分。
 
-## Public Contract
+## 公开契约
 
-Describe APIs, messages, files, data shape, or user-facing surfaces other modules rely on.
+描述其他模块所依赖的 API、消息、文件、数据结构或面向用户的界面。
 
-## Internal Design
+## 内部设计
 
-Describe important internal structure, state, algorithms, or flows.
+描述重要的内部结构、状态、算法或流程。
 
-## Dependencies
+## 依赖
 
-List durable dependencies. When the project maintains an architecture graph, keep this table as a subset of graph relations.
+列出持久的依赖。当项目维护架构图时，本表应保持为图关系的一个子集。
 
-| Dependency | Direction | Reason |
+| 依赖 | 方向 | 原因 |
 | --- | --- | --- |
 |  |  |  |
 
-## Constraints
+## 约束
 
 - 
 
-## Validation
+## 验证
 
 - 
 
-## Review Notes
+## 评审记录
 
 - Review status: not-reviewed

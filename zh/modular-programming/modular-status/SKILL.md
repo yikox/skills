@@ -3,75 +3,75 @@ name: modular-status
 description: Maintain `project-management.md` for the modular programming workflow. Use when starting, updating, completing, archiving, or summarizing tracked work; recording active tasks, requirements, change backlog rows, modular design indexes, ADR summaries, validation evidence, blockers, risks, roadmap, milestones, or Chinese requests such as 记录进行中, 完成记录, PM 更新, 项目状态, 设计索引, 归档.
 ---
 
-# Modular Status
+# 模块化状态（Modular Status）
 
-Use this skill to keep project management state aligned with the architecture-first modular workflow. PM records current state and durable evidence; it does not define module boundaries and should not become a transcript.
+用这个 skill 让项目管理状态与"架构优先"的模块化工作流保持一致。PM 记录当前状态与持久证据；它不定义模块边界，也不应变成一份流水账。
 
-## Required References
+## 必读参考
 
-Read:
+阅读：
 
 - `../_shared/references/modular-workflow-rules.md`
 - `../_shared/references/storage-schema.md`
-- `../_shared/references/pm-maintenance-rules.md` when archiving or compressing PM history.
+- 归档或压缩 PM 历史时阅读 `../_shared/references/pm-maintenance-rules.md`。
 
-Use:
+使用：
 
 - `../_shared/assets/project-management-template.md`
 
 ## PM Start
 
-For L2/L3, update `Active Tasks` or the local equivalent before or near the beginning of design/implementation work.
+对 L2/L3，在设计/实现工作开始之前或临近开始时，更新 `Active Tasks` 或其本地等价物。
 
-For L1, use Active Tasks only when the work crosses sessions, carries notable risk or release evidence, belongs to an existing active task, or the user explicitly wants tracking. Otherwise skip PM start.
+对 L1，仅当工作跨会话、携带显著风险或发布证据、隶属于某个既有进行中任务，或用户明确希望被跟踪时，才使用 Active Tasks。否则跳过 PM start。
 
-Record:
+记录：
 
-- date;
-- task summary;
-- primary module;
-- impacted modules;
-- change level;
-- status;
-- next step;
-- expected design/ADR/architecture artifact when known.
+- 日期；
+- 任务摘要；
+- 主模块；
+- 受影响模块；
+- 变更级别；
+- 状态；
+- 下一步；
+- 已知时，预期的设计/ADR/架构产物。
 
 ## PM Update
 
-Update the same task or backlog row when:
+在以下情况更新同一任务或 backlog 行：
 
-- the primary module changes;
-- impacted modules expand;
-- L1 becomes L2 or L2 becomes L3;
-- design, review, or human acceptance status changes;
-- the task becomes blocked;
-- validation strategy or risk changes materially.
+- 主模块变化；
+- 受影响模块扩大；
+- L1 变为 L2，或 L2 变为 L3；
+- 设计、评审或人工接受状态变化；
+- 任务被阻塞；
+- 验证策略或风险发生实质变化。
 
 ## PM Complete
 
-When work completes, update PM with:
+工作完成时，用以下内容更新 PM：
 
-- outcome;
-- final status;
-- changed design or architecture paths;
-- verification command/result;
-- implementation evidence;
-- whether architecture baseline changed.
+- 成果；
+- 最终状态；
+- 变更的设计或架构路径；
+- 验证命令/结果；
+- 实现证据；
+- 架构基线是否发生变化。
 
-Then remove, mark done, or archive stale active-task rows according to the document's style.
+然后按文档的风格，移除、标记完成或归档陈旧的 active-task 行。
 
-For untracked L1 work, prefer a single concise `Recent Updates` bullet only when the result is useful future context. Do not add archive rows for routine L1 work.
+对未被跟踪的 L1 工作，仅当结果是有价值的未来上下文时，才倾向于补一条简洁的 `Recent Updates` 条目。不要为例行的 L1 工作添加归档行。
 
-## Backlog And Design Index
+## Backlog 与设计索引
 
-Use Requirements / Change Backlog for requested work not yet implemented. Include primary module, impacted modules, level, scope/impact, and next step.
+用 Requirements / Change Backlog 记录已请求但尚未实现的工作。包含主模块、受影响模块、级别、范围/影响与下一步。
 
-Use Modular Design Index for main architecture, module docs, architecture changes, ADRs, and module changes.
+用 Modular Design Index 记录主架构、模块文档、架构变更、ADR 与模块变更。
 
-Do not duplicate ordinary commit logs. Record durable project state, not every file edit.
+不要重复普通的提交日志。记录持久的项目状态，而非每一次文件编辑。
 
-## Archive
+## 归档
 
-Archive implemented, obsolete, or superseded work only after preserving final status, design paths, and evidence. Keep current architecture baseline and active target designs indexed.
+只有在保留了最终状态、设计路径与证据之后，才归档已实现、已过时或已被取代的工作。保持当前架构基线与在用目标设计处于被索引状态。
 
-Follow `pm-maintenance-rules.md` for archive candidates, protected statuses, and compression.
+归档候选、受保护状态与压缩遵循 `pm-maintenance-rules.md`。

@@ -1,97 +1,97 @@
-# Modular Workflow Rules
+# 模块化工作流规则
 
-Use these rules for the modular programming workflow. The workflow is architecture-first: module structure and relationships are the source of truth, while project management records current work state and durable evidence.
+使用这些规则来执行模块化编程工作流。该工作流以架构为先：模块结构与关系是事实来源，而项目管理记录当前工作状态与持久证据。
 
-Default to the lightest path that preserves future understanding. Use strict PM, design, review, ADR, and graph artifacts only when the change complexity justifies them.
+默认走能保留未来可理解性的最轻量路径。只有当变更复杂度足以支撑时，才使用严格的 PM、设计、评审、ADR 与图产物。
 
-## Artifact Hierarchy
+## 产物层级
 
 ```text
-architecture/main-design.md                  # current baseline module map
-architecture/modules/<module>.md             # current baseline module contract
-architecture/changes/<date>-<change>.md      # L3 target architecture change
-architecture/adrs/ADR-<date>-<decision>.md   # durable architecture decision
-architecture/modules/<module>/changes/*.md   # L2 module change design
-project-management.md                        # active work, requirements, status, indexes
-knowledge-summary.md                         # reusable project knowledge
-implementation plan / todo                   # temporary execution detail
-architecture/graphs/*.arch.json              # optional advanced visualization source
-architecture/rendered/*.html|svg             # optional advanced visualization output
+architecture/main-design.md                  # 当前基线模块地图
+architecture/modules/<module>.md             # 当前基线模块契约
+architecture/changes/<date>-<change>.md      # L3 目标架构变更
+architecture/adrs/ADR-<date>-<decision>.md   # 持久架构决策
+architecture/modules/<module>/changes/*.md   # L2 模块变更设计
+project-management.md                        # 进行中工作、需求、状态、索引
+knowledge-summary.md                         # 可复用的项目知识
+implementation plan / todo                   # 临时执行细节
+architecture/graphs/*.arch.json              # 可选的高级可视化来源
+architecture/rendered/*.html|svg             # 可选的高级可视化输出
 ```
 
-Architecture owns what the system is and how modules relate. PM owns what is happening, why it matters now, who/what it affects, and whether it is done.
-For AI continuity, `architecture/main-design.md` plus `architecture/modules/*.md` is the default source of truth. Graphs are a human-facing advanced capability, not a required baseline artifact.
+架构负责“系统是什么、模块之间如何关联”。PM 负责“正在发生什么、为何此刻重要、影响谁/什么、是否完成”。
+为保证 AI 上下文连续性，`architecture/main-design.md` 加上 `architecture/modules/*.md` 是默认事实来源。图是面向人的高级能力，不是必备的基线产物。
 
-## Session Entry
+## 会话入口
 
-At the start of a new session (or after losing context), before any non-trivial work:
+新会话开始时（或丢失上下文之后），在做任何非平凡工作之前：
 
-1. Read `project-management.md` for active tasks, blockers, and current focus.
-2. Read `architecture/main-design.md` for the current module map.
-3. If the request appears to continue an active task, ask the user whether to resume it. Never silently resume, duplicate, or close active tasks.
-4. If PM or architecture is missing or stale, repair it with `modular-init` or `modular-audit` before large changes.
+1. 阅读 `project-management.md`，了解进行中任务、阻塞项与当前焦点。
+2. 阅读 `architecture/main-design.md`，了解当前模块地图。
+3. 如果请求看起来是在延续某个进行中任务，先询问用户是否恢复该任务。切勿静默恢复、重复创建或关闭进行中任务。
+4. 如果 PM 或架构缺失或陈旧，先用 `modular-init` 或 `modular-audit` 修复，再做大改动。
 
-Do not re-read these files on every message within the same session unless they may have changed.
+在同一会话内，除非这些文件可能已变化，否则不要在每条消息时都重新读取它们。
 
-## Routing Quick Reference
+## 路由速查
 
-| Request shape | Skill | Typical level | Expected artifact |
+| 请求形态 | 技能 | 典型级别 | 预期产物 |
 | --- | --- | --- | --- |
-| Set up / repair workflow files | `modular-init` | - | PM, knowledge, baseline architecture |
-| Define or migrate module map, optional graphs, ADR | `modular-architecture` | - | baseline/target docs; optional advanced graph/rendered diagram |
-| Feature, bug fix, refactor, behavior change | `modular-change` | L0-L3 | level-specific path |
-| Record start/progress/completion/archive for tracked work | `modular-status` | L2/L3, tracked L1 | PM rows and evidence; concise notes for untracked L1 |
-| Hands-off execution of an accepted, reviewed L2/L3 design | `modular-autopilot` | L2-L3 | intake confirmation, decision log, final report |
-| Modularity assessment, refactoring proposal, modular design discussion | `modular-advisor` | - | assessment report; staged refactoring proposal; new-project design proposal |
-| Understand or explain an existing project, plain-language, read-only | `modular-narrator` | - | conversational explanation only; no files produced |
-| Check a design, ADR, PM row, or graph | `modular-review` | - | review notes, fixes, open questions |
-| Consistency check or legacy migration | `modular-audit` | - | audit report, migration gaps |
-| Save reusable commands/facts/lessons | `modular-knowledge` | - | knowledge-summary entries |
+| 搭建 / 修复工作流文件 | `modular-init` | - | PM、知识、基线架构 |
+| 定义或迁移模块地图、可选图、ADR | `modular-architecture` | - | 基线/目标文档；可选的高级图/渲染图 |
+| 功能、缺陷修复、重构、行为变更 | `modular-change` | L0-L3 | 按级别的具体路径 |
+| 记录被跟踪工作的开始/进展/完成/归档 | `modular-status` | L2/L3、被跟踪的 L1 | PM 行与证据；未跟踪 L1 用简要说明 |
+| 对已接受、已评审的 L2/L3 设计做无人值守执行 | `modular-autopilot` | L2-L3 | 接入确认、决策日志、最终报告 |
+| 模块化评估、重构提案、模块化设计讨论 | `modular-advisor` | - | 评估报告；分阶段重构提案；新项目设计提案 |
+| 理解或讲解现有项目，通俗语言、只读 | `modular-narrator` | - | 仅对话式讲解；不产出文件 |
+| 检查设计、ADR、PM 行或图 | `modular-review` | - | 评审意见、修正、待解问题 |
+| 一致性检查或老项目迁移 | `modular-audit` | - | 审计报告、迁移缺口 |
+| 保存可复用命令/事实/经验 | `modular-knowledge` | - | knowledge-summary 条目 |
 
-## Module Gate
+## 模块门禁
 
-Every non-trivial request must identify:
+每个非平凡请求都必须识别：
 
-- primary module;
-- impacted modules;
-- change level: `L0`, `L1`, `L2`, or `L3`;
-- expected artifact: none, PM record, module change design, architecture change, or ADR.
+- 主模块；
+- 受影响模块；
+- 变更级别：`L0`、`L1`、`L2` 或 `L3`；
+- 预期产物：无、PM 记录、模块变更设计、架构变更或 ADR。
 
-If a non-trivial request cannot be mapped to a primary module, stop before implementation planning. First create or repair the architecture baseline, or record the task as blocked by an architecture gap.
+如果一个非平凡请求无法映射到某个主模块，则在实现规划之前停下。先创建或修复架构基线，或将该任务记录为因架构缺口而阻塞。
 
-When module docs declare `code_paths`, locate the primary module deterministically: intersect the paths you expect to change with each module's `code_paths`. One match = primary module; no match or multi-module ambiguity = architecture gap flow above.
+当模块文档声明了 `code_paths` 时，用确定性方式定位主模块：把你预期会改动的路径与每个模块的 `code_paths` 求交集。一个匹配 = 主模块；无匹配或多模块歧义 = 走上面的架构缺口流程。
 
-### Diagnostic Mode
+### 诊断模式
 
-If the primary module or root cause is unclear, enter diagnostic mode before planning implementation:
+如果主模块或根因不清楚，在规划实现之前先进入诊断模式：
 
-- allowed: read code, run tests, reproduce symptoms, inspect logs, add temporary local diagnostics when needed;
-- not allowed: structural refactors, public contract changes, PM completion, or baseline updates;
-- exit by identifying the likely primary module and routing to L1/L2/L3, or by recording an architecture gap if the module map is insufficient.
+- 允许：读代码、跑测试、复现症状、检查日志、必要时添加临时的本地诊断；
+- 不允许：结构性重构、公共契约变更、PM 完成、基线更新；
+- 退出条件：识别出可能的主模块并路由到 L1/L2/L3，或在模块地图不足时记录一处架构缺口。
 
-Use diagnostic mode for old projects, unclear bugs, and requests whose real module ownership is unknown. Do not use it as a shortcut to implement without the module gate.
+对老项目、不明缺陷以及真实模块归属未知的请求使用诊断模式。不要把它当作绕过模块门禁直接实现的捷径。
 
-## Code Ownership
+## 代码归属
 
-Module docs declare owned code via frontmatter `code_paths` (repo-relative globs):
+模块文档通过 front matter 的 `code_paths`（相对仓库根的 glob）声明所拥有的代码：
 
-- Every behavior-bearing code path belongs to exactly one module. Overlapping claims are a boundary smell: fix the mapping or split the file.
-- Tests follow the module they test; generated artifacts follow the module that produces them.
-- Repo meta files (README, LICENSE, CI config, AI collaboration docs) need no owner by default; other intentional exceptions are listed in `main-design.md` Shared Constraints.
-- `code_paths` is required for new and migrated modules. Existing docs without it stay valid; `modular-audit` flags them for backfill, plus orphan paths (owned by no module) and ghost globs (matching nothing).
+- 每条承载行为的代码路径都属于且仅属于一个模块。归属重叠是边界坏味道：修正映射或拆分文件。
+- 测试跟随其所测试的模块；生成物跟随产出它的模块。
+- 仓库元文件（README、LICENSE、CI 配置、AI 协作文档）默认无需归属；其它有意的例外列在 `main-design.md` 的 Shared Constraints 中。
+- 新模块与迁移模块必须有 `code_paths`。缺少它的既有文档仍然有效；`modular-audit` 会将它们标记为待补全，并标出孤儿路径（无任何模块拥有）与幽灵 glob（未匹配任何文件）。
 
-## Change Levels
+## 变更级别
 
-### L3 Architecture Change
+### L3 架构变更
 
-Use L3 when the change:
+当变更满足以下情况时使用 L3：
 
-- creates, splits, merges, or removes modules;
-- changes module responsibilities or ownership boundaries;
-- changes cross-module contracts, core data flow, state ownership, persistence, runtime model, or external system boundaries;
-- requires a durable technical decision that future work must respect.
+- 创建、拆分、合并或移除模块；
+- 改变模块职责或归属边界；
+- 改变跨模块契约、核心数据流、状态归属、持久化、运行时模型或外部系统边界；
+- 需要一项未来工作必须遵循的持久技术决策。
 
-Flow:
+流程：
 
 ```text
 PM start -> architecture change design / ADR -> review
@@ -100,19 +100,19 @@ PM start -> architecture change design / ADR -> review
 -> update implemented baseline -> PM complete
 ```
 
-Write target/proposed architecture before implementation. Do not overwrite current baseline as implemented until evidence exists.
+在实现之前先写出目标/提案架构。在证据出现之前，不要把当前基线覆写为已实现。
 
-### L2 Module Change
+### L2 模块变更
 
-Use L2 when the change:
+当变更满足以下情况时使用 L2：
 
-- has one clear primary module;
-- usually touches more than a tiny local behavior or needs more than one coherent implementation step;
-- changes module internals, file organization, algorithms, internal state flow, or substantial implementation structure;
-- does not change external module contracts, or changes them only compatibly;
-- needs a target module design to avoid implementation drift.
+- 有一个清晰的主模块；
+- 通常涉及的不止一点点局部行为，或需要不止一个连贯的实现步骤；
+- 改变模块内部、文件组织、算法、内部状态流或大量实现结构；
+- 不改变对外模块契约，或仅做兼容性改变；
+- 需要一份目标模块设计以避免实现漂移。
 
-Flow:
+流程：
 
 ```text
 PM start -> module change design -> review
@@ -120,17 +120,17 @@ PM start -> module change design -> review
 -> verification -> update module architecture -> PM complete
 ```
 
-### L1 Lightweight Module Change
+### L1 轻量模块变更
 
-Use L1 when the change:
+当变更满足以下情况时使用 L1：
 
-- has one clear primary module;
-- usually touches 1-3 files;
-- adds, removes, or adjusts local behavior;
-- does not change module boundaries, public contracts, or core flow;
-- can be understood without a design document and verified locally in the current session.
+- 有一个清晰的主模块；
+- 通常涉及 1-3 个文件；
+- 增加、移除或调整局部行为；
+- 不改变模块边界、公共契约或核心流程；
+- 无需设计文档即可理解，并可在当前会话内本地验证。
 
-Flow:
+流程：
 
 ```text
 optional light PM note -> implementation -> verification
@@ -138,130 +138,130 @@ optional light PM note -> implementation -> verification
 -> concise completion evidence
 ```
 
-L1 does not require a full change design. Do not add an Active Tasks row for routine L1 work unless it crosses sessions, carries release/risk evidence, is explicitly requested by the user, or belongs to an existing active task. A concise Recent Updates entry is enough when durable evidence matters.
+L1 不需要完整的变更设计。不要为常规 L1 工作新增 Active Tasks 行，除非它跨会话、携带发布/风险证据、由用户明确要求，或属于某个既有的进行中任务。当持久证据重要时，一条简洁的 Recent Updates 条目就够了。
 
-### L0 Trivial Change
+### L0 琐碎变更
 
-Use L0 for typo, comment, formatting, local constants, small docs wording, or mechanical edits that do not change behavior or module understanding.
+对错别字、注释、格式、局部常量、文档小措辞，或不改变行为或模块理解的机械性编辑使用 L0。
 
-Flow:
+流程：
 
 ```text
 tag module -> implementation -> verification -> optional PM/architecture update
 ```
 
-PM is optional for L0 unless the user explicitly asked for the change, the work belongs to an existing active task, or release evidence matters.
+L0 的 PM 是可选的，除非用户明确要求该变更、工作属于某个既有进行中任务，或发布证据重要。
 
-## Bug Fix Path
+## 缺陷修复路径
 
-Bug fixes route through the same levels, with these specifics:
+缺陷修复走相同的级别，但有以下特别之处：
 
-- A bug fix changes behavior, so it is at least L1 — never L0 (docs-only typo fixes excepted).
-- Before fixing, reproduce the bug or capture concrete evidence (failing command, error output, user-confirmed symptom). Do not fix from guesses. If the root cause or module ownership is unclear, start in diagnostic mode.
-- Choose the level by the shape of the fix, not the severity of the symptom:
-  - **L1 bug fix**: root cause is local to one module and the fix is a small localized change.
-    Flow: `optional light PM note (symptom + suspected module) -> reproduce -> locate root cause -> fix -> verify (the failing case passes and existing validation still passes) -> concise completion evidence`.
-  - **L2 bug fix**: the fix needs multi-step restructuring inside one module, or the root cause is structural.
-    Flow: the normal L2 path; the module change design must include a root cause analysis section.
-- Record the root cause in PM completion. If it is reusable (environment trap, recurring pattern), also record it via `modular-knowledge`.
-- If the root cause reveals wrong module boundaries or cross-module contract defects, confirm promotion to L3 with the user before restructuring.
+- 缺陷修复会改变行为，因此至少是 L1——绝不是 L0（仅文档的错别字修复除外）。
+- 修复前，先复现缺陷或采集具体证据（失败的命令、报错输出、用户确认的症状）。不要凭猜测修复。如果根因或模块归属不清楚，先进入诊断模式。
+- 按修复的形态而非症状的严重程度来选择级别：
+  - **L1 缺陷修复**：根因局限于一个模块，且修复是小范围的局部改动。
+    流程：`optional light PM note (symptom + suspected module) -> reproduce -> locate root cause -> fix -> verify (the failing case passes and existing validation still passes) -> concise completion evidence`。
+  - **L2 缺陷修复**：修复需要在一个模块内做多步重构，或根因是结构性的。
+    流程：常规 L2 路径；模块变更设计必须包含一节根因分析。
+- 在 PM 完成时记录根因。如果可复用（环境陷阱、反复出现的模式），也通过 `modular-knowledge` 记录。
+- 如果根因揭示出错误的模块边界或跨模块契约缺陷，在重构之前与用户确认提升到 L3。
 
-## PM Start, Update, Complete
+## PM 开始、更新、完成
 
-For L2 and L3 work, update `project-management.md` at the beginning and the end. For L1, update PM only when the work crosses sessions, affects release evidence, carries meaningful risk, belongs to an active task, or the user explicitly wants tracking.
+对 L2 和 L3 工作，在开始与结束时更新 `project-management.md`。对 L1，仅在工作跨会话、影响发布证据、携带实质风险、属于某个进行中任务，或用户明确希望跟踪时才更新 PM。
 
-At start, record:
+开始时，记录：
 
-- date;
-- task summary;
-- primary module;
-- impacted modules;
-- change level;
-- current status;
-- expected artifacts and next step.
+- 日期；
+- 任务摘要；
+- 主模块；
+- 受影响模块；
+- 变更级别；
+- 当前状态；
+- 预期产物与下一步。
 
-During work, update PM when:
+工作过程中，遇到以下情况时更新 PM：
 
-- primary module changes;
-- impact expands;
-- work becomes blocked;
-- design/review/acceptance state changes;
-- risk or validation strategy materially changes.
+- 主模块变化；
+- 影响范围扩大；
+- 工作陷入阻塞；
+- 设计/评审/接受状态变化；
+- 风险或验证策略发生实质变化。
 
-At completion, record:
+完成时，记录：
 
-- outcome;
-- changed design/architecture paths;
-- verification result;
-- implementation evidence such as commit, PR, changed files, or user confirmation;
-- whether architecture baseline was updated.
+- 结果；
+- 变更的设计/架构路径；
+- 验证结果；
+- 实现证据，例如提交、PR、变更文件或用户确认；
+- 架构基线是否已更新。
 
-Do not leave stale active tasks after completion. Do not turn PM into a transcript; keep the main file focused on current state, open work, blockers, design indexes, and durable evidence.
+完成后不要留下陈旧的进行中任务。不要把 PM 变成流水账；让主文件聚焦于当前状态、待办工作、阻塞项、设计索引与持久证据。
 
-## Baseline vs Target Architecture
+## 基线架构 vs 目标架构
 
-Baseline architecture describes implemented or explicitly accepted current structure. Target architecture describes a reviewed direction that has not landed yet.
+基线架构描述已实现或已明确接受的当前结构。目标架构描述一个已评审、尚未落地的方向。
 
-Use these statuses unless the project already has equivalent terms:
+除非项目已有等价术语，否则使用以下状态：
 
-- `draft`: incomplete or assumption-heavy;
-- `proposed`: ready for review;
-- `accepted`: approved target direction;
-- `implemented`: landed in code and reflected in baseline;
-- `obsolete`: superseded.
+- `draft`：不完整或假设偏多；
+- `proposed`：可供评审；
+- `accepted`：已批准的目标方向；
+- `implemented`：已落地于代码并反映到基线；
+- `obsolete`：已被取代。
 
-Never present proposed target architecture as implemented baseline.
+绝不要把提案中的目标架构当作已实现的基线来呈现。
 
-## User Confirmation Points
+## 用户确认点
 
-Blocking — do not proceed until the user confirms:
+阻塞式——在用户确认前不得继续：
 
-- the initial module map for a new project or migration baseline (module boundaries and names);
-- the project memory location and the first write into project AI docs (`CLAUDE.md`, `AGENTS.md`, or equivalent);
-- classifying work as L3 and entering the architecture change path;
-- an L2 module change design, before implementation;
-- an L3 target architecture or ADR direction, after review;
-- promoting L2 to L3;
-- product scope tradeoffs or choosing among materially different module ownership options;
-- cancelling active tasks or archiving large amounts of history.
+- 新项目或迁移基线的初始模块地图（模块边界与名称）；
+- 项目记忆位置以及首次写入项目 AI 文档（`CLAUDE.md`、`AGENTS.md` 或等价物）；
+- 将工作归类为 L3 并进入架构变更路径；
+- L2 模块变更设计，在实现之前；
+- L3 目标架构或 ADR 方向，在评审之后；
+- 将 L2 提升为 L3；
+- 产品范围取舍，或在实质不同的模块归属方案之间做选择；
+- 取消进行中任务或归档大量历史。
 
-When asking for L2/L3 confirmation, present a decision summary of 3-8 bullets covering key changes, ambiguities, and risks. The user should be able to decide without reading the full design.
+请求 L2/L3 确认时，给出一份 3-8 条要点的决策摘要，涵盖关键变更、歧义与风险。用户应能在不阅读完整设计的情况下做出决定。
 
-Embed the summary in the confirmation request itself — inside the question prompt or its option previews — never only in a separate earlier message. Confirmation UI may appear without the preceding text, so a detached summary is a summary the user never saw. If the summary is too long to embed, send it as its own message, wait for the user's reply, and only then ask for confirmation.
+把摘要内嵌到确认请求本身——放在问题提示或其选项预览里——绝不要只放在一条更早的独立消息里。确认 UI 可能在没有前置文本的情况下出现，因此脱离的摘要就是用户从未看到的摘要。如果摘要长到无法内嵌，就把它作为独立消息发出，等用户回复，然后再请求确认。
 
-Report-only — proceed and report, correct if the user objects:
+仅报告式——先执行并报告，若用户反对再纠正：
 
-- lightweight PM notes for L1 and PM start/update/complete records for L2/L3;
-- L0/L1 classification;
-- baseline updates and graph re-rendering after verified implementation;
-- archiving a single completed row.
+- L1 的轻量 PM 说明，以及 L2/L3 的 PM 开始/更新/完成记录；
+- L0/L1 分级；
+- 经过验证的实现之后的基线更新与图重渲染；
+- 归档单条已完成行。
 
-## Preference Profiles
+## 偏好档案
 
-`modular-init` asks the user's workflow preferences and records them in the project AI docs (`Preferences` section of the merged rules snippet). All skills honor them. When unset, use `follow-project` + `standard`.
+`modular-init` 会询问用户的工作流偏好并记录到项目 AI 文档中（合并规则片段的 `Preferences` 小节）。所有技能都遵循它们。未设置时，使用 `follow-project` + `standard`。
 
-`docs-language` — language for PM, architecture, knowledge, and design docs, and for decision summaries:
+`docs-language`——PM、架构、知识、设计文档以及决策摘要所用的语言：
 
-- `zh`: write these docs in Chinese.
-- `en`: write these docs in English.
-- `follow-project`: follow the dominant language of existing project docs.
+- `zh`：用中文撰写这些文档。
+- `en`：用英文撰写这些文档。
+- `follow-project`：跟随既有项目文档的主导语言。
 
-`confirmation` — adjusts the User Confirmation Points above:
+`confirmation`——调整上面的用户确认点：
 
-| Profile | Semantics |
+| 档案 | 语义 |
 | --- | --- |
-| `high-touch` | All standard points, plus: give a one-line summary and confirm before L1 implementation; walk through L2/L3 designs section by section. |
-| `standard` | The User Confirmation Points above, unchanged. |
-| `low-touch` | L2 confirmation becomes report-only: send the decision summary, then implement without waiting; the user can stop at any time. Everything else stays blocking. |
+| `high-touch` | 全部标准确认点，另加：在 L1 实现前给出一行摘要并确认；逐节走查 L2/L3 设计。 |
+| `standard` | 上面的用户确认点，保持不变。 |
+| `low-touch` | L2 确认变为仅报告式：发送决策摘要，然后不等待即实现；用户可随时叫停。其它一切仍为阻塞式。 |
 
-Safety floor: no profile may skip L3 direction acceptance, module map approval, the first write into project AI docs, or L2-to-L3 promotion.
+安全底线：任何档案都不得跳过 L3 方向接受、模块地图批准、首次写入项目 AI 文档，或 L2 到 L3 的提升。
 
-## Design, ADR, And Plan Boundaries
+## 设计、ADR 与计划的边界
 
-Use a design when describing how a change will modify the system.
+当描述某个变更将如何修改系统时，使用设计。
 
-Use an ADR when recording why a durable architecture direction was chosen among meaningful alternatives.
+当记录为何在若干有意义的备选方案中选定某个持久架构方向时，使用 ADR。
 
-Do not write an ADR when there is no real decision to preserve. A useful ADR has at least two viable options, a decision that will constrain future work, and a plausible future reader asking "why did we choose this?"
+当没有真正需要保留的决策时，不要写 ADR。一份有用的 ADR 至少有两个可行选项、一个会约束未来工作的决策，以及一个未来可能的读者会问“我们当初为什么选这个？”
 
-Use an implementation plan only after the architecture or module design is accepted enough to execute. Plans are temporary execution aids, not source-of-truth architecture. Store plans under `plans/` beside the design's `changes/` directory with `source_design` and `level` front matter (see `storage-schema.md` Plan Files), and archive or delete them once PM completion is recorded.
+只有在架构或模块设计被接受到足以执行之后，才使用实现计划。计划是临时的执行辅助，而非事实来源的架构。把计划放在设计 `changes/` 目录旁的 `plans/` 下，并带上 `source_design` 与 `level` front matter（见 `storage-schema.md` 的 Plan Files），一旦记录了 PM 完成，就归档或删除它们。

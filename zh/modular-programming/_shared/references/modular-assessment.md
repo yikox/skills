@@ -1,54 +1,54 @@
-# Modular Assessment
+# 模块化评估
 
-Use this rubric to judge how modular a project actually is. Directory structure alone proves nothing: a repo full of module folders can still be one tangled monolith. Every dimension below is judged from real code evidence.
+用这套评分标准判断一个项目实际上有多模块化。仅凭目录结构什么都证明不了：一个满是模块文件夹的仓库仍可能是一坨纠缠的单体。下面每个维度都基于真实的代码证据来判断。
 
-## Evidence Requirements
+## 证据要求
 
-- Every conclusion must point to concrete code locations (files, functions, call sites), not folder names.
-- Mark each finding `verified` (you read the code / ran the command) or `inferred` (pattern suggests it); never present a guess as fact.
-- Prefer a small number of load-bearing examples over exhaustive listings.
-- An assessment that only describes the directory tree is a defect, not a deliverable.
+- 每个结论都必须指向具体的代码位置（文件、函数、调用点），而非文件夹名称。
+- 把每条发现标注为 `verified`（你读了代码 / 跑了命令）或 `inferred`（模式暗示）；绝不要把猜测当作事实呈现。
+- 优先给出少量承重的示例，而非穷举列表。
+- 只描述目录树的评估是一个缺陷，而非交付物。
 
-## Assessment Dimensions
+## 评估维度
 
-1. **Responsibility clarity** — can each module's job be stated in one sentence, plus what it does NOT do? Does its code serve one goal? Any god-modules?
-2. **Contract clarity** — is there an explicit public entry? Is the public surface small and stable? Are internals leaked? Are inputs/outputs/errors defined?
-3. **Dependency complexity** — how many dependencies per module; are they one-directional, explicit, acyclic; any hidden deps via globals or direct infrastructure calls?
-4. **Change blast radius** — how many modules does an ordinary requirement touch? Does swapping a cache/database/format ripple into unrelated modules?
-5. **Independent testability** — can a module be tested without booting the whole system, with external dependencies replaced, against its own behavior?
-6. **Replaceability** — can the database, cache, an algorithm, or an external service implementation be swapped without editing callers?
-7. **Independent comprehensibility** — can a newcomer understand one module by reading it alone? Clear entry point, concentrated core flow, few cross-module jumps?
-8. **Data ownership clarity** — one owning module per core datum; no cross-module direct writes; state changes flow through one mechanism.
-9. **Deployment/runtime independence** (large systems only) — independent deploy/scale/upgrade, fault isolation. A monolith can still score high overall; independent deployment is not a universal goal.
-10. **Architecture constraint strength** — explicit dependency rules, tooling that catches illegal imports/cycles, module design docs, and adherence in new code.
+1. **职责清晰度**——每个模块的职责能否用一句话说清，外加它不做什么？它的代码是否服务于一个目标？有没有上帝模块？
+2. **契约清晰度**——是否有明确的公共入口？公共面是否小而稳定？内部是否泄漏？输入/输出/错误是否有定义？
+3. **依赖复杂度**——每个模块有多少依赖；它们是否单向、显式、无环；有没有经由全局或直连基础设施的隐藏依赖？
+4. **变更爆炸半径**——一个普通需求触及多少模块？替换缓存/数据库/格式是否会波及无关模块？
+5. **独立可测性**——一个模块能否在不启动整个系统、外部依赖被替换的情况下，针对其自身行为进行测试？
+6. **可替换性**——能否在不改动调用方的情况下替换数据库、缓存、某个算法或某个外部服务实现？
+7. **独立可理解性**——新人能否只读一个模块就理解它？入口清晰、核心流程集中、跨模块跳转少？
+8. **数据归属清晰度**——每份核心数据只有一个拥有它的模块；无跨模块直接写入；状态变更经由一个机制流转。
+9. **部署/运行时独立性**（仅大型系统）——独立部署/扩缩/升级、故障隔离。单体整体上仍可得高分；独立部署并非普适目标。
+10. **架构约束强度**——显式的依赖规则、能捕获非法导入/环的工具、模块设计文档，以及新代码对其的遵循。
 
-## Maturity Levels
+## 成熟度等级
 
-**Low** — many globals; files call each other freely; several modules mutate shared state; business code hits database/cache directly; widespread cycles; any change ripples globally; nothing testable in isolation. Directory splits exist but the system is one organism.
+**低**——大量全局；文件之间随意互相调用；多个模块修改共享状态；业务代码直连数据库/缓存；环遍布；任何改动都全局波及；没有任何东西可隔离测试。目录拆分存在，但系统是一个整体生物。
 
-**Medium** — basic responsibility split and some public interfaces; parts testable in isolation; but shared state and cross-module reach-ins persist; infrastructure and business only partly separated; some changes still blast wide. Foundations exist; boundaries not yet stable.
+**中**——基本的职责拆分与一些公共接口；部分可隔离测试；但共享状态与跨模块深入依然存在；基础设施与业务只部分分离；一些改动仍大范围波及。基础已具备；边界尚不稳定。
 
-**High** — clear responsibilities and dependency directions; stable contracts; replaceable internals; explicit data ownership; most modules independently testable; local blast radius; enforced constraints; new features land by composing or extending modules.
+**高**——职责与依赖方向清晰；契约稳定；内部可替换；数据归属显式；多数模块可独立测试；爆炸半径局部；约束被强制执行；新功能通过组合或扩展模块落地。
 
-## Checklist
+## 检查清单
 
-1. Can every module's responsibility be stated in one sentence?
-2. Does every module state what it is NOT responsible for?
-3. Does every module have a stable public contract?
-4. Does anything outside access a module's internals directly?
-5. Are there dependency cycles between modules?
-6. Are dependencies explicitly declared?
-7. Is there significant global mutable state?
-8. Does every piece of core data have exactly one owning module?
-9. Can modules be tested independently?
-10. Can internal implementations be replaced?
-11. Does changing one module force changes in many unrelated ones?
-12. Does business code depend directly on database/cache/framework?
-13. Are cross-module flows orchestrated by the application layer?
-14. Is there a bloating common/shared/utils module?
-15. Do tools or rules block illegal dependencies?
-16. Can a new developer understand one module in isolation?
-17. Can a new feature land by extending one module?
-18. Can a module be replaced without touching its callers?
+1. 每个模块的职责能否用一句话说清？
+2. 每个模块是否声明了它不负责什么？
+3. 每个模块是否有稳定的公共契约？
+4. 是否有外部直接访问某个模块的内部？
+5. 模块之间是否存在依赖环？
+6. 依赖是否显式声明？
+7. 是否存在大量全局可变状态？
+8. 每份核心数据是否恰好有一个拥有它的模块？
+9. 模块能否被独立测试？
+10. 内部实现能否被替换？
+11. 改动一个模块是否会迫使许多无关模块跟着改？
+12. 业务代码是否直接依赖数据库/缓存/框架？
+13. 跨模块流程是否由应用层编排？
+14. 是否存在膨胀的 common/shared/utils 模块？
+15. 是否有工具或规则阻止非法依赖？
+16. 新开发者能否独立理解一个模块？
+17. 新功能能否通过扩展一个模块落地？
+18. 一个模块能否在不触动其调用方的情况下被替换？
 
-Score pragmatically: the more "healthy" answers with verified evidence, the higher the maturity. Report the 3-5 worst pain points ranked by blast radius, each with its evidence.
+务实地打分：带 `verified` 证据的“健康”回答越多，成熟度越高。报告按爆炸半径排序的 3-5 个最严重痛点，每个附上其证据。

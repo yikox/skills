@@ -1,4 +1,4 @@
 interface:
   display_name: "Modular Audit"
-  short_description: "Audit modular workflow consistency and migration gaps"
-  default_prompt: "Use $modular-audit to check this project's modular workflow state and migration health."
+  short_description: "审计模块化工作流的一致性与迁移缺口"
+  default_prompt: "用 $modular-audit 检查本项目的模块化工作流状态与迁移健康度。"

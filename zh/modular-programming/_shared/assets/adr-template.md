@@ -6,24 +6,24 @@ review_status: not-reviewed
 
 # ADR-<YYYY-MM-DD>-<Decision>
 
-## Context
+## 背景
 
-Describe the durable architecture question.
+描述这一长期存在的架构问题。
 
-## Decision
+## 决策
 
-State the chosen direction.
+阐明所选定的方向。
 
-## Alternatives Considered
+## 备选方案
 
-| Alternative | Reason Not Chosen |
+| 备选方案 | 未选择的原因 |
 | --- | --- |
 |  |  |
 
-## Consequences
+## 影响
 
 - 
 
-## Follow-Up
+## 后续事项
 
 - 

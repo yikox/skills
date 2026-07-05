@@ -4,37 +4,37 @@ status: draft
 review_status: not-reviewed
 ---
 
-# <Project Name> Architecture
+# <Project Name> 架构
 
-## Scope
+## 范围
 
-Describe the system boundary, runtime environment, users, and external dependencies.
+描述系统边界、运行环境、用户以及外部依赖。
 
-## Module Map
+## 模块地图
 
-| Module | Form | Kind | Responsibility | Status |
+| 模块 | 形态 | 类型 | 职责 | 状态 |
 | --- | --- | --- | --- | --- |
 | <module-slug> | atomic | function-flow |  | draft |
 
-## Advanced Architecture Graph
+## 高级架构图
 
-Optional advanced visualization. `main-design.md` plus `architecture/modules/*.md` is sufficient for the default AI workflow.
+可选的高级可视化。对默认 AI 工作流而言，`main-design.md` 加上 `architecture/modules/*.md` 已经足够。
 
-- Source: `architecture/graphs/current-project.arch.json` (optional)
-- Rendered: `architecture/rendered/current-project-architecture.html` (optional)
+- 来源：`architecture/graphs/current-project.arch.json`（可选）
+- 渲染产物：`architecture/rendered/current-project-architecture.html`（可选）
 
-## Cross-Module Flow
+## 跨模块流程
 
-Describe only durable baseline behavior. Do not store pending plans here.
+只描述持久的基线行为。不要在此存放待定的计划。
 
-## Shared Constraints
-
-- 
-
-## Open Questions
+## 共享约束
 
 - 
 
-## Review Notes
+## 待解问题
+
+- 
+
+## 评审记录
 
 - Review status: not-reviewed

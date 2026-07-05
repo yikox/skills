@@ -1,43 +1,43 @@
-# Modular Programming Workflow
+# 模块化编程工作流
 
-This project uses the modular-programming workflow. Architecture docs own module boundaries; `project-management.md` (PM) owns work state and evidence.
+本项目采用 modular-programming 工作流。架构文档负责界定模块边界；`project-management.md`（PM）负责记录工作状态与证据。
 
-## Preferences
+## 偏好设置
 
-- `docs-language`: <zh | en | follow-project> — language for PM, architecture, knowledge, and design docs, and for decision summaries.
-- `confirmation`: <high-touch | standard | low-touch> — confirmation granularity; semantics defined in the workflow's Preference Profiles. `low-touch` never skips L3 acceptance, module map approval, first AI-doc write, or L2-to-L3 promotion.
+- `docs-language`: <zh | en | follow-project> — PM、架构、知识与设计文档以及决策摘要所使用的语言。
+- `confirmation`: <high-touch | standard | low-touch> — 确认粒度；具体语义在工作流的 Preference Profiles 中定义。`low-touch` 绝不跳过 L3 接受、模块地图批准、首次写入 AI 文档，或 L2 到 L3 的提升。
 
-## Session Entry
+## 会话入口
 
-- At the start of a new session, read `project-management.md` and `architecture/main-design.md` before non-trivial work.
-- If the request relates to an active task, ask the user whether to resume it. Never silently resume, duplicate, or close active tasks.
+- 新会话开始时，在进行非平凡工作前先阅读 `project-management.md` 与 `architecture/main-design.md`。
+- 如果请求与某个进行中任务相关，先询问用户是否恢复该任务。切勿静默恢复、重复创建或关闭进行中任务。
 
-## Module Gate And Levels
+## 模块闸门与级别
 
-Non-trivial changes must name a primary module, impacted modules, and a level before implementation planning. Default to the lightest path that preserves future understanding:
+非平凡变更在实现规划之前必须指明主模块、受影响模块和级别。默认选择既能保留未来可理解性、又最轻量的路径：
 
-- L0 trivial edit: implement and verify; PM optional. Bug fixes are at least L1: reproduce first, verify the failing case after the fix, record root cause at completion.
-- L1 local change: implement -> verify -> concise evidence. Use Active Tasks only when the work crosses sessions, carries risk/release evidence, belongs to an existing active task, or the user asks for tracking.
-- L2 module change: PM start -> module change design -> review -> decision summary + user confirmation -> implement -> verify -> PM complete.
-- L3 architecture change: PM start -> target design/ADR -> review -> decision summary + user acceptance -> implement -> verify -> baseline update -> PM complete.
+- L0 平凡编辑：实现并验证；PM 可选。Bug 修复至少为 L1：先复现，修复后验证失败用例，完成时记录根因。
+- L1 局部变更：实现 -> 验证 -> 简洁证据。仅当工作跨会话、携带风险/发布证据、属于某个既有进行中任务，或用户要求跟踪时，才使用 Active Tasks。
+- L2 模块变更：PM 启动 -> 模块变更设计 -> 评审 -> 决策摘要 + 用户确认 -> 实现 -> 验证 -> PM 完成。
+- L3 架构变更：PM 启动 -> 目标设计/ADR -> 评审 -> 决策摘要 + 用户接受 -> 实现 -> 验证 -> 基线更新 -> PM 完成。
 
-If the primary module or root cause is unclear, use diagnostic mode first: reproduce, inspect, and gather evidence without structural changes or completion claims.
+如果主模块或根因不明确，先进入诊断模式：复现、检查并收集证据，不做结构性变更，也不宣称完成。
 
-L2/L3 confirmation requests must embed a decision summary of 3-8 bullets (key changes, ambiguities, risks) in the request itself — not in a separate earlier message — so the user can decide without reading the full design.
+L2/L3 确认请求必须在请求本身中内嵌一份 3-8 条的决策摘要（关键变更、模糊点、风险）——而不是放在此前另一条消息里——以便用户无需阅读完整设计即可决策。
 
-## Skill Routing
+## 技能路由
 
-Primary user-facing entries:
+面向用户的主要入口：
 
-- `modular-init`: set up or repair workflow files.
-- `modular-change`: any feature, bug fix, or refactor request.
-- `modular-audit`: consistency check, legacy migration, PM compression.
-- `modular-knowledge`: record reusable commands, facts, and lessons.
+- `modular-init`：搭建或修复工作流文件。
+- `modular-change`：任何功能、bug 修复或重构请求。
+- `modular-audit`：一致性检查、老项目迁移、PM 压缩。
+- `modular-knowledge`：记录可复用的命令、事实与经验。
 
-Internal or advanced entries:
+内部或高级入口：
 
-- `modular-architecture`: module maps, ADRs, baseline updates, and optional graph visualization.
-- `modular-autopilot`: advanced autonomous execution for accepted and reviewed L2/L3 designs.
-- `modular-advisor`: advanced advisory role for modularity assessment, legacy refactoring proposals, and new-project modular design discussion; proposals only, never implementation.
-- `modular-status`: PM start/update/complete/archive when explicit tracking is needed.
-- `modular-review`: check designs, ADRs, PM rows, and maintained graphs.
+- `modular-architecture`：模块地图、ADR、基线更新以及可选的图可视化。
+- `modular-autopilot`：针对已接受并已评审的 L2/L3 设计的高级自主执行。
+- `modular-advisor`：面向模块化评估、老项目重构提案与新项目模块化设计讨论的高级顾问角色；仅出提案，绝不实现。
+- `modular-status`：需要显式跟踪时的 PM 启动/更新/完成/归档。
+- `modular-review`：检查设计、ADR、PM 行以及维护的图。

@@ -3,91 +3,91 @@ name: modular-autopilot
 description: Supervise autonomous execution of an accepted L2/L3 change design through intake review, implementation planning, subagent-driven execution, and modular closeout, with a decision log and final report. Use when the user hands an accepted design over for hands-off execution and wants one confirmation at intake plus a report at the end; Chinese triggers include 自主执行, 托管执行, 监督执行, 交给监督者, 自动落地, 全程代办.
 ---
 
-# Modular Autopilot
+# 模块化监督者（Modular Autopilot）
 
-Act as the advanced supervising role between "design accepted" and "change landed". Use this only when the user explicitly wants hands-off execution for an accepted and reviewed L2/L3 design. Ask the user for exactly one confirmation at intake; afterwards run planning, execution, and closeout autonomously, log every decision made on the user's behalf, and deliver a final report. Never push, open PRs, or take any externally visible action — put the recommended commands in the report instead.
+充当介于"设计已接受"与"变更已落地"之间的高级监督角色。仅在用户明确希望对一份已接受且已评审的 L2/L3 设计进行放手执行时使用。在接单时向用户索取恰好一次确认；此后自主完成规划、执行与收尾，记录每一个代用户所做的决策，并交付最终报告。绝不 push、绝不开 PR、绝不采取任何外部可见的动作——把推荐命令写进报告里即可。
 
-## Hard Dependencies
+## 硬依赖
 
-This skill requires the superpowers plugin skills `writing-plans`, `subagent-driven-development`, and `using-git-worktrees`. If any of them is unavailable, stop and tell the user to install the superpowers plugin. There is no inline fallback.
+本 skill 需要 superpowers 插件的 `writing-plans`、`subagent-driven-development` 与 `using-git-worktrees` 三个 skill。若其中任一不可用，停下并告知用户安装 superpowers 插件。没有内置的降级方案。
 
-## Required References
+## 必读参考
 
-Read:
+阅读：
 
 - `../_shared/references/modular-workflow-rules.md`
 - `../_shared/references/storage-schema.md`
 - `../_shared/references/review-rules.md`
 
-## Preconditions
+## 前置条件
 
-Accept only a change design document whose front matter says `status: accepted` with `review_status: reviewed`. For anything else, refuse and route the user back to `modular-change` / `modular-review`. The design phase is not this skill's job.
+只接受 front matter 为 `status: accepted` 且 `review_status: reviewed` 的变更设计文档。其余一律拒绝，并把用户导回 `modular-change` / `modular-review`。设计阶段不是本 skill 的职责。
 
-## Phase 1: Intake Review (the only human confirmation)
+## 阶段 1：接单评审（唯一的人工确认）
 
-Check three categories before anything else:
+在做任何事之前，检查三类问题：
 
-1. **Module map correctness.** The design's primary and impacted modules match `architecture/main-design.md` and the modules' `code_paths`; the module map shows no obvious drift from the actual code. Problems stop here — never carry a broken map into the autonomous zone.
-2. **Design consistency and plannability.** Target design, contract impact, and validation sections do not contradict each other; no wording is too vague to plan from; an L2 design hides no L3 content (boundary or cross-module contract changes).
-3. **Execution prerequisites.** The validation commands the design names actually exist and run; a git worktree can be created; the impacted modules' contract docs exist.
+1. **模块地图正确性。** 设计的主模块与受影响模块与 `architecture/main-design.md` 及各模块的 `code_paths` 一致；模块地图相对实际代码没有明显漂移。问题止步于此——绝不把一张有问题的地图带入自主区。
+2. **设计的自洽性与可规划性。** 目标设计、契约影响、验证各节互不矛盾；没有含糊到无法据以规划的措辞；一份 L2 设计不能藏着 L3 的内容（边界或跨模块契约变更）。
+3. **执行前置条件。** 设计所指名的验证命令确实存在且可运行；能够创建 git worktree；受影响模块的契约文档存在。
 
-Send the user an intake report: findings, suggestions, and a short outline of how you will execute. Wait for explicit confirmation. After confirmation, do not come back to the user except under Hard Stops.
+给用户发一份接单报告：发现、建议，以及你将如何执行的简短提纲。等待明确确认。确认之后，除非触发硬停止，否则不再回到用户。
 
-## Phase 2: Implementation Plan
+## 阶段 2：实现计划
 
-1. Invoke `superpowers:writing-plans` with the design document, `architecture/main-design.md`, and the impacted modules' docs as the spec.
-2. Copy the design's module boundary and contract constraints **verbatim** into the plan's Global Constraints section — subagent-driven-development hands that section to every task reviewer, which makes each reviewer a module-boundary gatekeeper for free.
-3. Save the plan to `architecture/modules/<module>/plans/<YYYY-MM-DD>-<change>-plan.md` (L2) or `architecture/plans/<YYYY-MM-DD>-<change>-plan.md` (L3). Never save under a `changes/` directory. The plan front matter must include `source_design:` (pm-root-relative path to the design) and `level:`.
-4. Run the plan-vs-design self-review: no task crosses the module boundaries beyond the design's declared impact; every item in the design's Validation section has a matching verification step in the plan; Global Constraints carries all contract constraints.
-5. On pass, self-approve and append a decision-log line. Skip writing-plans' execution-handoff question entirely; proceed straight to Phase 3.
+1. 用设计文档、`architecture/main-design.md` 及受影响模块的文档作为 spec，调用 `superpowers:writing-plans`。
+2. 把设计的模块边界与契约约束**逐字**复制到计划的 Global Constraints 一节——subagent-driven-development 会把该节交给每一个 task reviewer，从而免费地让每个 reviewer 都成为模块边界的守门人。
+3. 把计划保存到 `architecture/modules/<module>/plans/<YYYY-MM-DD>-<change>-plan.md`（L2）或 `architecture/plans/<YYYY-MM-DD>-<change>-plan.md`（L3）。绝不保存到 `changes/` 目录下。计划的 front matter 必须包含 `source_design:`（相对 pm-root 的设计路径）与 `level:`。
+4. 执行"计划对设计"的自审：没有任务越过设计声明影响之外的模块边界；设计 Validation 一节的每一项在计划中都有对应的验证步骤；Global Constraints 承载了所有契约约束。
+5. 通过后，自行批准并追加一行决策日志。完全跳过 writing-plans 的执行交接提问；直接进入阶段 3。
 
-## Phase 3: Subagent Execution
+## 阶段 3：子 agent 执行
 
-1. Create an isolated workspace via `superpowers:using-git-worktrees`.
-2. Execute the plan with `superpowers:subagent-driven-development` unmodified: pre-flight plan review, per-task implementer plus task-reviewer, fix loops for Critical/Important findings, final whole-branch review, progress ledger.
-3. Where SDD would ask the human to adjudicate a plan-mandated conflict, rule it yourself by "the design document governs", and log the ruling.
-4. Do not enter `finishing-a-development-branch`. When the final whole-branch review passes, move to Phase 4.
+1. 通过 `superpowers:using-git-worktrees` 创建隔离工作区。
+2. 原样用 `superpowers:subagent-driven-development` 执行计划：预检计划评审、每个任务的 implementer 加 task-reviewer、针对 Critical/Important 发现的修复循环、最终的整分支评审、进度台账。
+3. 凡是 SDD 会请人来裁决计划所规定的冲突之处，你自己按"设计文档为准"来裁决，并记录裁决。
+4. 不要进入 `finishing-a-development-branch`。当最终整分支评审通过时，转入阶段 4。
 
-## Phase 4: Closeout
+## 阶段 4：收尾
 
-1. Collect verification evidence against the design's Validation section: SDD ledger, commit range, test output, review verdicts.
-2. Confirm the implementation has landed in the main workspace before changing baseline facts: the worktree branch is merged locally, a commit/PR already contains the code, or the user explicitly confirms the code is outside the reachable workspace and landed. A passing worktree branch is not landed evidence by itself.
-3. If the code is not landed yet, stop short of implemented closeout: leave the design at `status: accepted`, do not update module/architecture baselines, do not record PM completion, and deliver a pending-merge report with the exact merge/push/PR commands for the user to run.
-4. After landed evidence exists, update module/architecture baselines and re-render affected graphs (see `modular-architecture` Baseline Update).
-5. Mark the design `status: implemented`.
-6. Record PM completion with evidence via `modular-status`.
-7. Run modular-audit's deterministic checker as a drift self-check; fold findings into the report.
-8. Deliver the final report.
+1. 对照设计 Validation 一节收集验证证据：SDD 台账、提交区间、测试输出、评审结论。
+2. 在改动基线事实之前，确认实现已落地到主工作区：worktree 分支已在本地合并、某个 commit/PR 已包含该代码，或用户明确确认代码在可达工作区之外且已落地。仅仅一个通过的 worktree 分支本身不算落地证据。
+3. 若代码尚未落地，停在"已实现"收尾之前：让设计保持 `status: accepted`，不更新模块/架构基线，不记录 PM 完成，并交付一份待合并报告，附上供用户执行的确切 merge/push/PR 命令。
+4. 有了落地证据之后，更新模块/架构基线并重新渲染受影响的图（见 `modular-architecture` 的 Baseline Update）。
+5. 把设计标记为 `status: implemented`。
+6. 通过 `modular-status` 带证据记录 PM 完成。
+7. 运行 modular-audit 的确定性检查器作为漂移自查；把发现并入报告。
+8. 交付最终报告。
 
-When the PM directory lives inside the code repository, perform all modular doc updates (baseline, PM, design status) in the main workspace after the implementation has landed there — never inside the worktree, where they would strand on an unmerged branch.
+当 PM 目录位于代码仓库内部时，所有模块化文档更新（基线、PM、设计状态）都要在实现已落地到主工作区之后、于主工作区中进行——绝不在 worktree 里做，否则它们会搁浅在一个未合并的分支上。
 
-## Hard Stops
+## 硬停止
 
-Only two conditions pause the autonomous zone and return to the user:
+只有两种情况会暂停自主区并返回用户：
 
-1. SDD reports BLOCKED and all three remedies failed: more context, a stronger model, splitting the task.
-2. Facts discovered during execution overturn an intake-review conclusion (for example, the code seriously contradicts the module docs). The intake review missed something — stop rather than push through.
+1. SDD 报告 BLOCKED，且三种补救全部失败：补充上下文、换更强的模型、拆分任务。
+2. 执行中发现的事实推翻了接单评审的结论（例如代码严重与模块文档矛盾）。这说明接单评审漏掉了什么——停下，而不是硬推过去。
 
-Regardless of anything else: never push, never create PRs, never destroy data outside the worktree.
+无论其他情况如何：绝不 push、绝不创建 PR、绝不销毁 worktree 之外的数据。
 
-## Decision Log
+## 决策日志
 
-Append one line per autonomous ruling to `.superpowers/sdd/decision-log.md` (same directory as the SDD progress ledger):
+每一次自主裁决，向 `.superpowers/sdd/decision-log.md`（与 SDD 进度台账同目录）追加一行：
 
 ```text
 <ISO-8601 time> | <decision> | <reason>
 ```
 
-Log at minimum: plan self-approval, every plan-mandated conflict ruling, every Minor-finding deferral.
+至少记录：计划的自我批准、每一次计划所规定的冲突裁决、每一次 Minor 发现的延后处理。
 
-`.superpowers/sdd/` is ephemeral scratch that dies with the worktree. During closeout, copy the decision log next to the archived plan (e.g. `architecture/plans/archive/<YYYY-MM-DD>-<change>-decisions.md`) so accountability survives worktree cleanup.
+`.superpowers/sdd/` 是随 worktree 一起消亡的临时草稿。在收尾时，把决策日志复制到归档计划旁边（例如 `architecture/plans/archive/<YYYY-MM-DD>-<change>-decisions.md`），这样问责记录能在 worktree 清理后留存。
 
-## Final Report
+## 最终报告
 
-Deliver these sections, in order:
+按顺序交付以下各节：
 
-1. **Outcome and evidence** — what landed, commit range, test output, final review verdict.
-2. **Decisions made on your behalf** — the decision-log digest, each with its reason, for after-the-fact accountability.
-3. **Deviations from the design** — every divergence and how it was handled.
-4. **Leftovers** — Minor findings, risks, suggested follow-ups.
-5. **Recommended actions** — the exact merge/push/PR commands for the user to run.
+1. **成果与证据**——落地了什么、提交区间、测试输出、最终评审结论。
+2. **代你所做的决策**——决策日志摘要，每条附上其理由，用于事后问责。
+3. **对设计的偏离**——每一处偏离及其处理方式。
+4. **遗留项**——Minor 发现、风险、建议的后续跟进。
+5. **推荐动作**——供用户执行的确切 merge/push/PR 命令。

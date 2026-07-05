@@ -1,27 +1,27 @@
-# <Project Name> Knowledge Summary
+# <Project Name> 知识摘要
 
-Last updated: <YYYY-MM-DD>
+最后更新：<YYYY-MM-DD>
 
-## Verified Commands
+## 已验证命令
 
-| Command | Purpose | Notes |
+| 命令 | 用途 | 备注 |
 | --- | --- | --- |
 |  |  |  |
 
-## Architecture Facts
+## 架构事实
 
 - 
 
-## Conventions
+## 约定
 
 - 
 
-## Troubleshooting
+## 故障排查
 
-| Symptom | Cause | Fix / Evidence |
+| 现象 | 原因 | 修复 / 证据 |
 | --- | --- | --- |
 |  |  |  |
 
-## Reusable Lessons
+## 可复用经验
 
 - 

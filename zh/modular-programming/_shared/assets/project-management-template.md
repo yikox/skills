@@ -1,80 +1,80 @@
-# <Project Name> Modular Programming
+# <Project Name> 模块化编程
 
-Last updated: <YYYY-MM-DD>
+最后更新：<YYYY-MM-DD>
 
-## Overview
+## 概述
 
 - 
 
-## Current Status
+## 当前状态
 
-| Field | Value |
+| 字段 | 值 |
 | --- | --- |
-| Version |  |
-| State |  |
-| Current focus |  |
-| Architecture baseline | architecture/main-design.md |
+| 版本 |  |
+| 状态 |  |
+| 当前焦点 |  |
+| 架构基线 | architecture/main-design.md |
 
-## Active Tasks
+## 进行中任务
 
-| Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
+| 日期 | 任务 | 主模块 | 受影响模块 | 级别 | 状态 | 下一步 / 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
 
-Use this section for active L2/L3 work and tracked L1 work only. Routine same-session L1 work should usually appear, if at all, as a concise Recent Updates bullet after verification.
+本节仅用于进行中的 L2/L3 工作和已跟踪的 L1 工作。常规的同会话 L1 工作即便记录，通常也应在验证后作为一条简洁的「最近更新」条目出现。
 
-## Requirements / Change Backlog
+## 需求 / 变更待办
 
-| ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Design Path / Next Step |
+| ID | 日期 | 请求 | 主模块 | 受影响模块 | 级别 | 变更摘要 | 范围 / 影响 | 状态 | 优先级 | 设计路径 / 下一步 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-## Modular Design Index
+## 模块化设计索引
 
-| Type | Path | Status | Review | Notes |
+| 类型 | 路径 | 状态 | 评审 | 备注 |
 | --- | --- | --- | --- | --- |
-| Main Architecture | architecture/main-design.md | draft | not-reviewed |  |
+| 主架构 | architecture/main-design.md | draft | not-reviewed |  |
 
-## Roadmap
+## 路线图
 
-| Priority | Item | Primary Module | Status | Notes |
+| 优先级 | 事项 | 主模块 | 状态 | 备注 |
 | --- | --- | --- | --- | --- |
 | P1 |  |  |  |  |
 
-## Milestones
+## 里程碑
 
-| Milestone | Status | Notes |
+| 里程碑 | 状态 | 备注 |
 | --- | --- | --- |
 |  |  |  |
 
-## Testing and Validation
+## 测试与验证
 
 - 
 
-## Blockers and Risks
+## 阻塞与风险
 
-| Risk / Blocker | Impact | Mitigation / Status |
+| 风险 / 阻塞 | 影响 | 缓解 / 状态 |
 | --- | --- | --- |
 |  |  |  |
 
-## ADR Summary
+## ADR 汇总
 
-| Date | ADR | Decision | Status | Notes |
+| 日期 | ADR | 决策 | 状态 | 备注 |
 | --- | --- | --- | --- | --- |
 |  |  |  |  |  |
 
-## Archive
+## 归档
 
-### Completed Work
+### 已完成工作
 
-| Date | Task / Requirement | Final Status | Evidence |
+| 日期 | 任务 / 需求 | 最终状态 | 证据 |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-### Design Archive
+### 设计归档
 
-| Type | Path | Final Status | Notes |
+| 类型 | 路径 | 最终状态 | 备注 |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-## Recent Updates
+## 最近更新
 
 - <YYYY-MM-DD> - 

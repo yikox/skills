@@ -40,7 +40,3 @@ review_status: reviewed
 ## Validation
 
 - `./install.sh en --dry-run` 与 `./install.sh zh --dry-run` 各列出全部技能目录且退出码 0；`./install.sh`（缺 lang）退出码 2。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

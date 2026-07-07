@@ -44,7 +44,3 @@ review_status: reviewed
 
 - `./install.sh <en|zh> --dry-run` 应列出全部十个技能目录。
 - `grep -c "^name:" en/modular-programming/*/SKILL.md` 每个文件恰好 1。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

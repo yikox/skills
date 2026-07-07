@@ -41,7 +41,3 @@ review_status: reviewed
 ## Validation
 
 - `python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 无 error（schema 与检查器一致的间接证据）。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

@@ -38,7 +38,3 @@ review_status: reviewed
 ## Validation
 
 - `python3 en/modular-programming/_shared/scripts/render_modular_graph.py en/modular-programming/_shared/examples/nested-overview.arch.json -o /tmp/t.html` 退出码 0。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

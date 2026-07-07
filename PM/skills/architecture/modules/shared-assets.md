@@ -37,7 +37,3 @@ review_status: reviewed
 ## Validation
 
 - 用模板新建 PM 文档后跑 checker，不应出现 `[pm] 缺少 Active Tasks 章节`。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

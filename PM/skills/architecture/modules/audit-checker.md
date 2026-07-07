@@ -45,7 +45,3 @@ review_status: reviewed
 - `python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 退出码 0。
 - `python3 -m unittest discover -s en/modular-programming/modular-audit/tests` 退出码 0。
 - 构造缺 `source_design` 的计划 fixture 应产生 `[plans]` ERROR。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 基线与代码核对一致）

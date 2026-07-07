@@ -45,7 +45,3 @@ review_status: reviewed
 ## Open Questions
 
 - modular-autopilot 的端到端与负路径演练尚未执行（见 ADR-2026-07-03 Follow-Up）。
-
-## Review Notes
-
-- Review status: reviewed（2026-07-03 依据现有代码建立基线，与 checker 校验一致）

@@ -6,9 +6,10 @@ Last updated: 2026-07-04
 
 | Command | Purpose | Notes |
 | --- | --- | --- |
-| `python3 modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` | 项目记忆一致性检查 | 退出码 1 = 有 error；`--repo-root . --exclude 'docs/**' --exclude 'PM/**'` 启用代码所有权检查 |
-| `python3 modular-programming/_shared/scripts/render_modular_graph.py <in.arch.json> -o <out.html> --svg-output <out.svg>` | 渲染高级架构图 | stdlib-only；图是给人看的高级可视化，不是默认 AI baseline |
-| `./install.sh --dry-run` | 预演技能安装 | 默认目标 ~/.agents、~/.codex、~/.claude 的 skills 目录 |
+| `python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills --repo-root . --exclude 'docs/**' --exclude 'PM/**' --exclude 'zh/**'` | 项目记忆一致性检查（自审计标准命令） | 退出码 1 = 有 error；须豁免 zh 镜像 |
+| `python3 en/modular-programming/_shared/scripts/render_modular_graph.py <in.arch.json> -o <out.html> --svg-output <out.svg>` | 渲染高级架构图 | stdlib-only；图是给人看的高级可视化，不是默认 AI baseline |
+| `python3 -m unittest discover -s en/modular-programming/modular-audit/tests` | checker 单元测试 | 含 vocab drift-guard |
+| `./install.sh <zh\|en> --dry-run` | 预演技能安装 | 语言参数必填；默认目标 ~/.agents、~/.codex、~/.claude 的 skills 目录 |
 
 ## Architecture Facts
 

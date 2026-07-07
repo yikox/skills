@@ -14,7 +14,7 @@ Last updated: 2026-07-08
 | --- | --- |
 | Version | main @ 2026-07-08 |
 | State | 10 技能 + 共享层稳定；语言分层 en/（源）+ zh/（中文镜像）；证据单一居所规则已上线 |
-| Current focus | PM 已压缩；运行 `./install.sh <lang>` 同步已安装 skills；autopilot 演练待执行 |
+| Current focus | autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
@@ -48,7 +48,6 @@ Last updated: 2026-07-08
 | Risk / Blocker | Impact | Mitigation / Status |
 | --- | --- | --- |
 | superpowers 插件升级可能改变 writing-plans/SDD 行为 | autopilot 衔接点失效 | 插件升级后重跑演练（设计 Risks 节） |
-| 已安装 skill 副本尚未同步源码修复 | Codex/Claude/agents 目录仍加载旧版，直到安装脚本运行 | dry-run 已验证待同步内容；实际 `./install.sh <lang>` 因权限待运行 |
 
 ## ADR Summary
 
@@ -65,13 +64,13 @@ Last updated: 2026-07-08
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |
 | 2026-07-08 | 证据单一居所 + 记账面减重（L2） | implemented | 设计 architecture/modules/shared-references/changes/2026-07-08-evidence-single-home.md；commit 1bfa33a |
-| 2026-07-05 | 中英双语版本：语言分层 + install 语言参数（L2） | implemented; install pending | 设计 architecture/modules/installer/changes/2026-07-05-bilingual-zh-en.md；commits 7cf18d3/03d55f3 |
-| 2026-07-05 | 新增技能 modular-narrator（L2）+ architect 改名 advisor（L1） | implemented; install pending | 设计 architecture/modules/workflow-skills/changes/2026-07-05-modular-narrator.md；commits a537db2..e6d3ac8、265aa52 |
-| 2026-07-04 | 词表单一事实源 vocab.md（L3） | implemented; install pending | 设计 architecture/changes/2026-07-04-vocab-single-source.md；细节见 history |
-| 2026-07-04 | 拆分 module-kind-classification（L2） | implemented; install pending | 设计 architecture/modules/shared-references/changes/2026-07-04-split-module-kind-classification.md |
-| 2026-07-04 | 新增角色 modular-architect + 方法论/评估参考（L3） | implemented; install pending | 设计 architecture/changes/2026-07-04-modular-architect-skill.md；merge 22c98e8 |
-| 2026-07-04 | 轻量默认模块化工作流改造（L3） | implemented; install pending | 设计 architecture/changes/2026-07-04-lightweight-default-workflow.md |
-| 2026-07-03 | 审计跟进修复（autopilot 收尾语义、8 技能曝光、图校验） | implemented; install pending | 细节见 history |
+| 2026-07-05 | 中英双语版本：语言分层 + install 语言参数（L2） | implemented | 设计 architecture/modules/installer/changes/2026-07-05-bilingual-zh-en.md；commits 7cf18d3/03d55f3 |
+| 2026-07-05 | 新增技能 modular-narrator（L2）+ architect 改名 advisor（L1） | implemented | 设计 architecture/modules/workflow-skills/changes/2026-07-05-modular-narrator.md；commits a537db2..e6d3ac8、265aa52 |
+| 2026-07-04 | 词表单一事实源 vocab.md（L3） | implemented | 设计 architecture/changes/2026-07-04-vocab-single-source.md；细节见 history |
+| 2026-07-04 | 拆分 module-kind-classification（L2） | implemented | 设计 architecture/modules/shared-references/changes/2026-07-04-split-module-kind-classification.md |
+| 2026-07-04 | 新增角色 modular-architect + 方法论/评估参考（L3） | implemented | 设计 architecture/changes/2026-07-04-modular-architect-skill.md；merge 22c98e8 |
+| 2026-07-04 | 轻量默认模块化工作流改造（L3） | implemented | 设计 architecture/changes/2026-07-04-lightweight-default-workflow.md |
+| 2026-07-03 | 审计跟进修复（autopilot 收尾语义、8 技能曝光、图校验） | implemented | 细节见 history |
 | 2026-07-03 | modular-autopilot 监督者技能（L3） | implemented | 设计 architecture/changes/2026-07-03-modular-autopilot.md；commits 7e55bf5..77b70c2 |
 | 2026-07-03 | modular-autopilot 上线（里程碑） | done | 2026-07-03 合入 main |
 
@@ -95,6 +94,7 @@ Last updated: 2026-07-08
 
 ## Recent Updates
 
+- 2026-07-08 - `./install.sh zh` 实际同步完成（3 目标目录 × 10 技能，含新规则/模板），install pending 状态全部清除。
 - 2026-07-08 - PM 一次性压缩（125→103 行）：重排为单一居所结构，长证据原文移入 archives/project-management-history-2026.md；7 份基线文档去 Review Notes 节；knowledge-summary 命令路径修正为 en/ 前缀。
 - 2026-07-08 - 文档减重 L2「证据单一居所 + 记账面减重」实现（设计见 Design Archive；commit 1bfa33a）。
 - 2026-07-06 - zh 散文翻译落地（commit 03d55f3）；发现 en/ 为中英混合，纯英文化入 backlog（REQ-20260706）。

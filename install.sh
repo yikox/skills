@@ -9,11 +9,12 @@ usage() {
 Usage:
   ./install.sh <lang> [--dry-run] [target_dir ...]
 
-Installs one language edition of the modular-programming skill suite into one
-or more agent skills directories. The first positional argument selects the
-language and is required:
+Installs one language edition of the skills in this repo (the
+modular-programming suite plus any standalone skills) into one or more agent
+skills directories. The first positional argument selects the language and is
+required:
 
-  <lang>   zh | en   (source is <lang>/modular-programming/)
+  <lang>   zh | en   (source is <lang>/)
 
 Legacy project-memory and architecture-design skill names are removed from the
 targets. The installer also copies <lang>/modular-programming/_shared to each
@@ -77,8 +78,8 @@ case "$lang" in
     ;;
 esac
 
-src_dir="$repo_dir/$lang/modular-programming"
-shared_dir="$src_dir/_shared"
+src_dir="$repo_dir/$lang"
+shared_dir="$src_dir/modular-programming/_shared"
 
 if [[ ! -d "$src_dir" ]]; then
   echo "Source not found: $src_dir" >&2

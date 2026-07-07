@@ -78,6 +78,17 @@ Keep these visible in `project-management.md`:
 
 Do not remove stable IDs, dates, design paths, release URLs, commit SHAs, tags, PR links, blocker evidence, or user-confirmed implementation evidence.
 
+## Evidence Single Home
+
+This is a **write-time** rule: evidence goes into exactly one home at the moment it is written, instead of being written in several places and compressed later.
+
+- Each piece of evidence has one home:
+  - work with a design doc (L2/L3, tracked L1) — validation and implementation evidence goes only into that design doc's Validation / Implementation sections;
+  - work without a design doc (L0/L1) — evidence is a single `Recent Updates` line (outcome plus verification command or commit).
+- All other PM sections (Active Tasks notes, Archive evidence column, design index notes, Current Status) hold one line of outcome plus a pointer (design path / commit / requirement ID) — no command litanies, no implementation narratives.
+- A given fact appears in at most one section of the PM main file. Lifecycle transitions (an Active Task finishing and entering Archive) **move** the row; they do not copy it.
+- If work has no design doc but its evidence does not fit on one line, treat that as a leveling signal: it probably deserved a design doc.
+
 ## Lightweight PM Pattern
 
 Routine L1 work should not make the PM file noisy. Prefer a single outcome-oriented note in `Recent Updates` when future context needs it:

@@ -42,7 +42,3 @@ List durable dependencies. When the project maintains an architecture graph, kee
 ## Validation
 
 - 
-
-## Review Notes
-
-- Review status: not-reviewed

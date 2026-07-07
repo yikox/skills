@@ -34,7 +34,3 @@ Describe only durable baseline behavior. Do not store pending plans here.
 ## Open Questions
 
 - 
-
-## Review Notes
-
-- Review status: not-reviewed

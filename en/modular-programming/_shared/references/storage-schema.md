@@ -43,13 +43,14 @@ Prefer these sections for new `project-management.md` files. Preserve equivalent
 3. Active Tasks
 4. Requirements / Change Backlog
 5. Modular Design Index
-6. Roadmap
-7. Milestones
-8. Testing and Validation
-9. Blockers and Risks
-10. ADR Summary
-11. Archive
-12. Recent Updates
+6. Roadmap (optional: small projects can fold this into Requirements / Change Backlog)
+7. Milestones (optional: small projects can fold this into Archive)
+8. Blockers and Risks
+9. ADR Summary
+10. Archive
+11. Recent Updates
+
+There is no Testing and Validation section: currently runnable verification commands belong in `knowledge-summary.md`, and per-change validation evidence belongs in the corresponding design doc (see Evidence Single Home in pm-maintenance-rules).
 
 ## Active Task Fields
 

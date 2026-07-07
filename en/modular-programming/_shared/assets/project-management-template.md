@@ -35,19 +35,19 @@ Use this section for active L2/L3 work and tracked L1 work only. Routine same-se
 
 ## Roadmap
 
+(Optional section: small projects can fold this into Requirements / Change Backlog.)
+
 | Priority | Item | Primary Module | Status | Notes |
 | --- | --- | --- | --- | --- |
 | P1 |  |  |  |  |
 
 ## Milestones
 
+(Optional section: small projects can fold this into Archive.)
+
 | Milestone | Status | Notes |
 | --- | --- | --- |
 |  |  |  |
-
-## Testing and Validation
-
-- 
 
 ## Blockers and Risks
 
@@ -64,6 +64,8 @@ Use this section for active L2/L3 work and tracked L1 work only. Routine same-se
 ## Archive
 
 ### Completed Work
+
+The Evidence column holds a one-line pointer (design path / commit / PR); full evidence stays in the corresponding design doc (see Evidence Single Home in pm-maintenance-rules).
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |

@@ -22,6 +22,8 @@ Last updated: 2026-07-04
 - commit 末尾加 `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`。
 - CLAUDE.md / AGENTS.md 不入库（机器相关路径，见 0fa8ba2），保留本地副本。
 - 设计/PM 文档用中文，技能正文用英文（description 含中文触发词）。
+- en/zh 双语散文修改：先写 zh 再产出 en 对应版（用户观察 zh 散文效果更好），两语言同一提交落地；机器 token 不动。
+- 证据单一居所（写入时规则，2026-07-08 起）：证据只写进设计文档或 Recent Updates 单行，PM 其余节只放一行指针；见 pm-maintenance-rules。
 
 ## Troubleshooting
 

@@ -34,7 +34,3 @@ review_status: not-reviewed
 ## 待解问题
 
 - 
-
-## 评审记录
-
-- Review status: not-reviewed

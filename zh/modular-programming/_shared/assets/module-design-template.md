@@ -42,7 +42,3 @@ review_status: not-reviewed
 ## 验证
 
 - 
-
-## 评审记录
-
-- Review status: not-reviewed

@@ -43,13 +43,14 @@ PM/<project-slug>/
 3. Active Tasks
 4. Requirements / Change Backlog
 5. Modular Design Index
-6. Roadmap
-7. Milestones
-8. Testing and Validation
-9. Blockers and Risks
-10. ADR Summary
-11. Archive
-12. Recent Updates
+6. Roadmap（可选：小项目可并入 Requirements / Change Backlog）
+7. Milestones（可选：小项目可并入 Archive）
+8. Blockers and Risks
+9. ADR Summary
+10. Archive
+11. Recent Updates
+
+不设 Testing and Validation 小节：当前可跑的验证命令归 `knowledge-summary.md`，逐次变更的验证证据归对应设计文档（见 pm-maintenance-rules 的「证据单一居所」）。
 
 ## 进行中任务字段
 

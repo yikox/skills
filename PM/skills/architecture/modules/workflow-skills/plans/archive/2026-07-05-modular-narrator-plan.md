@@ -1,4 +1,11 @@
+---
+source_design: architecture/modules/workflow-skills/changes/2026-07-05-modular-narrator.md
+level: L2
+---
+
 # 项目讲述者（modular-narrator）实现计划
+
+> 迁移说明：原路径 `docs/superpowers/plans/2026-07-05-modular-narrator.md`，2026-07-07 审计时随设计迁入并归档（设计已 implemented）。正文保留原貌，文中路径为改名/语言分层前的历史路径。
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -180,7 +187,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 ## Self-Review
 
-**1. Spec coverage**（对照 `docs/superpowers/specs/2026-07-05-modular-narrator-design.md`）：
+**1. Spec coverage**（对照 `architecture/modules/workflow-skills/changes/2026-07-05-modular-narrator.md`，迁移前路径 `docs/superpowers/specs/2026-07-05-modular-narrator-design.md`）：
 - 角色定位 / 独立可用 → Task 1 Step 1（SKILL.md 正文 + description）。
 - 硬边界（只读 / 纯对话 / 有理有据 / 只读纪律内联不引用 `_shared`）→ Task 1 Step 1 "硬边界" 段，Step 4 校验未引用 `_shared`。
 - 讲解风格（500–1000 字符 / 默认高层 / 追问才下探 / 分层）→ Task 1 Step 1 "讲解风格" 段。

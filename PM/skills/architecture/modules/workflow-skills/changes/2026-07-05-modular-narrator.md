@@ -1,8 +1,18 @@
+---
+title: 项目讲述者（modular-narrator）
+level: L2
+status: implemented
+review_status: reviewed
+primary_module: workflow-skills
+impacted_modules: []
+---
+
 # 项目讲述者（modular-narrator）设计
 
 - 日期：2026-07-05
-- 状态：已确认，待实现
+- 状态：implemented（实现 commits a537db2 / 7723924 / e6d3ac8）
 - 类型：新增高级技能
+- 迁移说明：本设计经 superpowers 流程产出，原路径 `docs/superpowers/specs/2026-07-05-modular-narrator-design.md`，2026-07-07 审计时迁入 PM 树并按 review-rules L2 检查项复核（主模块 workflow-skills、纯增量无契约破坏、用户已确认、实现证据齐全）。正文保留原貌：文中 `modular-architect` 即现今的 `modular-advisor`（265aa52 改名），`modular-programming/` 路径即现今的 `en/modular-programming/`（7cf18d3 语言分层）。
 
 ## 背景与动机
 

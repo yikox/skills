@@ -16,7 +16,7 @@ review_status: reviewed
 
 | Module | Form | Kind | Responsibility | Status |
 | --- | --- | --- | --- | --- |
-| workflow-skills | atomic | config-rule | 九个技能入口 SKILL.md，定义工作流执行规则 | implemented |
+| workflow-skills | atomic | config-rule | 十个技能入口 SKILL.md，定义工作流执行规则 | implemented |
 | shared-references | atomic | config-rule | 跨技能共享的规则语料（工作流/存储/评审/图格式/模块化方法论与评估） | implemented |
 | shared-assets | atomic | resource-file | 文档模板与渲染示例夹具 | implemented |
 | audit-checker | atomic | function-flow | 项目记忆一致性的确定性检查脚本 | implemented |

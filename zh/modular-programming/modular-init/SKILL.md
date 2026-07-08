@@ -33,7 +33,7 @@ description: Initialize or repair an architecture-first modular programming work
    - 既有项目：在提议改动之前先检查代码并迁移当前事实；
    - 修复：修复缺失的章节、陈旧的路径或旧的工作流名称。
 4. 在创建文件之前，以多选题形式询问用户的工作流偏好（见 `modular-workflow-rules.md` 中的 Preference Profiles）：
-   - `docs-language`：PM、架构、知识与设计文档的语言（`zh` / `en` / `follow-project`）；
+   - `docs-language`：PM、架构、知识、可选 proposal 文档与决策摘要的语言（`zh` / `en` / `follow-project`）；
    - `confirmation`：确认粒度（`high-touch` / `standard` / `low-touch`）。
    用户无偏好时，默认 `follow-project` + `standard`。
 5. 以所选文档语言创建或修复 `project-management.md`、`knowledge-summary.md`、`architecture/main-design.md` 与 `architecture/modules/*.md`。当这会引入一份新的或被替换的模块地图时，先把它呈现给用户并取得批准，再写基线文档。

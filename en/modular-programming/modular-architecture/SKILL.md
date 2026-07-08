@@ -1,11 +1,11 @@
 ---
 name: modular-architecture
-description: Create, migrate, maintain, review, and render the architecture-first module map for modular programming projects. Use when the agent should define modules for a new project, infer modules from an existing codebase, update `architecture/main-design.md`, module docs, baseline vs proposed target architecture, architecture change docs, ADRs, graph JSON, rendered HTML/SVG diagrams, or Chinese requests such as 模块地图, 模块架构, 全局设计图, 架构变更, ADR, 老项目模块迁移.
+description: Create, migrate, maintain, review, and render the architecture-first module map for modular programming projects. Use when the agent should define modules for a new project, infer modules from an existing codebase, update `architecture/main-design.md`, module docs, branch-carried architecture patches, optional architecture proposal docs, ADRs, graph JSON, rendered HTML/SVG diagrams, or Chinese requests such as 模块地图, 模块架构, 全局设计图, 架构变更, ADR, 老项目模块迁移.
 ---
 
 # Modular Architecture
 
-Use this skill to maintain the authoritative module map. Architecture owns modules, boundaries, relationships, and durable contracts. PM records the lifecycle around that architecture. By default, `architecture/main-design.md` plus `architecture/modules/*.md` is sufficient for AI work; graph rendering is an advanced human-facing visualization capability.
+Use this skill to maintain the authoritative module map. Architecture owns modules, boundaries, relationships, and durable contracts. PM records the lifecycle around that architecture. By default, `architecture/main-design.md` plus `architecture/modules/*.md` is sufficient for AI work; L2/L3 changes are carried as branch architecture patches, and graph rendering is an advanced human-facing visualization capability.
 
 ## Required References
 
@@ -46,24 +46,27 @@ Use:
 5. Create or replace the baseline architecture docs. Create graph JSON/rendered output only when explicitly useful for human review or an advanced workflow.
 6. Record unclear boundaries and migration gaps in PM.
 
-### Baseline Update
+### Baseline / Branch Patch Update
 
-Use this after implementation changes durable architecture:
+Use this after implementation changes durable architecture, or when creating the first accepted architecture patch commit on a feature branch:
 
-1. Read the accepted design or implemented evidence.
+1. Read the accepted patch summary, optional proposal, or implemented evidence.
 2. Update module docs first, then `main-design.md`.
-3. If the project already uses graph artifacts or the change specifically affects a maintained graph, update graph JSON and render diagrams.
-4. Keep only landed or accepted baseline facts in baseline docs.
+3. If this is the first commit on a feature branch for L2/L3, also update the PM active row to point at the branch patch and keep the branch unmerged until implementation catches up.
+4. If the project already uses graph artifacts or the change specifically affects a maintained graph, update graph JSON and render diagrams.
+5. On main, keep only landed baseline facts in baseline docs. On a feature branch, accepted target facts may appear before implementation, but must be made true before merge.
 
-### L3 Target Architecture
+### L3 Branch Architecture Patch
 
 Use this before implementation when a change affects module boundaries, cross-module contracts, state ownership, persistence, runtime, or external systems:
 
 1. Ensure PM start exists for the L3 work.
-2. Write `architecture/changes/<date>-<change>.md`.
-3. Write or update `architecture/graphs/proposed/<date>-<change>.arch.json` only when a visual target helps or graph artifacts are part of the accepted advanced workflow.
+2. Prepare a 3-8 bullet target map summary and get human acceptance.
+3. Create or switch to a feature branch and make the first commit the architecture patch: update `architecture/main-design.md`, relevant module docs, PM active row, and proposed graph JSON only when a visual target helps or graph artifacts are part of the accepted advanced workflow.
 4. Add `architecture/adrs/ADR-<date>-<decision>.md` only when a durable decision among meaningful alternatives exists.
-5. Run `modular-review`, then ask for acceptance with a decision summary of 3-8 bullets (key changes, ambiguities, risks) embedded in the request; do not proceed to implementation until the target is reviewed and human-accepted.
+5. Run `modular-review` on the branch patch. Do not merge the branch until implementation and verification make the target map true.
+
+Use `architecture/changes/<date>-<change>.md` only when the target needs a standalone proposal for complex, cross-day, offline, or non-git review.
 
 ## Advanced Rendering
 
@@ -92,6 +95,6 @@ python3 <suite-dir>/_shared/scripts/serve_modular_graph.py --root <projects-root
 - When a graph is maintained, relations follow arrow-equals-dependency, the closed `kind` vocabulary, and solid/dashed runtime semantics in the graph format reference; that maintained graph is the authoritative visual source of inter-module relations.
 - Composite modules expose interfaces when external collaboration needs named endpoints.
 - Relations connect modules at the same architecture level.
-- Proposed targets are clearly separated from current baseline.
+- Proposed targets are clearly separated from current baseline. The separation may be by branch: main holds implemented baseline, the feature branch holds the accepted target patch.
 - Architecture docs do not contain task lists, implementation plans, or PM history.
 - PM indexes architecture artifacts, but does not define module boundaries.

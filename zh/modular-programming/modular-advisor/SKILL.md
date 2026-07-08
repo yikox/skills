@@ -41,7 +41,7 @@ description: Advanced advisory role with built-in modular design thinking. Use w
 - 数据归属的迁移顺序；
 - 风险、回滚，以及每个阶段的验证信号。
 
-落地：在工作流模式下，写成 `architecture/changes/<YYYY-MM-DD>-<change>.md` 并置 `status: proposed`，交给现有的 L3 路径（`modular-review` -> 决策摘要 -> 人工接受 -> `modular-change` / `modular-autopilot`）。在独立模式下，先在对话中呈现，再保存到用户选定的位置（默认 `docs/modularization/<YYYY-MM-DD>-<topic>.md`）。
+落地：在工作流模式下，先作为 branch architecture patch 摘要交给 L3 路径（`modular-review` -> 决策摘要 -> 人工接受 -> 分支第一颗 patch commit -> `modular-change` / `modular-autopilot`）。只有复杂/离线评审确实需要独立 proposal 时，才写成 `architecture/changes/<YYYY-MM-DD>-<change>.md`。在独立模式下，先在对话中呈现，再保存到用户选定的位置（默认 `docs/modularization/<YYYY-MM-DD>-<topic>.md`）。
 
 ### 3. 新项目模块化设计提案
 
@@ -51,7 +51,7 @@ description: Advanced advisory role with built-in modular design thinking. Use w
 
 **独立顾问**（项目未接入工作流）：理解目标 -> 读代码 / 评估 -> 讨论 -> 敲定。交付物在明确确认后放入 `docs/modularization/`（或用户选定的任意位置）。当用户希望提案成为在用基线时，建议以 `modular-init` 作为下一步——但一份提案无需接入工作流也是完整可用的。
 
-**工作流内**（已存在 PM/架构结构）：评估获得一条 PM 备注；遗留提案成为 L3 路径上的 proposed 架构变更；新项目设计喂给 `modular-architecture` 创建基线。顾问绝不编辑基线，也绝不把自己的提案标记为已接受或已实现——提案者与执行者保持角色分离。
+**工作流内**（已存在 PM/架构结构）：评估获得一条 PM 备注；遗留提案成为 L3 路径上的 branch architecture patch 摘要；新项目设计喂给 `modular-architecture` 创建基线。顾问绝不编辑基线，也绝不把自己的提案标记为已接受或已实现——提案者与执行者保持角色分离。
 
 ## 过程
 

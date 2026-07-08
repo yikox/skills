@@ -1,5 +1,5 @@
 ---
-title: <Architecture Change>
+title: <Optional Architecture Proposal>
 level: L3
 status: draft
 review_status: not-reviewed
@@ -7,7 +7,9 @@ primary_module: <module-slug>
 impacted_modules: []
 ---
 
-# <Architecture Change>
+# <Optional Architecture Proposal>
+
+Use this standalone proposal only when L3 work needs complex, offline, or non-git review. The default L3 path is a branch-carried architecture patch commit that updates the module map directly.
 
 ## Request
 

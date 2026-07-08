@@ -10,7 +10,7 @@ PM/<project-slug>/
   knowledge-summary.md
   architecture/
     main-design.md
-    changes/
+    changes/                         # optional proposal docs for complex/offline review
       <YYYY-MM-DD>-<architecture-change>.md
     plans/
       <YYYY-MM-DD>-<change>-plan.md
@@ -19,7 +19,7 @@ PM/<project-slug>/
     modules/
       <module-slug>.md
       <module-slug>/
-        changes/
+        changes/                     # optional proposal docs for complex/offline review
           <YYYY-MM-DD>-<module-change>.md
         plans/
           <YYYY-MM-DD>-<change>-plan.md
@@ -50,7 +50,7 @@ Prefer these sections for new `project-management.md` files. Preserve equivalent
 10. Archive
 11. Recent Updates
 
-There is no Testing and Validation section: currently runnable verification commands belong in `knowledge-summary.md`, and per-change validation evidence belongs in the corresponding design doc (see Evidence Single Home in pm-maintenance-rules).
+There is no Testing and Validation section: currently runnable verification commands belong in `knowledge-summary.md`; per-change validation evidence belongs in one PM completion pointer, the implementing commit/PR, or an archived execution artifact when one exists (see Evidence Single Home in pm-maintenance-rules).
 
 ## Active Task Fields
 
@@ -78,17 +78,19 @@ Use a backlog row when the user states a non-trivial requirement or change that 
 - scope / impact;
 - status;
 - priority;
-- design path / next step.
+- architecture patch commit, optional proposal path, or next step.
 
 ## Modular Design Index
 
-Index durable design artifacts:
+Index durable architecture artifacts:
 
 - Main Architecture: `architecture/main-design.md`;
 - Module: `architecture/modules/<module>.md`;
-- Architecture Change: `architecture/changes/<date>-<change>.md`;
 - ADR: `architecture/adrs/ADR-<date>-<decision>.md`;
-- Module Change: `architecture/modules/<module>/changes/<date>-<change>.md`.
+- Optional Architecture Proposal: `architecture/changes/<date>-<change>.md`;
+- Optional Module Proposal: `architecture/modules/<module>/changes/<date>-<change>.md`.
+
+Branch-carried architecture patch commits are not indexed as separate design files. Record them in PM Active Tasks while active and as one-line evidence after completion.
 
 Graph JSON and rendered diagrams are optional advanced visualization artifacts. Index them only when a project actively uses graph review or a specific change/design needs visual communication. `main-design.md` and module docs remain sufficient for the default AI workflow.
 
@@ -146,13 +148,14 @@ Use project-native status words when they already exist, but keep the meaning co
 
 ## Plan Files
 
-Implementation plans are temporary execution aids, not architecture. They live in `plans/` next to their design's `changes/` directory — L3 plans under `architecture/plans/`, L2 plans under `architecture/modules/<module-slug>/plans/`. Never store plans inside a `changes/` directory.
+Implementation plans are temporary execution aids, not architecture. L3 plans live under `architecture/plans/`; L2 plans live under `architecture/modules/<module-slug>/plans/`. Never store plans inside a `changes/` directory.
 
 Plan front matter:
 
 | Field | Required | Meaning |
 | --- | --- | --- |
-| `source_design` | yes | pm-root-relative path to the design the plan implements |
-| `level` | yes | `L2` or `L3`, matching the source design; a plan's directory must match its level (`plans/` holds L3, `modules/<module-slug>/plans/` holds L2) |
+| `source_patch` | yes, unless `source_design` is present | architecture patch commit hash or branch reference the plan implements |
+| `source_design` | yes, unless `source_patch` is present | pm-root-relative path to the optional proposal the plan implements |
+| `level` | yes | `L2` or `L3`, matching the source; a plan's directory must match its level (`plans/` holds L3, `modules/<module-slug>/plans/` holds L2) |
 
-Archive or delete a plan once its PM completion is recorded; `modular-audit` warns about plans whose source design is already `implemented`. To archive, move the plan into an `archive/` subdirectory beside it (e.g. `architecture/plans/archive/`); the checker intentionally skips archived plans.
+Archive or delete a plan once its PM completion is recorded; `modular-audit` warns about plans whose optional source design is already `implemented`. To archive, move the plan into an `archive/` subdirectory beside it (e.g. `architecture/plans/archive/`); the checker intentionally skips archived plans.

@@ -431,16 +431,18 @@ def check_plans(pm: Path) -> None:
                 error(f"[plans] {rel} 缺少 front matter")
                 continue
             src = meta.get("source_design")
-            if not isinstance(src, str) or not src:
-                error(f"[plans] {rel} 缺少 source_design")
-            elif Path(src).is_absolute() or not (pm / src).resolve().is_relative_to(pm):
-                error(f"[plans] {rel} source_design 越出 pm 根目录: {src}")
-            elif not (pm / src).exists():
-                error(f"[plans] {rel} source_design 路径不存在: {src}")
-            else:
-                smeta = parse_front_matter((pm / src).read_text(encoding="utf-8"))
-                if smeta.get("status") == "implemented":
-                    warn(f"[plans] {rel} 的源设计已 implemented，计划应归档或删除")
+            patch = meta.get("source_patch")
+            if isinstance(src, str) and src:
+                if Path(src).is_absolute() or not (pm / src).resolve().is_relative_to(pm):
+                    error(f"[plans] {rel} source_design 越出 pm 根目录: {src}")
+                elif not (pm / src).exists():
+                    error(f"[plans] {rel} source_design 路径不存在: {src}")
+                else:
+                    smeta = parse_front_matter((pm / src).read_text(encoding="utf-8"))
+                    if smeta.get("status") == "implemented":
+                        warn(f"[plans] {rel} 的源设计已 implemented，计划应归档或删除")
+            elif not isinstance(patch, str) or not patch:
+                error(f"[plans] {rel} 缺少 source_design 或 source_patch")
             level = meta.get("level")
             if level not in {"L2", "L3"}:
                 error(f"[plans] {rel} level 非法: {level}")

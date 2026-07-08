@@ -1,6 +1,6 @@
 ---
 name: modular-review
-description: Review modular programming artifacts before acceptance or completion. Use when the agent should check module routing, L0/L1/L2/L3 classification, PM start/completion records, architecture baseline vs target separation, module docs, architecture changes, ADRs, module change designs, graph relations, design indexes, or Chinese requests such as 模块化评审, 架构评审, 设计审核, 自动审核.
+description: Review modular programming artifacts before acceptance or completion. Use when the agent should check module routing, L0/L1/L2/L3 classification, PM start/completion records, architecture baseline vs target separation, module docs, branch architecture patches, optional proposals, ADRs, graph relations, artifact indexes, or Chinese requests such as 模块化评审, 架构评审, 设计审核, 自动审核.
 ---
 
 # Modular Review
@@ -18,8 +18,8 @@ Read:
 
 ## Workflow
 
-1. Identify the artifact type: PM row, architecture baseline, architecture change, ADR, module doc, module change, graph, or completion evidence.
-2. Read the linked PM row, architecture docs, module docs, and design index entries needed for traceability.
+1. Identify the artifact type: PM row, architecture baseline, branch architecture patch, optional proposal, ADR, module doc, graph, or completion evidence.
+2. Read the linked PM row, architecture docs, module docs, and artifact index entries needed for traceability.
 3. Check module gate, change level, impacted modules, status sync, baseline/target separation, review status, lightweight-PM fit, and open questions.
 4. Fix clear mechanical defects such as missing paths, stale index status, broken local links, or missing review labels.
 5. Record human questions for ambiguous module ownership, scope, architecture direction, product tradeoffs, or acceptance decisions.
@@ -32,5 +32,5 @@ Automatic review may say an artifact is internally consistent. It must not:
 
 - accept L3 architecture direction;
 - approve product scope tradeoffs;
-- mark a target implemented without evidence;
+- mark a branch patch or optional proposal implemented without evidence;
 - choose among materially different module ownership options without user confirmation.

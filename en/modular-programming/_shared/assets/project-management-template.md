@@ -24,7 +24,7 @@ Use this section for active L2/L3 work and tracked L1 work only. Routine same-se
 
 ## Requirements / Change Backlog
 
-| ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Design Path / Next Step |
+| ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Patch / Proposal / Next Step |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Modular Design Index
@@ -65,7 +65,7 @@ Use this section for active L2/L3 work and tracked L1 work only. Routine same-se
 
 ### Completed Work
 
-The Evidence column holds a one-line pointer (design path / commit / PR); full evidence stays in the corresponding design doc (see Evidence Single Home in pm-maintenance-rules).
+The Evidence column holds a one-line pointer (architecture patch commit / implementation commit / PR / optional proposal); full execution logs stay in archived process files when kept.
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |

@@ -41,7 +41,7 @@ Built on top of an assessment (run one first if none exists). Structure:
 - data-ownership migration order;
 - risks, rollback, and per-stage verification signals.
 
-Landing: in workflow mode write it as `architecture/changes/<YYYY-MM-DD>-<change>.md` with `status: proposed` and hand it to the existing L3 path (`modular-review` -> decision summary -> human acceptance -> `modular-change` / `modular-autopilot`). In standalone mode present it in conversation first, then save to the user's chosen location (default `docs/modularization/<YYYY-MM-DD>-<topic>.md`).
+Landing: in workflow mode present the proposal as a branch architecture patch summary and hand it to the L3 path (`modular-review` -> decision summary -> human acceptance -> first branch patch commit -> `modular-change` / `modular-autopilot`). Write `architecture/changes/<YYYY-MM-DD>-<change>.md` only when complex/offline review needs a standalone proposal. In standalone mode present it in conversation first, then save to the user's chosen location (default `docs/modularization/<YYYY-MM-DD>-<topic>.md`).
 
 ### 3. New Project Modular Design Proposal
 
@@ -51,7 +51,7 @@ Structure: system capability list -> module draft (responsibility / non-goals / 
 
 **Standalone advisory** (project not in the workflow): understand goals -> read code / assess -> discuss -> finalize. Deliverables go to `docs/modularization/` (or wherever the user chooses) after explicit confirmation. Recommend `modular-init` as the next step when the user wants the proposal to become a live baseline — but a proposal is complete and usable without adoption.
 
-**In-workflow** (PM/architecture structure exists): assessments get a PM note; legacy proposals become proposed architecture changes on the L3 path; new-project designs feed `modular-architecture` baseline creation. The advisor never edits the baseline and never marks its own proposals accepted or implemented — proposer and executor stay separate roles.
+**In-workflow** (PM/architecture structure exists): assessments get a PM note; legacy proposals become branch architecture patch summaries on the L3 path; new-project designs feed `modular-architecture` baseline creation. The advisor never edits the baseline and never marks its own proposals accepted or implemented — proposer and executor stay separate roles.
 
 ## Process
 

@@ -4,7 +4,7 @@
 
 ## 偏好设置
 
-- `docs-language`: <zh | en | follow-project> — PM、架构、知识与设计文档以及决策摘要所使用的语言。
+- `docs-language`: <zh | en | follow-project> — PM、架构、知识、可选 proposal 文档以及决策摘要所使用的语言。
 - `confirmation`: <high-touch | standard | low-touch> — 确认粒度；具体语义在工作流的 Preference Profiles 中定义。`low-touch` 绝不跳过 L3 接受、模块地图批准、首次写入 AI 文档，或 L2 到 L3 的提升。
 
 ## 会话入口
@@ -18,12 +18,14 @@
 
 - L0 平凡编辑：实现并验证；PM 可选。Bug 修复至少为 L1：先复现，修复后验证失败用例，完成时记录根因。
 - L1 局部变更：实现 -> 验证 -> 简洁证据。仅当工作跨会话、携带风险/发布证据、属于某个既有进行中任务，或用户要求跟踪时，才使用 Active Tasks。
-- L2 模块变更：PM 启动 -> 模块变更设计 -> 评审 -> 决策摘要 + 用户确认 -> 实现 -> 验证 -> PM 完成。
-- L3 架构变更：PM 启动 -> 目标设计/ADR -> 评审 -> 决策摘要 + 用户接受 -> 实现 -> 验证 -> 基线更新 -> PM 完成。
+- L2 模块变更：PM 启动 -> 决策摘要 + 用户确认 -> 功能分支第一颗 architecture patch commit -> 实现 -> 验证 -> PM 完成。
+- L3 架构变更：PM 启动 -> 决策摘要 + 用户接受 -> 功能分支第一颗 architecture patch commit / 必要时 ADR -> 实现 -> 验证 -> PM 完成。
 
 如果主模块或根因不明确，先进入诊断模式：复现、检查并收集证据，不做结构性变更，也不宣称完成。
 
-L2/L3 确认请求必须在请求本身中内嵌一份 3-8 条的决策摘要（关键变更、模糊点、风险）——而不是放在此前另一条消息里——以便用户无需阅读完整设计即可决策。
+L2/L3 默认使用分支携带的 architecture patch。除非复杂度、离线评审或非 git 协作确实需要，否则不要创建长期独立 proposal 文件。architecture patch 分支必须在代码与模块地图一致后才能合并。
+
+L2/L3 确认请求必须在请求本身中内嵌一份 3-8 条的决策摘要（关键变更、模糊点、风险）——而不是放在此前另一条消息里——以便用户无需打开独立 proposal 即可决策。
 
 ## 技能路由
 
@@ -37,7 +39,7 @@ L2/L3 确认请求必须在请求本身中内嵌一份 3-8 条的决策摘要（
 内部或高级入口：
 
 - `modular-architecture`：模块地图、ADR、基线更新以及可选的图可视化。
-- `modular-autopilot`：针对已接受并已评审的 L2/L3 设计的高级自主执行。
+- `modular-autopilot`：针对已接受并已评审的 L2/L3 architecture patch 或可选 proposal 的高级自主执行。
 - `modular-advisor`：面向模块化评估、老项目重构提案与新项目模块化设计讨论的高级顾问角色；仅出提案，绝不实现。
 - `modular-status`：需要显式跟踪时的 PM 启动/更新/完成/归档。
-- `modular-review`：检查设计、ADR、PM 行以及维护的图。
+- `modular-review`：检查 architecture patch、可选 proposal、ADR、PM 行以及维护的图。

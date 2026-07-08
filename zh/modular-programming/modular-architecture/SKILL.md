@@ -1,11 +1,11 @@
 ---
 name: modular-architecture
-description: Create, migrate, maintain, review, and render the architecture-first module map for modular programming projects. Use when the agent should define modules for a new project, infer modules from an existing codebase, update `architecture/main-design.md`, module docs, baseline vs proposed target architecture, architecture change docs, ADRs, graph JSON, rendered HTML/SVG diagrams, or Chinese requests such as 模块地图, 模块架构, 全局设计图, 架构变更, ADR, 老项目模块迁移.
+description: Create, migrate, maintain, review, and render the architecture-first module map for modular programming projects. Use when the agent should define modules for a new project, infer modules from an existing codebase, update `architecture/main-design.md`, module docs, branch-carried architecture patches, optional architecture proposal docs, ADRs, graph JSON, rendered HTML/SVG diagrams, or Chinese requests such as 模块地图, 模块架构, 全局设计图, 架构变更, ADR, 老项目模块迁移.
 ---
 
 # 模块化架构（Modular Architecture）
 
-用这个 skill 维护权威的模块地图。架构拥有模块、边界、关系与持久契约。PM 记录围绕该架构的生命周期。默认情况下，`architecture/main-design.md` 加 `architecture/modules/*.md` 足以支撑 AI 工作；图渲染是一项面向人类的高级可视化能力。
+用这个 skill 维护权威的模块地图。架构拥有模块、边界、关系与持久契约。PM 记录围绕该架构的生命周期。默认情况下，`architecture/main-design.md` 加 `architecture/modules/*.md` 足以支撑 AI 工作；L2/L3 变更由分支 architecture patch 承载，图渲染是一项面向人类的高级可视化能力。
 
 ## 必读参考
 
@@ -46,24 +46,27 @@ description: Create, migrate, maintain, review, and render the architecture-firs
 5. 创建或替换基线架构文档。仅当对人工评审或高级工作流明确有用时，才创建图 JSON/渲染输出。
 6. 把不清楚的边界与迁移缺口记录进 PM。
 
-### 基线更新
+### 基线 / 分支 Patch 更新
 
-在实现改动了持久架构之后使用：
+在实现改动了持久架构之后，或在功能分支创建第一颗已接受 architecture patch commit 时使用：
 
-1. 阅读已接受的设计或已实现的证据。
+1. 阅读已接受的 patch 摘要、可选 proposal 或已实现的证据。
 2. 先更新模块文档，再更新 `main-design.md`。
-3. 若项目已使用图产物，或该变更特别影响到某个维护中的图，则更新图 JSON 并渲染图表。
-4. 基线文档中只保留已落地或已接受的基线事实。
+3. 如果这是 L2/L3 功能分支上的第一颗 commit，也更新 PM active 行指向该分支 patch，并保持分支未合并，直到实现追上目标地图。
+4. 若项目已使用图产物，或该变更特别影响到某个维护中的图，则更新图 JSON 并渲染图表。
+5. main 上的基线文档只保留已落地事实。功能分支可以先出现已接受目标事实，但合并前必须由实现验证它为真。
 
-### L3 目标架构
+### L3 分支 Architecture Patch
 
 当变更影响模块边界、跨模块契约、状态归属、持久化、运行时或外部系统时，在实现前使用：
 
 1. 确保该 L3 工作已有 PM start。
-2. 写 `architecture/changes/<date>-<change>.md`。
-3. 仅当可视化目标有帮助，或图产物属于已接受的高级工作流时，才写入或更新 `architecture/graphs/proposed/<date>-<change>.arch.json`。
+2. 准备 3-8 条目标地图摘要并取得人工接受。
+3. 创建或切换到功能分支，把第一颗 commit 作为 architecture patch：更新 `architecture/main-design.md`、相关模块文档、PM active 行；仅当可视化目标有帮助，或图产物属于已接受的高级工作流时，才写入 proposed 图 JSON。
 4. 仅当存在需在多个有意义备选方案间做出的持久决策时，才添加 `architecture/adrs/ADR-<date>-<decision>.md`。
-5. 运行 `modular-review`，然后请求接受，并把一段 3-8 条要点的决策摘要（关键变更、含糊点、风险）内嵌在请求中；在目标经过评审并获人工接受前，不要进入实现。
+5. 对分支 patch 运行 `modular-review`。在实现和验证让目标地图成真之前，不要合并该分支。
+
+只有当目标需要复杂、跨天、离线或非 git 评审时，才写 `architecture/changes/<date>-<change>.md`。
 
 ## 高级渲染
 
@@ -92,6 +95,6 @@ python3 <suite-dir>/_shared/scripts/serve_modular_graph.py --root <projects-root
 - 当维护图时，关系遵循"箭头即依赖"、封闭的 `kind` 词表，以及图格式参考中的实线/虚线运行时语义；该维护中的图是模块间关系的权威可视化来源。
 - 当外部协作需要具名端点时，复合模块暴露接口。
 - 关系连接的是处于同一架构层级的模块。
-- 提议的目标与当前基线清晰分离。
+- 提议的目标与当前基线清晰分离。分离可以通过分支实现：main 保持已实现基线，功能分支携带已接受目标 patch。
 - 架构文档不包含任务清单、实现计划或 PM 历史。
 - PM 索引架构产物，但不定义模块边界。

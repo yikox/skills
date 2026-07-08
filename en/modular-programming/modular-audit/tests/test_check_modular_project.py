@@ -324,6 +324,34 @@ class CheckModularProjectGraphTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("0 error", result.stdout)
 
+    def test_plan_may_reference_branch_architecture_patch_commit(self) -> None:
+        pm = self.make_pm(
+            {
+                "format": "arch-graph/v0.3",
+                "name": "Patch plan graph",
+                "described": "Plan source patch fixture",
+                "objects": [],
+                "groups": [],
+                "relations": [],
+            }
+        )
+        write(
+            pm / "architecture/plans/2026-07-08-branch-patch-plan.md",
+            """
+            ---
+            source_patch: bd19dfa
+            level: L3
+            ---
+
+            # Branch Patch Plan
+            """,
+        )
+
+        result = self.run_checker(pm)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("0 error, 0 warning", result.stdout)
+
 
 class VocabSingleSourceTests(unittest.TestCase):
     """受控词表以 _shared/references/vocab.md 为单一事实源，缺失时回退内置默认。"""

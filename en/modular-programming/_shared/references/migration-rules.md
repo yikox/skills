@@ -36,7 +36,7 @@ Map them to the new modular suite by responsibility:
 
 - initialization and repair -> `modular-init`;
 - architecture/module baseline -> `modular-architecture`;
-- request intake and change design -> `modular-change`;
+- request intake and branch architecture patch / optional proposal flow -> `modular-change`;
 - active/completed PM state -> `modular-status`;
 - automatic review -> `modular-review`;
 - consistency audit and migration -> `modular-audit`;

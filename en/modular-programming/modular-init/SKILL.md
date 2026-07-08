@@ -33,7 +33,7 @@ Use these assets for new files:
    - existing project: inspect code and migrate current facts before proposing changes;
    - repair: fix missing sections, stale paths, or old workflow names.
 4. Ask the user's workflow preferences as multiple-choice questions before creating files (see Preference Profiles in `modular-workflow-rules.md`):
-   - `docs-language`: language for PM, architecture, knowledge, and design docs (`zh` / `en` / `follow-project`);
+   - `docs-language`: language for PM, architecture, knowledge, optional proposal docs, and decision summaries (`zh` / `en` / `follow-project`);
    - `confirmation`: confirmation granularity (`high-touch` / `standard` / `low-touch`).
    Default to `follow-project` + `standard` when the user has no preference.
 5. Create or repair `project-management.md`, `knowledge-summary.md`, `architecture/main-design.md`, and `architecture/modules/*.md` in the chosen docs language. When this introduces a new or replaced module map, present it to the user and get approval before writing baseline docs.

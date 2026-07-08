@@ -1,5 +1,5 @@
 ---
-title: <Module Change>
+title: <Optional Module Proposal>
 level: L2
 status: draft
 review_status: not-reviewed
@@ -7,7 +7,9 @@ primary_module: <module-slug>
 impacted_modules: []
 ---
 
-# <Module Change>
+# <Optional Module Proposal>
+
+仅当 L2 工作需要复杂、离线或非 git 评审时，才使用这份独立 proposal。默认 L2 路径是由分支携带的 architecture patch commit，直接修改受影响的模块地图。
 
 ## 需求
 

@@ -1,6 +1,6 @@
 # skills 仓库 Knowledge Summary
 
-Last updated: 2026-07-04
+Last updated: 2026-07-08
 
 ## Verified Commands
 
@@ -15,7 +15,8 @@ Last updated: 2026-07-04
 
 - 默认 AI-readable baseline 是 `architecture/main-design.md` + `architecture/modules/*.md`；图是高级可视化能力，只有项目维护图时才作为关系的权威可视化来源。
 - `architecture/graphs/*.arch.json` 可缺省；checker 仅在图文件存在时校验图端点、关系词表、group/interface/scope 与 Dependencies 子集。
-- 计划文件存 `plans/`（L3）或 `modules/<slug>/plans/`（L2），front matter 须含 `source_design` 与 `level`；归档移入旁边 `archive/` 子目录（checker 有意跳过）。
+- L2/L3 默认先在 feature branch 第一颗 commit 中写入已接受的 architecture patch；独立 proposal 只在复杂、离线或非 git 协作时使用。
+- 计划文件存 `plans/`（L3）或 `modules/<slug>/plans/`（L2），front matter 须含 `source_patch` 或 `source_design`，并含 `level`；归档移入旁边 `archive/` 子目录（checker 有意跳过）。
 - modular-autopilot 是主会话技能：subagent 不能再派发 subagent，任何"监督者"类角色都必须坐在主会话。
 
 ## Conventions
@@ -24,7 +25,7 @@ Last updated: 2026-07-04
 - CLAUDE.md / AGENTS.md 不入库（机器相关路径，见 0fa8ba2），保留本地副本。
 - 设计/PM 文档用中文，技能正文用英文（description 含中文触发词）。
 - en/zh 双语散文修改：先写 zh 再产出 en 对应版（用户观察 zh 散文效果更好），两语言同一提交落地；机器 token 不动。
-- 证据单一居所（写入时规则，2026-07-08 起）：证据只写进设计文档或 Recent Updates 单行，PM 其余节只放一行指针；见 pm-maintenance-rules。
+- 证据单一居所（写入时规则，2026-07-08 起）：默认 L2/L3 证据写成 PM 完成指针（architecture patch commit + implementation commit/PR）；可选 proposal 的证据写进 proposal 或归档执行产物；L0/L1 用 Recent Updates 单行。PM 其余节只放一行指针；见 pm-maintenance-rules。
 
 ## Troubleshooting
 
@@ -37,4 +38,4 @@ Last updated: 2026-07-04
 
 - 把设计中的契约约束逐字注入 writing-plans 的 Global Constraints，SDD 会转交每个任务评审者，自动获得模块边界守门。
 - 转录型任务（计划内嵌全文）用最便宜模型跑 implementer 足够，评审用中档模型核对零漂移。
-- 模块化工作流默认应轻量：L1 不默认进入 Active Tasks；只有跨会话、风险、发布证据、用户要求或已有 active task 才完整 PM。
+- 模块化工作流默认应轻量：L1 不默认进入 Active Tasks；L2/L3 不默认维护独立过程文档，而是用 branch-carried architecture patch 修改主体模块地图，完成后用一行 PM 指针收尾。

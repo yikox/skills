@@ -18,14 +18,14 @@ review_status: reviewed
 ## Public Contract
 
 - 技能以 `../_shared/references/<file>.md` 相对路径引用；文件名即契约，改名属于 L3 变更。
-- storage-schema 定义的目录布局与 front matter 字段（模块字段、计划 `source_design`/`level`、过程文件归档位置）被 audit-checker 以代码形式强制。
+- storage-schema 定义的目录布局与 front matter 字段（模块字段、计划 `source_patch` 或 `source_design` + `level`、过程文件归档位置）被 audit-checker 以代码形式强制。
 - `vocab.md` 是受控词表（module_form / module_kind / relation_kind / relation_style / design_status / review_status）的单一事实源，被 audit-checker 启动时解析；其它规则文档只解释语义，枚举值以 vocab.md 为准。
 - architecture-graph-json-format 定义 `arch-graph/v0.3`，是高级 graph-tooling 的输入契约。
 
 ## Internal Design
 
 - 规则按主题分文件，单一事实来源：布局归 storage-schema，语义归 workflow-rules，图结构归 graph-json-format。
-- L2/L3 设计语义以“分支携带的 architecture patch”为默认：目标模块地图先在 feature branch 中落地，独立 proposal / changes 文件只是例外的离线审阅载体。
+- L2/L3 目标语义以“分支携带的 architecture patch”为默认：目标模块地图先在 feature branch 中落地，独立 proposal / changes 文件只是例外的离线审阅载体。
 - `module-kind-classification.md` 为总览 + 选择规则 + 索引；9 类 `module_kind` 的详解（什么模块属于这类/图形设计/展开方式/文档模板）分片到 `module-kinds/<kind>.md`，主文件名保留为稳定引用入口。
 
 ## Dependencies

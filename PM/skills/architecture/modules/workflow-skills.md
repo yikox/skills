@@ -25,7 +25,7 @@ review_status: reviewed
 
 - 所有技能通过 `../_shared/references/*.md` 相对路径读取共享规则，通过 `../_shared/assets/*.md` 读取模板。
 - modular-autopilot 硬依赖 superpowers 插件（writing-plans、subagent-driven-development、using-git-worktrees），缺席时报错并指引安装。
-- L2/L3 的默认 spec 是功能分支内已接受的目标模块地图，而不是长期维护的独立变更设计文档。
+- L2/L3 的默认 spec 是功能分支内已接受的目标模块地图，而不是长期维护的独立过程 proposal。
 
 ## Dependencies
 

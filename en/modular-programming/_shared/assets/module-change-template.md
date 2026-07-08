@@ -1,5 +1,5 @@
 ---
-title: <Module Change>
+title: <Optional Module Proposal>
 level: L2
 status: draft
 review_status: not-reviewed
@@ -7,7 +7,9 @@ primary_module: <module-slug>
 impacted_modules: []
 ---
 
-# <Module Change>
+# <Optional Module Proposal>
+
+Use this standalone proposal only when L2 work needs complex, offline, or non-git review. The default L2 path is a branch-carried architecture patch commit that updates the affected module map directly.
 
 ## Request
 

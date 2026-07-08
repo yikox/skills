@@ -19,7 +19,7 @@ review_status: reviewed
 
 - CLI：`python3 check_modular_project.py <pm-root> [--repo-root <path>] [--exclude <glob>]...`
 - 检查项词表（DESIGN_STATUSES、REVIEW_STATUSES、MODULE_KINDS、MODULE_FORMS、RELATION_KINDS、RELATION_STYLES）在启动时由 `load_vocab()` 从 shared-references 的 `vocab.md` 解析得到，单一事实源即该清单；解析失败或缺项回退内置默认词表并告警。
-- `check_plans` 校验 `plans/*.md` 与 `modules/*/plans/*.md`：`source_design` 存在且不越出 pm 根、`level` 合法且与目录匹配（plans/ 存 L3，modules/*/plans/ 存 L2）、源设计已 implemented 时告警归档。
+- `check_plans` 校验 `plans/*.md` 与 `modules/*/plans/*.md`：`source_patch` 或 `source_design` 至少存在一个；`source_design` 存在时必须不越出 pm 根且路径存在；`level` 合法且与目录匹配（plans/ 存 L3，modules/*/plans/ 存 L2）；可选来源 proposal 已 implemented 时告警归档。
 - `check_graph` 在图文件存在时校验图端点、关系词表、group 森林、interface provider 所属子树、relation 同层 scope；缺少图文件不再告警。v0.3 引入的结构约束对 v0.1/v0.2 老图降级为 warning，不阻断老项目迁移审计。
 - `check_ownership` 将 `shared_paths` / `ignored_paths` 作为已说明的非 owner 例外，不参与唯一 owner 检查，也不报孤儿路径；例外 glob 匹配不到任何文件时报幽灵例外 warning。
 
@@ -44,4 +44,4 @@ review_status: reviewed
 
 - `python3 en/modular-programming/modular-audit/scripts/check_modular_project.py PM/skills` 退出码 0。
 - `python3 -m unittest discover -s en/modular-programming/modular-audit/tests` 退出码 0。
-- 构造缺 `source_design` 的计划 fixture 应产生 `[plans]` ERROR。
+- 构造缺 `source_patch` 且缺 `source_design` 的计划 fixture 应产生 `[plans]` ERROR；构造仅含 `source_patch` 的计划 fixture 应通过。

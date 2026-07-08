@@ -36,7 +36,7 @@
 
 - 初始化与修复 -> `modular-init`；
 - 架构/模块基线 -> `modular-architecture`；
-- 请求接入与变更设计 -> `modular-change`；
+- 请求接入与分支 architecture patch / 可选 proposal 流程 -> `modular-change`；
 - 进行中/已完成的 PM 状态 -> `modular-status`；
 - 自动评审 -> `modular-review`；
 - 一致性审计与迁移 -> `modular-audit`；

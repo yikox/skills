@@ -1,11 +1,11 @@
 ---
 name: modular-autopilot
-description: Supervise autonomous execution of an accepted L2/L3 change design through intake review, implementation planning, subagent-driven execution, and modular closeout, with a decision log and final report. Use when the user hands an accepted design over for hands-off execution and wants one confirmation at intake plus a report at the end; Chinese triggers include 自主执行, 托管执行, 监督执行, 交给监督者, 自动落地, 全程代办.
+description: Supervise autonomous execution of an accepted L2/L3 branch architecture patch or optional proposal through intake review, implementation planning, subagent-driven execution, and modular closeout, with a decision log and final report. Use when the user hands an accepted patch/proposal over for hands-off execution and wants one confirmation at intake plus a report at the end; Chinese triggers include 自主执行, 托管执行, 监督执行, 交给监督者, 自动落地, 全程代办.
 ---
 
 # Modular Autopilot
 
-Act as the advanced supervising role between "design accepted" and "change landed". Use this only when the user explicitly wants hands-off execution for an accepted and reviewed L2/L3 design. Ask the user for exactly one confirmation at intake; afterwards run planning, execution, and closeout autonomously, log every decision made on the user's behalf, and deliver a final report. Never push, open PRs, or take any externally visible action — put the recommended commands in the report instead.
+Act as the advanced supervising role between "architecture patch accepted" and "change landed". Use this only when the user explicitly wants hands-off execution for an accepted and reviewed L2/L3 branch architecture patch or optional proposal. Ask the user for exactly one confirmation at intake; afterwards run planning, execution, and closeout autonomously, log every decision made on the user's behalf, and deliver a final report. Never push, open PRs, or take any externally visible action — put the recommended commands in the report instead.
 
 ## Hard Dependencies
 
@@ -21,45 +21,50 @@ Read:
 
 ## Preconditions
 
-Accept only a change design document whose front matter says `status: accepted` with `review_status: reviewed`. For anything else, refuse and route the user back to `modular-change` / `modular-review`. The design phase is not this skill's job.
+Accept either:
+
+- a feature branch whose first architecture patch commit has been accepted and reviewed, with PM showing the active L2/L3 task; or
+- an optional proposal document whose front matter says `status: accepted` with `review_status: reviewed`.
+
+For anything else, refuse and route the user back to `modular-change` / `modular-review`. The patch/proposal phase is not this skill's job.
 
 ## Phase 1: Intake Review (the only human confirmation)
 
 Check three categories before anything else:
 
-1. **Module map correctness.** The design's primary and impacted modules match `architecture/main-design.md` and the modules' `code_paths`; the module map shows no obvious drift from the actual code. Problems stop here — never carry a broken map into the autonomous zone.
-2. **Design consistency and plannability.** Target design, contract impact, and validation sections do not contradict each other; no wording is too vague to plan from; an L2 design hides no L3 content (boundary or cross-module contract changes).
-3. **Execution prerequisites.** The validation commands the design names actually exist and run; a git worktree can be created; the impacted modules' contract docs exist.
+1. **Module map correctness.** The accepted branch target map or optional proposal's primary and impacted modules match `architecture/main-design.md` and the modules' `code_paths`; the module map shows no obvious drift from the actual code. Problems stop here — never carry a broken map into the autonomous zone.
+2. **Patch consistency and plannability.** Target map changes, contract impact, and validation expectations do not contradict each other; no wording is too vague to plan from; an L2 patch hides no L3 content (boundary or cross-module contract changes).
+3. **Execution prerequisites.** The validation commands named by PM/proposal/module docs actually exist and run; a git worktree can be created; the impacted modules' contract docs exist.
 
 Send the user an intake report: findings, suggestions, and a short outline of how you will execute. Wait for explicit confirmation. After confirmation, do not come back to the user except under Hard Stops.
 
 ## Phase 2: Implementation Plan
 
-1. Invoke `superpowers:writing-plans` with the design document, `architecture/main-design.md`, and the impacted modules' docs as the spec.
-2. Copy the design's module boundary and contract constraints **verbatim** into the plan's Global Constraints section — subagent-driven-development hands that section to every task reviewer, which makes each reviewer a module-boundary gatekeeper for free.
-3. Save the plan to `architecture/modules/<module>/plans/<YYYY-MM-DD>-<change>-plan.md` (L2) or `architecture/plans/<YYYY-MM-DD>-<change>-plan.md` (L3). Never save under a `changes/` directory. The plan front matter must include `source_design:` (pm-root-relative path to the design) and `level:`.
-4. Run the plan-vs-design self-review: no task crosses the module boundaries beyond the design's declared impact; every item in the design's Validation section has a matching verification step in the plan; Global Constraints carries all contract constraints.
+1. Invoke `superpowers:writing-plans` with the accepted branch architecture patch (or optional proposal), `architecture/main-design.md`, and the impacted modules' docs as the spec.
+2. Copy the patch/proposal's module boundary and contract constraints **verbatim** into the plan's Global Constraints section — subagent-driven-development hands that section to every task reviewer, which makes each reviewer a module-boundary gatekeeper for free.
+3. Save the plan to `architecture/modules/<module>/plans/<YYYY-MM-DD>-<change>-plan.md` (L2) or `architecture/plans/<YYYY-MM-DD>-<change>-plan.md` (L3). Never save under a `changes/` directory. The plan front matter must include `source_patch:` (architecture patch commit/branch) or `source_design:` (optional proposal path), plus `level:`.
+4. Run the plan-vs-patch self-review: no task crosses the module boundaries beyond the patch/proposal's declared impact; every validation expectation has a matching verification step in the plan; Global Constraints carries all contract constraints.
 5. On pass, self-approve and append a decision-log line. Skip writing-plans' execution-handoff question entirely; proceed straight to Phase 3.
 
 ## Phase 3: Subagent Execution
 
 1. Create an isolated workspace via `superpowers:using-git-worktrees`.
 2. Execute the plan with `superpowers:subagent-driven-development` unmodified: pre-flight plan review, per-task implementer plus task-reviewer, fix loops for Critical/Important findings, final whole-branch review, progress ledger.
-3. Where SDD would ask the human to adjudicate a plan-mandated conflict, rule it yourself by "the design document governs", and log the ruling.
+3. Where SDD would ask the human to adjudicate a plan-mandated conflict, rule it yourself by "the accepted architecture patch governs", and log the ruling.
 4. Do not enter `finishing-a-development-branch`. When the final whole-branch review passes, move to Phase 4.
 
 ## Phase 4: Closeout
 
-1. Collect verification evidence against the design's Validation section: SDD ledger, commit range, test output, review verdicts.
+1. Collect verification evidence against the accepted patch/proposal validation expectations: SDD ledger, commit range, test output, review verdicts.
 2. Confirm the implementation has landed in the main workspace before changing baseline facts: the worktree branch is merged locally, a commit/PR already contains the code, or the user explicitly confirms the code is outside the reachable workspace and landed. A passing worktree branch is not landed evidence by itself.
-3. If the code is not landed yet, stop short of implemented closeout: leave the design at `status: accepted`, do not update module/architecture baselines, do not record PM completion, and deliver a pending-merge report with the exact merge/push/PR commands for the user to run.
-4. After landed evidence exists, update module/architecture baselines and re-render affected graphs (see `modular-architecture` Baseline Update).
-5. Mark the design `status: implemented`.
+3. If the code is not landed yet, stop short of implemented closeout: leave PM active and any optional proposal at `status: accepted`, do not record PM completion, and deliver a pending-merge report with the exact merge/push/PR commands for the user to run.
+4. After landed evidence exists, ensure module/architecture baselines match the implementation and re-render affected graphs (see `modular-architecture` Baseline Update).
+5. Mark the optional proposal `status: implemented` when one exists; otherwise keep the patch commit as evidence.
 6. Record PM completion with evidence via `modular-status`.
 7. Run modular-audit's deterministic checker as a drift self-check; fold findings into the report.
 8. Deliver the final report.
 
-When the PM directory lives inside the code repository, perform all modular doc updates (baseline, PM, design status) in the main workspace after the implementation has landed there — never inside the worktree, where they would strand on an unmerged branch.
+When the PM directory lives inside the code repository, perform all closeout doc updates (baseline, PM, optional proposal status) in the main workspace after the implementation has landed there — never inside the worktree, where they would strand on an unmerged branch.
 
 ## Hard Stops
 
@@ -88,6 +93,6 @@ Deliver these sections, in order:
 
 1. **Outcome and evidence** — what landed, commit range, test output, final review verdict.
 2. **Decisions made on your behalf** — the decision-log digest, each with its reason, for after-the-fact accountability.
-3. **Deviations from the design** — every divergence and how it was handled.
+3. **Deviations from the patch/proposal** — every divergence and how it was handled.
 4. **Leftovers** — Minor findings, risks, suggested follow-ups.
 5. **Recommended actions** — the exact merge/push/PR commands for the user to run.

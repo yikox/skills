@@ -1,6 +1,6 @@
 ---
 name: modular-audit
-description: Audit or migrate a modular programming project for consistency. Use when the agent should check stale PM tasks, missing primary modules, missing PM start/completion records, outdated architecture baselines, graph/doc drift, implemented designs not reflected in architecture, old project-memory or architecture-design schema, roadmap drift, archive candidates, or Chinese requests such as 模块化审计, 项目迁移, 架构漂移检查, 清理 PM, 旧项目迁移.
+description: Audit or migrate a modular programming project for consistency. Use when the agent should check stale PM tasks, missing primary modules, missing PM start/completion records, outdated architecture baselines, graph/doc drift, implemented patches/proposals not reflected in architecture, old project-memory or architecture-design schema, roadmap drift, archive candidates, or Chinese requests such as 模块化审计, 项目迁移, 架构漂移检查, 清理 PM, 旧项目迁移.
 ---
 
 # 模块化审计（Modular Audit）
@@ -34,11 +34,11 @@ python3 <skill-dir>/scripts/check_modular_project.py <pm-root> [--repo-root <rep
 - 每个进行中的 L2/L3 任务及被跟踪的 L1 任务都有 PM start 信息；
 - 已完成的 L2/L3 工作及被跟踪的 L1 工作都有 PM completion 证据；
 - 非平凡的 backlog 行都有 primary module、impacted modules 与 change level；
-- L2/L3 设计文档已被索引且状态同步；
-- 计划文件位于 `plans/` 下，且有合法的 `source_design` 与 `level`；其来源设计已实现的计划为归档候选；
-- 已实现的设计有证据；
+- 可选 L2/L3 proposal 文档存在时，已被索引且状态同步；
+- 计划文件位于 `plans/` 下，且有合法的 `source_patch` 或 `source_design` 与 `level`；其可选来源 proposal 已实现的计划为归档候选；
+- 已实现的分支 patch / proposal 有证据；
 - 已落地的持久变更已反映到架构基线中；
-- proposed 目标架构没有被当作已实现基线呈现；
+- proposed 目标架构没有在 main 上被当作已实现基线呈现；
 - 当存在图产物时，图 JSON 关系与模块文档及同层关系规则一致；
 - 模块文档声明所拥有的 `code_paths`；无 orphan 路径（承载行为却无模块拥有的代码）、无 ghost glob（匹配不到任何东西）、无重叠的归属声明；`shared_paths` / `ignored_paths` 是有文档记录的非归属例外；
 - 当存在图产物时，模块文档的 Dependencies 表是图关系的子集，且关系 `kind` 值取自封闭词表；

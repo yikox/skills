@@ -10,7 +10,7 @@ PM/<project-slug>/
   knowledge-summary.md
   architecture/
     main-design.md
-    changes/
+    changes/                         # 可选 proposal 文档，用于复杂/离线评审
       <YYYY-MM-DD>-<architecture-change>.md
     plans/
       <YYYY-MM-DD>-<change>-plan.md
@@ -19,7 +19,7 @@ PM/<project-slug>/
     modules/
       <module-slug>.md
       <module-slug>/
-        changes/
+        changes/                     # 可选 proposal 文档，用于复杂/离线评审
           <YYYY-MM-DD>-<module-change>.md
         plans/
           <YYYY-MM-DD>-<change>-plan.md
@@ -50,7 +50,7 @@ PM/<project-slug>/
 10. Archive
 11. Recent Updates
 
-不设 Testing and Validation 小节：当前可跑的验证命令归 `knowledge-summary.md`，逐次变更的验证证据归对应设计文档（见 pm-maintenance-rules 的「证据单一居所」）。
+不设 Testing and Validation 小节：当前可跑的验证命令归 `knowledge-summary.md`；逐次变更的验证证据只放在 PM 完成指针、实现 commit/PR，或存在时的归档执行产物中（见 pm-maintenance-rules 的「证据单一居所」）。
 
 ## 进行中任务字段
 
@@ -78,17 +78,19 @@ PM/<project-slug>/
 - 范围 / 影响；
 - 状态；
 - 优先级；
-- 设计路径 / 下一步。
+- architecture patch commit、可选 proposal 路径，或下一步。
 
 ## 模块化设计索引
 
-索引持久的设计产物：
+索引持久的架构产物：
 
 - 主架构：`architecture/main-design.md`；
 - 模块：`architecture/modules/<module>.md`；
-- 架构变更：`architecture/changes/<date>-<change>.md`；
 - ADR：`architecture/adrs/ADR-<date>-<decision>.md`；
-- 模块变更：`architecture/modules/<module>/changes/<date>-<change>.md`。
+- 可选架构 proposal：`architecture/changes/<date>-<change>.md`；
+- 可选模块 proposal：`architecture/modules/<module>/changes/<date>-<change>.md`。
+
+分支携带的 architecture patch commit 不作为独立设计文件索引。进行中时记录在 PM Active Tasks，完成后作为一行证据记录。
 
 图 JSON 与渲染图是可选的高级可视化产物。仅在项目主动使用图评审，或某个具体变更/设计需要可视化沟通时才索引它们。对默认 AI 工作流而言，`main-design.md` 与模块文档仍然足够。
 
@@ -146,13 +148,14 @@ not-reviewed -> needs-review -> reviewed
 
 ## 计划文件
 
-实现计划是临时的执行辅助，而非架构。它们存放在设计 `changes/` 目录旁的 `plans/` 里——L3 计划在 `architecture/plans/` 下，L2 计划在 `architecture/modules/<module-slug>/plans/` 下。绝不要把计划存放在 `changes/` 目录内。
+实现计划是临时的执行辅助，而非架构。L3 计划放在 `architecture/plans/` 下，L2 计划放在 `architecture/modules/<module-slug>/plans/` 下。绝不要把计划存放在 `changes/` 目录内。
 
 计划 front matter：
 
 | 字段 | 必填 | 含义 |
 | --- | --- | --- |
-| `source_design` | 是 | 该计划所实现设计的相对 pm 根路径 |
-| `level` | 是 | `L2` 或 `L3`，与源设计一致；计划的目录必须与其级别匹配（`plans/` 放 L3，`modules/<module-slug>/plans/` 放 L2） |
+| `source_patch` | 是，除非已有 `source_design` | 该计划所实现的 architecture patch commit hash 或分支引用 |
+| `source_design` | 是，除非已有 `source_patch` | 该计划所实现的可选 proposal 相对 pm 根路径 |
+| `level` | 是 | `L2` 或 `L3`，与来源一致；计划的目录必须与其级别匹配（`plans/` 放 L3，`modules/<module-slug>/plans/` 放 L2） |
 
-一旦记录了 PM 完成，就归档或删除计划；`modular-audit` 会对源设计已为 `implemented` 的计划发出告警。归档时，把计划移入其旁边的 `archive/` 子目录（如 `architecture/plans/archive/`）；checker 会有意跳过已归档的计划。
+一旦记录了 PM 完成，就归档或删除计划；`modular-audit` 会对可选源设计已为 `implemented` 的计划发出告警。归档时，把计划移入其旁边的 `archive/` 子目录（如 `architecture/plans/archive/`）；checker 会有意跳过已归档的计划。

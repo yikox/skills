@@ -1,6 +1,6 @@
 ---
 name: modular-status
-description: Maintain `project-management.md` for the modular programming workflow. Use when starting, updating, completing, archiving, or summarizing tracked work; recording active tasks, requirements, change backlog rows, modular design indexes, ADR summaries, validation evidence, blockers, risks, roadmap, milestones, or Chinese requests such as 记录进行中, 完成记录, PM 更新, 项目状态, 设计索引, 归档.
+description: Maintain `project-management.md` for the modular programming workflow. Use when starting, updating, completing, archiving, or summarizing tracked work; recording active tasks, requirements, change backlog rows, architecture artifact indexes, ADR summaries, validation evidence, blockers, risks, roadmap, milestones, or Chinese requests such as 记录进行中, 完成记录, PM 更新, 项目状态, 设计索引, 归档.
 ---
 
 # 模块化状态（Modular Status）
@@ -21,7 +21,7 @@ description: Maintain `project-management.md` for the modular programming workfl
 
 ## PM Start
 
-对 L2/L3，在设计/实现工作开始之前或临近开始时，更新 `Active Tasks` 或其本地等价物。
+对 L2/L3，在 architecture patch / 实现工作开始之前或临近开始时，更新 `Active Tasks` 或其本地等价物。
 
 对 L1，仅当工作跨会话、携带显著风险或发布证据、隶属于某个既有进行中任务，或用户明确希望被跟踪时，才使用 Active Tasks。否则跳过 PM start。
 
@@ -34,7 +34,7 @@ description: Maintain `project-management.md` for the modular programming workfl
 - 变更级别；
 - 状态；
 - 下一步；
-- 已知时，预期的设计/ADR/架构产物。
+- 已知时，预期的 architecture patch、可选 proposal、ADR 或架构产物。
 
 ## PM Update
 
@@ -43,7 +43,7 @@ description: Maintain `project-management.md` for the modular programming workfl
 - 主模块变化；
 - 受影响模块扩大；
 - L1 变为 L2，或 L2 变为 L3；
-- 设计、评审或人工接受状态变化；
+- architecture patch、可选 proposal、评审或人工接受状态变化；
 - 任务被阻塞；
 - 验证策略或风险发生实质变化。
 
@@ -53,7 +53,7 @@ description: Maintain `project-management.md` for the modular programming workfl
 
 - 成果；
 - 最终状态；
-- 变更的设计或架构路径；
+- architecture patch commit、可选 proposal 路径，或变更的架构路径；
 - 验证命令/结果；
 - 实现证据；
 - 架构基线是否发生变化。
@@ -62,16 +62,16 @@ description: Maintain `project-management.md` for the modular programming workfl
 
 对未被跟踪的 L1 工作，仅当结果是有价值的未来上下文时，才倾向于补一条简洁的 `Recent Updates` 条目。不要为例行的 L1 工作添加归档行。
 
-## Backlog 与设计索引
+## Backlog 与架构产物索引
 
 用 Requirements / Change Backlog 记录已请求但尚未实现的工作。包含主模块、受影响模块、级别、范围/影响与下一步。
 
-用 Modular Design Index 记录主架构、模块文档、架构变更、ADR 与模块变更。
+用 Modular Design Index 记录主架构、模块文档、ADR 与活跃的可选 proposal 文档。分支携带的 architecture patch commit 记录在 Active Tasks 和完成证据中，不作为索引行。
 
 不要重复普通的提交日志。记录持久的项目状态，而非每一次文件编辑。
 
 ## 归档
 
-只有在保留了最终状态、设计路径与证据之后，才归档已实现、已过时或已被取代的工作。保持当前架构基线与在用目标设计处于被索引状态。
+只有在保留了最终状态、patch/proposal 指针与证据之后，才归档已实现、已过时或已被取代的工作。保持当前架构基线与活跃可选 proposal 处于被索引状态。
 
 归档候选、受保护状态与压缩遵循 `pm-maintenance-rules.md`。

@@ -21,7 +21,7 @@ Last updated: 2026-07-08
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-07-08 | 默认 L2/L3 改为 branch-carried architecture patch，减少长期过程文档 | shared-references | workflow-skills, shared-assets | L3 | accepted / architecture patch committed on branch | 在本分支实现规则、模板与收尾语义；完成后归档过程文件 |
+| 2026-07-08 | 默认 L2/L3 改为 branch-carried architecture patch，减少长期过程文档 | shared-references | workflow-skills, shared-assets, audit-checker | L3 | accepted / architecture patch committed on branch | 在本分支实现规则、模板、checker 与收尾语义；完成后归档过程文件 |
 
 ## Requirements / Change Backlog
 
@@ -42,7 +42,7 @@ Last updated: 2026-07-08
 | Module | architecture/modules/graph-tooling.md | implemented | reviewed |  |
 | Module | architecture/modules/installer.md | implemented | reviewed |  |
 
-已实现的变更设计索引见 Archive 的 Design Archive。
+已实现的可选 proposal / 历史过程文件索引见 Archive 的 Design Archive。
 
 ## Blockers and Risks
 
@@ -60,7 +60,7 @@ Last updated: 2026-07-08
 
 ### Completed Work
 
-证据列为一行指针；完整证据在对应设计文档，规则生效前的存量长证据在 archives/project-management-history-2026.md。
+证据列为一行指针；默认 L2/L3 指向 architecture patch commit + implementation commit/PR，可选 proposal 的长证据留在 proposal 或归档执行产物；规则生效前的存量长证据在 archives/project-management-history-2026.md。
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |

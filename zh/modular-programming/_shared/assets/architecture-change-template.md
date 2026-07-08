@@ -1,5 +1,5 @@
 ---
-title: <Architecture Change>
+title: <Optional Architecture Proposal>
 level: L3
 status: draft
 review_status: not-reviewed
@@ -7,7 +7,9 @@ primary_module: <module-slug>
 impacted_modules: []
 ---
 
-# <Architecture Change>
+# <Optional Architecture Proposal>
+
+仅当 L3 工作需要复杂、离线或非 git 评审时，才使用这份独立 proposal。默认 L3 路径是由分支携带的 architecture patch commit，直接修改模块地图。
 
 ## 需求
 

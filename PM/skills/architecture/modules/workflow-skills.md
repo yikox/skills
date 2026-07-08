@@ -18,13 +18,14 @@ review_status: reviewed
 ## Public Contract
 
 - 每个技能目录 `en/modular-programming/<skill>/SKILL.md`，front matter 含 `name` 与 `description`（含中英触发词）。
-- 技能间交接协议：modular-change 是日常入口，按 L0-L3 路由到其他技能；modular-autopilot 接手已接受设计的自主执行；modular-advisor 是高级顾问角色，只产出评估/重构/设计方案，不落盘不实现；modular-narrator 是只读讲述者角色，独立可用（不依赖工作流资产），只讲解不评估不落盘，与 advisor 以"理解 vs 提案"划界（双向 SKILL description 均声明该边界）。
+- 技能间交接协议：modular-change 是日常入口，按 L0-L3 路由。L2/L3 默认先在分支上提交 architecture patch，再进入实现；modular-autopilot 接手已接受的分支目标地图与实现计划；modular-advisor 是高级顾问角色，只产出评估/重构/设计方案，不落盘不实现；modular-narrator 是只读讲述者角色，独立可用（不依赖工作流资产），只讲解不评估不落盘，与 advisor 以"理解 vs 提案"划界（双向 SKILL description 均声明该边界）。
 - 每个技能的 `agents/openai.yaml` 为 OpenAI 兼容入口的附属配置。
 
 ## Internal Design
 
 - 所有技能通过 `../_shared/references/*.md` 相对路径读取共享规则，通过 `../_shared/assets/*.md` 读取模板。
 - modular-autopilot 硬依赖 superpowers 插件（writing-plans、subagent-driven-development、using-git-worktrees），缺席时报错并指引安装。
+- L2/L3 的默认 spec 是功能分支内已接受的目标模块地图，而不是长期维护的独立变更设计文档。
 
 ## Dependencies
 
@@ -39,6 +40,7 @@ review_status: reviewed
 
 - 技能正文用英文，description 中保留中文触发词（安装目标含多语言 agent 环境）。
 - 修改任一技能的交接协议时必须同步检查被交接技能的对应表述。
+- 不得把仅在实现期间有用的 proposal / plan / decision log 变成 main 分支的日常事实源；完成后默认归档。
 
 ## Validation
 

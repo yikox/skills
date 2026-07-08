@@ -14,13 +14,14 @@ Last updated: 2026-07-08
 | --- | --- |
 | Version | main @ 2026-07-08 |
 | State | 10 技能 + 共享层稳定；语言分层 en/（源）+ zh/（中文镜像）；证据单一居所规则已上线 |
-| Current focus | autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
+| Current focus | branch-carried architecture patch 流程改造；autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-07-08 | 默认 L2/L3 改为 branch-carried architecture patch，减少长期过程文档 | shared-references | workflow-skills, shared-assets | L3 | accepted / architecture patch committed on branch | 在本分支实现规则、模板与收尾语义；完成后归档过程文件 |
 
 ## Requirements / Change Backlog
 

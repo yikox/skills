@@ -33,6 +33,7 @@ review_status: reviewed
 
 - 技能执行流：agent 加载 workflow-skills 中某技能 → 读 shared-references 规则与 shared-assets 模板 → 按需触发 audit-checker（一致性检查）或 graph-tooling（高级可视化渲染）。
 - 分发流：installer 把技能目录与 `_shared` 平铺复制到目标 skills 目录，保证 `../_shared/` 相对引用在安装后依然成立。
+- L2/L3 流程改造流：用户接受架构 patch 摘要后，在功能分支的第一颗 commit 中先把目标模块地图写入 `architecture/main-design.md` / `architecture/modules/*.md` 与 PM active 行；后续实现提交必须让代码与该目标地图收敛，合并前完成验证与 PM closeout。main 分支只保留已实现且与代码一致的模块地图。
 
 ## Shared Constraints
 
@@ -41,6 +42,7 @@ review_status: reviewed
 - 无主路径（不属于任何模块的 behavior-bearing 之外内容）：`docs/**`（superpowers 流程存档）、`PM/**`（本仓库自身的项目记忆）、`zh/**`（`en/**` 的中文翻译镜像，随 en 模块同步，不单独建模块）。
 - 语言镜像约束：`zh/modular-programming` 与 `en/modular-programming` 逐目录对等；只翻译散文，`*.py` 脚本与 vocab/front-matter 的机器 token（module_form/module_kind/relation_kind/status 等取值）保持英文单源，两语言目录逐字一致，否则 audit-checker 对 zh 失效。
 - 本仓库自身用 modular 工作流管理，docs-language 为 `zh`，confirmation 档位为 `standard`。
+- 默认不再为 L2/L3 长期维护独立变更设计文件。分支承载已接受的 architecture patch；独立 proposal / changes 文件只在复杂、跨天、需离线审阅或非 git 协作时使用。完成后过程文件默认归档，日常入口不读取 archive。
 
 ## Open Questions
 

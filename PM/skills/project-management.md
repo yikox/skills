@@ -1,6 +1,6 @@
 # skills 仓库 Modular Programming
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 
 ## Overview
 
@@ -14,7 +14,7 @@ Last updated: 2026-07-08
 | --- | --- |
 | Version | main @ 2026-07-08 |
 | State | 10 技能 + 共享层稳定；语言分层 en/（源）+ zh/（中文镜像）；证据单一居所规则已上线 |
-| Current focus | autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
+| Current focus | living-docs v2 重设计（REQ-20260709）：冻结 v1 套件，重建为两份文档 + 三 skill；设计待用户评审 |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
@@ -26,6 +26,7 @@ Last updated: 2026-07-08
 
 | ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Design Path / Next Step |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-20260709-living-docs-v2 | 2026-07-09 | 回归初心重设计：产品定义为两份文档（项目文档 + 设计文档），机制减为三 skill（init/sync/acceptance），顺带更新 + git 对账，v1 套件冻结入 legacy，中文单源 | workflow-skills | shared-references, shared-assets, installer, audit-checker, graph-tooling | L3 | 见设计 | 替代整个 v1 套件 | proposed | P0 | [architecture/changes/2026-07-09-living-docs-v2-redesign.md](architecture/changes/2026-07-09-living-docs-v2-redesign.md)；待用户评审设计 |
 | REQ-20260703-autopilot-rehearsal | 2026-07-03 | modular-autopilot 端到端与负路径演练 | workflow-skills | audit-checker | L1 | 按设计 Validation 节执行两类演练并记录证据 | 验证 autopilot 可用性 | accepted | P1 | 见 ADR-2026-07-03 Follow-Up |
 | REQ-20260706-en-pure-english | 2026-07-06 | en/ 纯英文化（现为历史遗留的中英混合） | shared-references | workflow-skills, shared-assets | L2 | en/ 散文全量英文化，token 不变 | 英文用户体验 | needs-clarification | P2 | 待用户排期 |
 

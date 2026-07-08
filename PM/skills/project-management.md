@@ -14,14 +14,13 @@ Last updated: 2026-07-08
 | --- | --- |
 | Version | main @ 2026-07-08 |
 | State | 10 技能 + 共享层稳定；语言分层 en/（源）+ zh/（中文镜像）；证据单一居所规则已上线 |
-| Current focus | branch-carried architecture patch 流程改造；autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
+| Current focus | autopilot 演练（REQ-20260703）；en/ 纯英文化待排期（REQ-20260706） |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-07-08 | 默认 L2/L3 改为 branch-carried architecture patch，减少长期过程文档 | shared-references | workflow-skills, shared-assets, audit-checker | L3 | accepted / architecture patch committed on branch | 在本分支实现规则、模板、checker 与收尾语义；完成后归档过程文件 |
 
 ## Requirements / Change Backlog
 
@@ -64,6 +63,7 @@ Last updated: 2026-07-08
 
 | Date | Task / Requirement | Final Status | Evidence |
 | --- | --- | --- | --- |
+| 2026-07-08 | 默认 L2/L3 改为 branch-carried architecture patch，减少长期过程文档（L3） | implemented | architecture patch bd19dfa；implementation ca17459；验证 `unittest en/zh`、`check_modular_project`、`install.sh en/zh --dry-run`、`git diff --check` |
 | 2026-07-08 | 证据单一居所 + 记账面减重（L2） | implemented | 设计 architecture/modules/shared-references/changes/2026-07-08-evidence-single-home.md；commit 1bfa33a |
 | 2026-07-05 | 中英双语版本：语言分层 + install 语言参数（L2） | implemented | 设计 architecture/modules/installer/changes/2026-07-05-bilingual-zh-en.md；commits 7cf18d3/03d55f3 |
 | 2026-07-05 | 新增技能 modular-narrator（L2）+ architect 改名 advisor（L1） | implemented | 设计 architecture/modules/workflow-skills/changes/2026-07-05-modular-narrator.md；commits a537db2..e6d3ac8、265aa52 |

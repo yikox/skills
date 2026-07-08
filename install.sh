@@ -9,16 +9,16 @@ usage() {
 Usage:
   ./install.sh <lang> [--dry-run] [target_dir ...]
 
-Installs one language edition of the skills in this repo (the
-modular-programming suite plus any standalone skills) into one or more agent
-skills directories. The first positional argument selects the language and is
-required:
+Installs one language edition of the skills in this repo into one or more
+agent skills directories. The first positional argument selects the language
+and is required:
 
-  <lang>   zh | en   (source is <lang>/)
+  <lang>   zh   (source is <lang>/)
 
-Legacy project-memory and architecture-design skill names are removed from the
-targets. The installer also copies <lang>/modular-programming/_shared to each
-target as _shared so installed modular-* skills can read ../_shared resources.
+en is frozen: the modular-programming v1 suite (en + zh) lives read-only in
+legacy/ (git tag modular-v1-frozen) and is not installed. Deprecated skill
+names, including the frozen modular-* suite and its _shared layer, are removed
+from the targets.
 
 Default targets:
   ~/.agents/skills
@@ -26,9 +26,9 @@ Default targets:
   ~/.claude/skills
 
 Examples:
-  ./install.sh en
+  ./install.sh zh
   ./install.sh zh --dry-run
-  ./install.sh en ~/.codex/skills ~/.claude/skills ~/my-agent/skills
+  ./install.sh zh ~/.codex/skills ~/.claude/skills ~/my-agent/skills
 USAGE
 }
 
@@ -70,16 +70,19 @@ fi
 
 lang="${positional[0]}"
 case "$lang" in
-  zh|en) ;;
+  zh) ;;
+  en)
+    echo "en edition is frozen: see legacy/ (git tag modular-v1-frozen)." >&2
+    exit 2
+    ;;
   *)
-    echo "Invalid <lang>: $lang (expected zh|en)." >&2
+    echo "Invalid <lang>: $lang (expected zh)." >&2
     usage >&2
     exit 2
     ;;
 esac
 
 src_dir="$repo_dir/$lang"
-shared_dir="$src_dir/modular-programming/_shared"
 
 if [[ ! -d "$src_dir" ]]; then
   echo "Source not found: $src_dir" >&2
@@ -121,6 +124,17 @@ deprecated_skills=(
   pm-architecture-docs
   pm-requirement-to-design
   modular-architect
+  modular-init
+  modular-architecture
+  modular-change
+  modular-autopilot
+  modular-advisor
+  modular-narrator
+  modular-status
+  modular-review
+  modular-audit
+  modular-knowledge
+  _shared
 )
 
 if ((${#skills[@]} == 0)); then
@@ -145,17 +159,6 @@ for target in "${targets[@]}"; do
   else
     mkdir -p "$expanded_target"
     echo "Installing to: $expanded_target"
-  fi
-
-  shared_destination="$expanded_target/_shared"
-  if [[ -d "$shared_dir" ]]; then
-    if ((dry_run)); then
-      echo "  _shared -> $shared_destination"
-    else
-      mkdir -p "$shared_destination"
-    fi
-
-    rsync "${rsync_flags[@]}" "$shared_dir/" "$shared_destination/"
   fi
 
   for skill in "${skills[@]}"; do

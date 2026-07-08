@@ -12,23 +12,24 @@ Last updated: 2026-07-09
 
 | Field | Value |
 | --- | --- |
-| Version | main @ 2026-07-08 |
-| State | 10 技能 + 共享层稳定；语言分层 en/（源）+ zh/（中文镜像）；证据单一居所规则已上线 |
-| Current focus | living-docs v2 重设计（REQ-20260709）：冻结 v1 套件，重建为两份文档 + 三 skill；设计待用户评审 |
+| Version | main @ 2026-07-09 |
+| State | v1 套件（en+zh 10 技能）已冻结入 legacy/（tag `modular-v1-frozen`）；installer 仅装 zh 独立 skill；v2 living-docs 待实现 |
+| Current focus | living-docs v2（REQ-20260709）：迁移路径第 1 步冻结已完成；下一步先写验收清单与 docs-acceptance |
 | Architecture baseline | architecture/main-design.md |
 
 ## Active Tasks
 
 | Date | Task | Primary Module | Impacted Modules | Level | Status | Next Step / Notes |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-07-09 | living-docs v2 落地（REQ-20260709） | workflow-skills | installer, shared-references, shared-assets | L3 | in-progress | 第 1 步冻结完成（tag + legacy/ + installer + README 公告）；下一步：验收清单 + docs-acceptance → 模板与规则 → docs-init/docs-sync。已知漂移：PM 基线模块文档的 code_paths 仍指向移动前路径，第 5 步迁移时统一处理 |
 
 ## Requirements / Change Backlog
 
 | ID | Date | Request | Primary Module | Impacted Modules | Level | Change Summary | Scope / Impact | Status | Priority | Design Path / Next Step |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-20260709-living-docs-v2 | 2026-07-09 | 回归初心重设计：产品定义为两份文档（项目文档 + 设计文档），机制减为三 skill（init/sync/acceptance），顺带更新 + git 对账，v1 套件冻结入 legacy，中文单源 | workflow-skills | shared-references, shared-assets, installer, audit-checker, graph-tooling | L3 | 见设计 | 替代整个 v1 套件 | proposed | P0 | [architecture/changes/2026-07-09-living-docs-v2-redesign.md](architecture/changes/2026-07-09-living-docs-v2-redesign.md)；待用户评审设计 |
-| REQ-20260703-autopilot-rehearsal | 2026-07-03 | modular-autopilot 端到端与负路径演练 | workflow-skills | audit-checker | L1 | 按设计 Validation 节执行两类演练并记录证据 | 验证 autopilot 可用性 | accepted | P1 | 见 ADR-2026-07-03 Follow-Up |
-| REQ-20260706-en-pure-english | 2026-07-06 | en/ 纯英文化（现为历史遗留的中英混合） | shared-references | workflow-skills, shared-assets | L2 | en/ 散文全量英文化，token 不变 | 英文用户体验 | needs-clarification | P2 | 待用户排期 |
+| REQ-20260709-living-docs-v2 | 2026-07-09 | 回归初心重设计：产品定义为两份文档（项目文档 + 设计文档），机制减为三 skill（init/sync/acceptance），顺带更新 + git 对账，v1 套件冻结入 legacy，中文单源 | workflow-skills | shared-references, shared-assets, installer, audit-checker, graph-tooling | L3 | 见设计 | 替代整个 v1 套件 | proposed | P0 | [architecture/changes/2026-07-09-living-docs-v2-redesign.md](architecture/changes/2026-07-09-living-docs-v2-redesign.md)；设计已评审通过，执行中（见 Active Tasks） |
+| REQ-20260703-autopilot-rehearsal | 2026-07-03 | modular-autopilot 端到端与负路径演练 | workflow-skills | audit-checker | L1 | 按设计 Validation 节执行两类演练并记录证据 | 验证 autopilot 可用性 | dropped (v1 frozen) | — | v1 冻结（REQ-20260709），演练失去意义 |
+| REQ-20260706-en-pure-english | 2026-07-06 | en/ 纯英文化（现为历史遗留的中英混合） | shared-references | workflow-skills, shared-assets | L2 | en/ 散文全量英文化，token 不变 | 英文用户体验 | dropped (v1 frozen) | — | v2 中文单源（REQ-20260709），en 随 v1 冻结 |
 
 ## Modular Design Index
 
@@ -96,6 +97,7 @@ Last updated: 2026-07-09
 
 ## Recent Updates
 
+- 2026-07-09 - v1 套件冻结：tag `modular-v1-frozen`；en/zh modular-programming 移入 legacy/；install.sh 仅支持 zh、清理已装 modular-* 与 _shared；README 双语冻结公告。REQ-20260703/REQ-20260706 随冻结 dropped。
 - 2026-07-08 - `./install.sh zh` 实际同步完成（3 目标目录 × 10 技能，含新规则/模板），install pending 状态全部清除。
 - 2026-07-08 - PM 一次性压缩（125→103 行）：重排为单一居所结构，长证据原文移入 archives/project-management-history-2026.md；7 份基线文档去 Review Notes 节；knowledge-summary 命令路径修正为 en/ 前缀。
 - 2026-07-08 - 文档减重 L2「证据单一居所 + 记账面减重」实现（设计见 Design Archive；commit 1bfa33a）。

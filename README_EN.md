@@ -2,6 +2,8 @@
 
 > Language / 语言: **English** ｜ [中文](README.md)
 
+> **⚠️ The v1 suite is frozen (2026-07-09).** The 10-skill modular-programming suite described below has moved to [`legacy/`](legacy/README.md) (git tag `modular-v1-frozen`): contract frozen, no longer installed. Its successor v2 (living-docs: two documents + three skills, Chinese-only source) is designed in [`PM/skills/architecture/changes/2026-07-09-living-docs-v2-redesign.md`](PM/skills/architecture/changes/2026-07-09-living-docs-v2-redesign.md). `./install.sh zh` currently installs only the standalone `personal-style` skill; `./install.sh en` is retired.
+
 This repo provides a suite of `modular-programming` skills that let an AI agent develop projects the "locate the module first, then design/implement" way. The default path stays lightweight: small changes finish fast, complex ones escalate to design, review, and PM governance.
 
 Core principles:

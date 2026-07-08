@@ -2,6 +2,8 @@
 
 > 语言 / Language: **中文** ｜ [English](README_EN.md)
 
+> **⚠️ v1 套件已冻结(2026-07-09)。** 下文描述的 modular-programming 10-skill 套件已整体移入 [`legacy/`](legacy/README.md)(git tag `modular-v1-frozen`),契约冻结、不再安装。后继 v2(living-docs:两份文档 + 三 skill,中文单源)设计见 [`PM/skills/architecture/changes/2026-07-09-living-docs-v2-redesign.md`](PM/skills/architecture/changes/2026-07-09-living-docs-v2-redesign.md),实现落地后本 README 将重写。当前 `./install.sh zh` 只安装套件外独立 skill(`personal-style`)。
+
 这个仓库提供一套 `modular-programming` skills，用来让 AI agent 按“先定位模块，再设计/实现”的方式开发项目。默认路径尽量轻量：小改快速完成，复杂修改再升级到设计、评审和 PM 治理。
 
 核心原则：

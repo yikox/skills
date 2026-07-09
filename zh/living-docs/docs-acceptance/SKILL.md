@@ -17,7 +17,7 @@ living-docs 套件的验收员。存在的理由：**对套件本身的任何修
 
 ## docs-init 验收清单
 
-1. 产物齐全：project.md 四章齐全；architecture/main-design.md 存在；每个模块有 modules/<name>.md；git 项目有 architecture/.last-sync。
+1. 产物齐全：project.md 四章齐全；architecture/main-design.md 存在（frontmatter 含 sync_branches）；每个模块有 modules/<name>.md；git 项目已装 pre-push 同步门（`.git/hooks/pre-push` 可执行且指向 check_sync.py）。
 2. 可读性：project.md 各章开头一屏内；main-design.md 不超过两屏；每个模块文档不超过 80 行。
 3. 模块划分在用户确认之后才落盘，未经确认不得写入。
 4. AI 规则合并不覆盖既有内容，首次创建或修改 CLAUDE.md/AGENTS.md 前经过确认。
@@ -26,9 +26,9 @@ living-docs 套件的验收员。存在的理由：**对套件本身的任何修
 
 ## docs-sync 验收清单
 
-1. 漂移清单与实际 git diff 相符（抽查至少一个被点名模块核对）。
-2. 对账完成后 architecture/.last-sync 等于当前 HEAD。
-3. 每个漂移模块有明确结论：已更新文档，或确认无需更新（两者都算对齐）。
+1. 点名清单与实际 git diff 相符（抽查至少一个被点名模块核对）。
+2. 处理完成后，受影响 range 复跑 check_sync 通过（exit 0）；全程未用 `--no-verify`，所有 skip 出口都以 `Arch-Sync: skip` 带理由写进 commit message。
+3. 每个被点名模块有明确结论：已更新文档，或 Arch-Sync skip（两者都算对齐）。
 4. 归档/压缩后证据仍可追溯：日期、commit、结论没有被删除，只被移动或以链接摘要保留。
 5. 全程不超过 10 分钟；超时记录原因（漂移积累量、模块数）。
 6. project.md 四章仍符合写法规则（当前焦点 1-5 行、变更日志一条一行、知识按主题合并）。

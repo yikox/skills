@@ -1,7 +1,7 @@
 ---
 name: <module-name>
 code_paths:
-  # 仓库相对 glob；本模块拥有的代码。漂移检测的映射表。
+  # 仓库相对 glob；本模块拥有的代码。同步门的映射表。
   - src/<module>/**
 ---
 

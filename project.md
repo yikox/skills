@@ -7,18 +7,18 @@ Last updated: 2026-07-09
 个人 agent skills 的源仓库。当前产品是 **living-docs v2 套件**(`zh/living-docs/`:docs-init / docs-sync / docs-acceptance)——用两份文档(项目文档 + 模块地图)加"顺带更新 + git 对账"维持项目可持续,取代已冻结的 modular-programming v1(见 `legacy/`,tag `modular-v1-frozen`)。另含独立 skill `personal-style`。中文单源,不维护英文镜像。
 
 - 安装:`./install.sh zh`(默认目标 `~/.agents|.codex|.claude` 的 skills 目录;预演加 `--dry-run`)
-- 漂移检测:`python3 zh/living-docs/docs-sync/scripts/check_drift.py --arch-dir architecture`
+- 同步预检:`python3 zh/living-docs/docs-sync/scripts/check_sync.py --arch-dir architecture`(push main 时 pre-push hook 自动跑)
 
 ## 当前焦点
 
-- v2 落地全部完成并经用户验收确认(2026-07-09),套件进入试用期;毕业计数 1/5。
-- 待办:acceptance-log 已有一条套件改进证据(.last-sync 锚点入库导致落后 HEAD 一颗 commit),下次修改套件时处理。
+- 同步机制 v2.1 落地:锚点文件废除,改为"提交纪律 + pre-push 同步门"(依据 acceptance-log 存疑条目);套件试用期,毕业计数 1/5。
+- 下一步:在真实项目上用 docs-init 跑一次完整接入,产生第 2 条验收记录。
 
 ## 知识
 
 ### 构建与测试
 
-- 无构建;验证靠 `./install.sh zh --dry-run` 与 `check_drift.py` 直跑。仅 Python 3 标准库 + bash,不引入第三方包。
+- 无构建;验证靠 `./install.sh zh --dry-run` 与 `check_sync.py` 直跑。仅 Python 3 标准库 + bash,不引入第三方包。
 
 ### 环境坑
 
@@ -37,6 +37,7 @@ Last updated: 2026-07-09
 
 <!-- append-only,一条一行:日期 + 一句话 + commit。超 50 条或本文件超 15KB 时归档。 -->
 
+- 2026-07-09 同步机制 v2.1:废除 .last-sync 锚点,check_drift.py 重写为 check_sync.py(range 门模式,sync_branches/Arch-Sync skip),docs-init 装 pre-push hook;依据 acceptance-log 2026-07-09 存疑条目 (本次 commit)
 - 2026-07-09 文档迁至标准位置项目根,PM/ 与全部 v1 记账产物按用户指示丢弃(git 历史/tag 可回溯);清理 ~/.codex 残留 project-management-docs 并补进 installer 清理列表 (本次 commit)
 - 2026-07-09 本仓库 PM 迁移至 living-docs 格式,v1 记账文档移入 archives/(v1- 前缀),README 重写 (f447354)
 - 2026-07-09 living-docs v2 套件实现:三 skill + 模板 + check_drift.py,中文单源、无 _shared 层(与设计的偏差:skill 自包含,原因是 installer 平铺布局与 _shared 清理冲突) (a229eb8)

@@ -22,7 +22,7 @@ living-docs 的产品是两份文档，不是流程。init 只做一件事：让
    - project.md：概况按已知信息填写；当前焦点写接入时的状态；变更日志首条记 init。
    - architecture/：从代码结构推断模块划分，顶层模块建议 3-9 个；每模块一份文档。不确定的边界如实标注"(不确定)"，不假装明确。
 4. **确认后落盘**：给用户看草稿要点——模块清单 + 每模块一句话职责 + 你不确定的点。**模块划分必须经用户确认才写入。**
-5. **初始化对账锚点**：git 项目写 `architecture/.last-sync`，内容为当前 HEAD 的 commit hash 一行；非 git 项目跳过并告知漂移检测不可用。
+5. **安装同步门**：git 项目把 `templates/pre-push-hook.sh` 装到 `.git/hooks/pre-push`（替换其中 ARCH_DIR 与 CHECK_SYNC_PATH 为实际路径，`chmod +x`；已有 pre-push hook 则追加调用，先确认）；main-design.md frontmatter 写 `sync_branches`（默认 main）。非 git 项目跳过并告知同步门不可用。
 6. **写入规则**：把 `templates/ai-rules-snippet.md` 合并进项目的 CLAUDE.md / AGENTS.md（合并不覆盖既有内容；首次创建或修改前先向用户确认）。
 7. **验收**：完成后必须调用 $docs-acceptance 验收本次 init。
 
@@ -30,4 +30,4 @@ living-docs 的产品是两份文档，不是流程。init 只做一件事：让
 
 - 可读性第一：project.md 各章开头一屏内；main-design.md 一到两屏；模块文档 ≤80 行——超限说明模块该拆，或文档在复述代码。
 - project.md 不写实现细节叙述（那属于 commit message 和模块文档）。
-- code_paths 用仓库相对 glob，每个承载行为的路径归属一个模块;这是漂移检测的映射表，不是门禁。
+- code_paths 用仓库相对 glob，每个承载行为的路径归属一个模块；这是同步门的映射表。文档准确性靠提交纪律（文档与代码同一颗 commit）加 push 时的同步门保证，日常没有别的流程。

@@ -25,3 +25,10 @@
   6. 通过——四章合规:当前焦点 2 行、变更日志一条一行、知识按主题小节;project.md 3.6KB;模块文档 19-28 行,main-design 26 行。
 - 用户结论:确认(存疑项认可语义对齐解释,作为改进证据留存,未当场修改套件)。本条非全过,不计入连续计数。
 - 用户备注:无
+
+## 2026-07-09 套件修改 v2.1(变更记录,非 init/sync 运行)
+
+- 依据:本日志 2026-07-09 存疑条目(锚点入库永远落后 HEAD 一颗 commit)+ 用户提议的合入时检查设计。
+- 变更:废除 .last-sync 锚点;check_drift.py → check_sync.py(range 门模式,sync_branches 默认 [main],Arch-Sync: skip 放行出口);docs-init 安装 pre-push hook;docs-sync 改为门后对齐/抽查/压缩/迁移;验收清单第 1/2 条改为门语义。
+- 验证:同步(exit 0)/不受管分支放行/DRIFT 点名/skip 放行/hook 随 push --dry-run 触发,五条路径实测通过;commit ac5bbfe、0071b8a。
+- 状态:待试用期检验;存疑条目就此关闭。

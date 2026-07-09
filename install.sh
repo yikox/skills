@@ -123,6 +123,7 @@ deprecated_skills=(
   project-knowledge-memory
   pm-architecture-docs
   pm-requirement-to-design
+  project-management-docs
   modular-architect
   modular-init
   modular-architecture

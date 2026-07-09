@@ -3,7 +3,9 @@ ignored_paths:
   - README.md
   - README_EN.md
   - CLAUDE.md
-  - PM/**
+  - project.md
+  - acceptance-log.md
+  - archives/**
 ---
 
 # skills 仓库 设计文档

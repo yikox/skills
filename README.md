@@ -38,11 +38,12 @@ Use $docs-sync 对账/压缩项目文档/迁移旧文档体系。
 ## 仓库结构
 
 ```text
+project.md            # 本仓库自己的项目文档
+architecture/         # 本仓库自己的模块地图
 zh/living-docs/       # v2 套件:docs-init / docs-sync / docs-acceptance
 zh/personal-style/    # 独立 skill
 legacy/               # v1 冻结存档(只读)
-PM/skills/            # 本仓库自己的 living-docs 文档(project.md + architecture/)
 install.sh
 ```
 
-设计与决策沿革见 `PM/skills/architecture/changes/2026-07-09-living-docs-v2-redesign.md`。
+设计与决策沿革见 `architecture/changes/2026-07-09-living-docs-v2-redesign.md`。

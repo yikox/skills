@@ -5,6 +5,7 @@ ignored_paths:
   - README.md
   - README_EN.md
   - CLAUDE.md
+  - .gitignore
   - project.md
   - acceptance-log.md
   - archives/**

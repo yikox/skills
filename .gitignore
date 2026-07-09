@@ -1,6 +1,5 @@
-# 本机工作流文档，含机器相关路径，不入库
+# v2 起 CLAUDE.md 入库(规则仅含仓库相对路径,决定见 project.md 知识区)
 AGENTS.md
-CLAUDE.md
 
 # git worktrees for isolated execution
 .claude/worktrees/

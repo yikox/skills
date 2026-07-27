@@ -9,13 +9,15 @@
 
 准确性不靠流程审批,靠两道保证:**提交纪律**(改到哪个模块,文档改动和代码同一颗 commit,写进项目 CLAUDE.md 的一条规则)+ **同步门**(pre-push hook 在变更进入受管分支前跑 `git diff ∩ code_paths`,"代码动了、文档没动"就拒绝;确实无需改文档时 commit message 加 `Arch-Sync: skip <module> <理由>` 放行,理由入历史可审计)。受管分支默认 main,开发分支自由。
 
-## 三个 skill
+## Skills
 
 | Skill | 什么时候用 |
 | --- | --- |
 | `docs-init` | 新项目接入:建两份文档 + 写入顺带更新规则 |
 | `docs-sync` | 漂移对账、项目文档归档压缩、旧文档体系一次性迁移 |
 | `docs-acceptance` | 临时验收员:init/sync 完成后自动调用,结果记入 acceptance-log.md;连续 5 次全过后拆除毕业 |
+| `personal-style` | 处理开发请求时遵循个人编码风格约定 |
+| `using-cursor-cli` | 通过本地 Cursor Agent CLI 做只读分析、规划、结构化自动化或隔离代码修改 |
 
 对套件本身的修改,唯一合法输入是 acceptance-log.md 里的使用证据——这是 v1 三十次"看着不对劲"式修改永不收敛的教训。
 
@@ -24,6 +26,7 @@
 ```text
 Use $docs-init 给这个项目接入 living-docs。
 Use $docs-sync 对账/压缩项目文档/迁移旧文档体系。
+Use $using-cursor-cli 通过 Cursor Agent CLI 复核当前改动。
 ```
 
 ## 安装
@@ -42,6 +45,7 @@ project.md            # 本仓库自己的项目文档
 architecture/         # 本仓库自己的模块地图
 zh/living-docs/       # v2 套件:docs-init / docs-sync / docs-acceptance
 zh/personal-style/    # 独立 skill
+zh/using-cursor-cli/  # Cursor Agent CLI 调用 skill
 legacy/               # v1 冻结存档(只读)
 install.sh
 ```

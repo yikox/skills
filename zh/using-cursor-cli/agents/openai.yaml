@@ -1,0 +1,4 @@
+interface:
+  display_name: "使用 Cursor CLI"
+  short_description: "通过 Cursor Agent CLI 安全执行分析、规划、复核与隔离开发任务"
+  default_prompt: "使用 $using-cursor-cli 通过本地 Cursor Agent CLI 以结构化输出完成当前任务。"

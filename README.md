@@ -17,7 +17,9 @@
 | `docs-sync` | 漂移对账、项目文档归档压缩、旧文档体系一次性迁移 |
 | `docs-acceptance` | 临时验收员:init/sync 完成后自动调用,结果记入 acceptance-log.md;连续 5 次全过后拆除毕业 |
 | `personal-style` | 处理开发请求时遵循个人编码风格约定 |
-| `using-cursor-cli` | 通过本地 Cursor Agent CLI 做只读分析、规划、结构化自动化或隔离代码修改 |
+| `using-cursor-cli` | 低带宽调度本地 Cursor Agent CLI 做分析、规划、结构化自动化或隔离代码修改 |
+| `using-claude-cli` | 低带宽调度本地 Claude Code CLI 做分析、规划、结构化自动化或隔离代码修改 |
+| `using-codex-cli` | 低带宽调度本地 Codex CLI 做分析、规划、结构化自动化或隔离代码修改 |
 
 对套件本身的修改,唯一合法输入是 acceptance-log.md 里的使用证据——这是 v1 三十次"看着不对劲"式修改永不收敛的教训。
 
@@ -27,6 +29,8 @@
 Use $docs-init 给这个项目接入 living-docs。
 Use $docs-sync 对账/压缩项目文档/迁移旧文档体系。
 Use $using-cursor-cli 通过 Cursor Agent CLI 复核当前改动。
+Use $using-claude-cli 通过 Claude Code CLI 复核当前改动。
+Use $using-codex-cli 通过 Codex CLI 复核当前改动。
 ```
 
 ## 安装
@@ -46,6 +50,8 @@ architecture/         # 本仓库自己的模块地图
 zh/living-docs/       # v2 套件:docs-init / docs-sync / docs-acceptance
 zh/personal-style/    # 独立 skill
 zh/using-cursor-cli/  # Cursor Agent CLI 调用 skill
+zh/using-claude-cli/  # Claude Code CLI 调用 skill
+zh/using-codex-cli/   # Codex CLI 调用 skill
 legacy/               # v1 冻结存档(只读)
 install.sh
 ```

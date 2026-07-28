@@ -1,10 +1,10 @@
 # skills 仓库 项目文档
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
 ## 概况
 
-个人 agent skills 的源仓库。当前产品是 **living-docs v2 套件**(`zh/living-docs/`:docs-init / docs-sync / docs-acceptance)——用两份文档(项目文档 + 模块地图)加"顺带更新 + git 对账"维持项目可持续,取代已冻结的 modular-programming v1(见 `legacy/`,tag `modular-v1-frozen`)。另含独立 skill `personal-style`、`using-cursor-cli` 与 `writing-plexus-notes`。中文单源,不维护英文镜像。
+个人 agent skills 的源仓库。当前产品是 **living-docs v2 套件**(`zh/living-docs/`:docs-init / docs-sync / docs-acceptance)——用两份文档(项目文档 + 模块地图)加"顺带更新 + git 对账"维持项目可持续,取代已冻结的 modular-programming v1(见 `legacy/`,tag `modular-v1-frozen`)。另含独立 skill `personal-style`、三个本地 CLI 调度 skill(`using-cursor-cli` / `using-claude-cli` / `using-codex-cli`)与 `writing-plexus-notes`。中文单源,不维护英文镜像。
 
 - 安装:`./install.sh zh`(默认目标 `~/.agents|.codex|.claude` 的 skills 目录;预演加 `--dry-run`)
 - 同步预检:`python3 zh/living-docs/docs-sync/scripts/check_sync.py --arch-dir architecture`(push main 时 pre-push hook 自动跑)
@@ -13,7 +13,8 @@ Last updated: 2026-07-27
 
 - 同步机制 v2.1 落地:锚点文件废除,改为"提交纪律 + pre-push 同步门"(依据 acceptance-log 存疑条目);套件试用期,毕业计数 1/5。
 - writing-plexus-notes 已同步进技能源仓库;下一步在真实笔记写入中观察路径自配置和节点规则是否足够。
-- 新增 using-cursor-cli,已覆盖本地 Cursor Agent CLI 的只读、结构化输出、会话续接和隔离写任务;下一步在真实任务中观察触发与执行效果。
+- 三个 CLI 调度 skill 已统一低带宽契约:using-cursor-cli 等待完成唤醒,新增 using-claude-cli / using-codex-cli 按各自原生权限与 worktree 能力分开实现;下一步用真实长任务观察 token 降幅和参数兼容性。
+- personal-style 新增下载测速与可信换源约定;下一步在依赖和模型下载任务中观察切换判断是否合适。
 - living-docs 下一步:在真实项目上用 docs-init 跑一次完整接入,产生第 2 条验收记录。
 
 ## 知识
@@ -39,6 +40,10 @@ Last updated: 2026-07-27
 
 <!-- append-only,一条一行:日期 + 一句话 + commit。超 50 条或本文件超 15KB 时归档。 -->
 
+- 2026-07-28 基于 using-cursor-cli 新增 using-claude-cli 与 using-codex-cli,统一低带宽调度并分别落实原生/调用方 worktree 隔离 (本次 commit)
+- 2026-07-28 using-cursor-cli 取消默认定时轮询,改为等待完成唤醒;仅按用户要求或诊断失联时做窄检查 (本次 commit)
+- 2026-07-27 using-cursor-cli 改为低带宽调度,禁止回传原始 stream-json,只提取最终摘要并执行窄验收 (本次 commit)
+- 2026-07-27 personal-style 新增下载前测速、低速换可信来源及内容一致性校验约定 (本次 commit)
 - 2026-07-27 新增 writing-plexus-notes 独立 skill:记录 Plexus 路径自配置、知识节点结构与安全写入规则 (本次 commit)
 - 2026-07-25 新增 using-cursor-cli 独立 skill:统一 Cursor Agent CLI 的只读、结构化输出、会话和隔离写入契约 (本次 commit)
 - 2026-07-09 同步机制 v2.1:废除 .last-sync 锚点,check_drift.py 重写为 check_sync.py(range 门模式,sync_branches/Arch-Sync skip),docs-init 装 pre-push hook;依据 acceptance-log 2026-07-09 存疑条目 (本次 commit)

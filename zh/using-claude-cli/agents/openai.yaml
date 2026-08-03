@@ -1,4 +1,4 @@
 interface:
   display_name: "使用 Claude CLI"
-  short_description: "通过 Claude Code CLI 低带宽执行分析、规划、复核与隔离开发任务"
+  short_description: "手动调用 Claude Code CLI 执行低带宽分析与隔离开发"
   default_prompt: "使用 $using-claude-cli 通过本地 Claude Code CLI 完成当前任务，仅返回最终摘要和窄验收结果。"

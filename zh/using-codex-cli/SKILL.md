@@ -1,9 +1,13 @@
 ---
 name: using-codex-cli
-description: Use when a task should run through the local Codex CLI, including non-interactive analysis, planning, code review, structured automation, session continuation, model or profile selection, MCP use, web-search decisions, or isolated code changes.
+description: Manual-only skill. Use only when the user explicitly invokes `$using-codex-cli` or explicitly asks to use the local Codex CLI; never trigger from task content alone. Covers non-interactive analysis, planning, code review, structured automation, session continuation, model or profile selection, MCP use, web-search decisions, or isolated code changes.
 ---
 
 # 使用 Codex CLI
+
+## 触发边界
+
+本 skill 仅手动触发：只有用户显式调用 `$using-codex-cli`，或明确要求使用本地 Codex CLI 时才加载。任务本身涉及分析、规划、复核或代码修改，不足以触发本 skill；未被明确点名时，使用普通工作流。
 
 ## 核心原则
 

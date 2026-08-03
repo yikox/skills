@@ -1,6 +1,6 @@
 # skills 仓库 项目文档
 
-Last updated: 2026-07-28
+Last updated: 2026-08-03
 
 ## 概况
 
@@ -13,7 +13,7 @@ Last updated: 2026-07-28
 
 - 同步机制 v2.1 落地:锚点文件废除,改为"提交纪律 + pre-push 同步门"(依据 acceptance-log 存疑条目);套件试用期,毕业计数 1/5。
 - writing-plexus-notes 已同步进技能源仓库;下一步在真实笔记写入中观察路径自配置和节点规则是否足够。
-- 三个 CLI 调度 skill 已统一低带宽契约:using-cursor-cli 等待完成唤醒,新增 using-claude-cli / using-codex-cli 按各自原生权限与 worktree 能力分开实现;下一步用真实长任务观察 token 降幅和参数兼容性。
+- 三个 CLI 调度 skill 已统一低带宽契约并改为仅手动触发:using-cursor-cli 等待完成唤醒,using-claude-cli / using-codex-cli 按各自原生权限与 worktree 能力分开实现;下一步用真实长任务观察 token 降幅和参数兼容性。
 - personal-style 新增下载测速与可信换源约定;下一步在依赖和模型下载任务中观察切换判断是否合适。
 - living-docs 下一步:在真实项目上用 docs-init 跑一次完整接入,产生第 2 条验收记录。
 
@@ -40,6 +40,7 @@ Last updated: 2026-07-28
 
 <!-- append-only,一条一行:日期 + 一句话 + commit。超 50 条或本文件超 15KB 时归档。 -->
 
+- 2026-08-03 三个 using-*-cli skill 改为仅在用户显式调用或明确指定对应 CLI 时触发 (本次 commit)
 - 2026-07-28 基于 using-cursor-cli 新增 using-claude-cli 与 using-codex-cli,统一低带宽调度并分别落实原生/调用方 worktree 隔离 (本次 commit)
 - 2026-07-28 using-cursor-cli 取消默认定时轮询,改为等待完成唤醒;仅按用户要求或诊断失联时做窄检查 (本次 commit)
 - 2026-07-27 using-cursor-cli 改为低带宽调度,禁止回传原始 stream-json,只提取最终摘要并执行窄验收 (本次 commit)

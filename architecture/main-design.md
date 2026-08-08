@@ -20,6 +20,7 @@ ignored_paths:
 | 模块 | 职责 | 入口 |
 | --- | --- | --- |
 | living-docs-suite | v2 套件:docs-init(建文档+装同步门)、docs-sync(门后对齐/抽查/压缩/迁移)、docs-acceptance(临时验收员),含模板、hook 与 check_sync.py | zh/living-docs/*/SKILL.md |
+| git-commit | 统一 git 提交信息规范：中文提交、标签化主题，支持仓库特化签名规则 | zh/git-commit/SKILL.md |
 | personal-style | 个人编码风格约定,独立 skill | zh/personal-style/SKILL.md |
 | using-cursor-cli | 通过本地 Cursor Agent CLI 做事件驱动的低带宽调度:Cursor 承担主要推理与执行,调用方默认等待完成唤醒,只处理最终摘要与窄验收 | zh/using-cursor-cli/SKILL.md |
 | using-claude-cli | 通过本地 Claude Code CLI 做低带宽调度:Plan 只读,原生 worktree + 最小工具白名单隔离写任务 | zh/using-claude-cli/SKILL.md |

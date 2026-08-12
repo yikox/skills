@@ -1,6 +1,6 @@
 # skills 仓库 项目文档
 
-Last updated: 2026-08-08
+Last updated: 2026-08-12
 
 ## 概况
 
@@ -12,6 +12,7 @@ Last updated: 2026-08-08
 ## 当前焦点
 
 - 已修正 `git-commit` skill：动态使用实际 Agent 身份，明确仓库规则优先级，并修复远端识别、签名去重和完整消息处理。
+- personal-style 整合本地 Git 与 `gh` 默认使用外部终端、测试材料默认不入库及任务结束询问清理的规则。
 - 同步机制 v2.1 落地:锚点文件废除,改为"提交纪律 + pre-push 同步门";套件试用期,毕业计数 1/5。
 - 下步：移除旧 `auto-ai-coauthor` 后，在真实 `git.mtlab.meitu.com` 仓库验证动态签名与去重行为。
 
@@ -38,6 +39,8 @@ Last updated: 2026-08-08
 
 <!-- append-only,一条一行:日期 + 一句话 + commit。超 50 条或本文件超 15KB 时归档。 -->
 
+- 2026-08-12 personal-style 增加测试材料默认不入库、结束时询问清理的规则 (本次 commit)
+- 2026-08-09 personal-style 增加本地 Git 与 `gh` 默认使用外部终端的规则 (本次 commit)
 - 2026-08-08 修正 git-commit skill 的动态 AI 身份、仓库规则优先级、远端识别与签名去重，并移除会丢失正文的 shell 模板 (本次 commit)
 - 2026-08-07 新增 git-commit skill（中文提交、[tag] 前缀、仓库特化 AI 追加规则），并补齐 architecture module 与主设计地图 (本次 commit)
 - 2026-08-06 personal-style 增加不保留兼容层、最简实现、最小端到端闭环、成熟依赖与已验证模式等约定 (本次 commit)

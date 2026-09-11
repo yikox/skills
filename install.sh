@@ -14,11 +14,6 @@ Usage:
 把本仓库 zh/ 下的全部 skill(按目录名平铺)复制到目标 skills 目录,并清理
 deprecated 列表中的旧 skill 名。语言参数必填且只接受 zh。
 
-  zh   source is zh/
-
-en 已冻结:modular-programming v1 套件(en + zh)只读存放在 legacy/
-(git tag modular-v1-frozen),不参与安装。
-
 Default targets:
   ~/.agents/skills
   ~/.codex/skills
@@ -70,10 +65,6 @@ fi
 lang="${positional[0]}"
 case "$lang" in
   zh) ;;
-  en)
-    echo "en edition is frozen: see legacy/ (git tag modular-v1-frozen)." >&2
-    exit 2
-    ;;
   *)
     echo "Invalid <lang>: $lang (expected zh)." >&2
     usage >&2
@@ -118,7 +109,11 @@ skills=("${sorted_skills[@]}")
 # 本仓库历史版本产出过的 skill 名,安装时从目标目录清除。
 # 分组仅作注释,匹配是精确目录名。
 deprecated_skills=(
-  # v1 治理套件(modular-programming,已冻结入 legacy/)
+  # v2 文档治理套件(已移除,内容存 git 历史)
+  docs-init
+  docs-sync
+  docs-acceptance
+  # v1 治理套件(modular-programming,已移除)
   modular-architect
   modular-init
   modular-architecture

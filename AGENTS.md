@@ -1,18 +1,19 @@
 # skills 仓库
 
-## living-docs 工作流
+个人 agent skills 的源仓库。只有 skill 源码与安装脚本,不含任何项目治理流程。
 
-- 会话开始:读 project.md(概况 + 当前焦点)和 architecture/main-design.md。
-- 顺带更新:改到哪个模块,**同一颗 commit** 里顺手更新 architecture/modules/<module>.md;新模块 = 新文件 + main-design.md 模块表加一行。
-- 同步门:push main 前 pre-push hook 会跑 check_sync.py;被拦下时要么补文档,要么(确实无需更新时)commit message 加 `Arch-Sync: skip <module|路径 glob> <一句话理由>`。不用 `--no-verify` 绕过。
-- 值得记的变化(行为、接口、决策)在 project.md 变更日志追加一行:日期 + 一句话 + commit。
-- 会话结束:更新"当前焦点"(1-5 行:在做什么、卡在哪、下一步)。
-- 可复用知识(命令、坑、约定)合并进 project.md 知识区的对应主题,不追加流水账。
-- 变更日志超 50 条或 project.md 超 15KB:用 $docs-sync 归档压缩;证据不删只移。
+## 约定
 
-## 本仓库特有约定
-
-- `legacy/` 契约冻结:任何变更都是违规,同步门点名它时回退变更而不是更新文档。
-- 对 living-docs 套件本身的修改,唯一合法输入是 acceptance-log.md 中的记录。
+- AI 协作规则只此一份;`CLAUDE.md` 通过 `@AGENTS.md` 引入,不要两边各写一份。
 - 提交信息按 `$git-commit`:`[tag] 中文摘要` 主题行,末尾加 `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`。
-- AI 规则只此一份;`CLAUDE.md` 通过 `@AGENTS.md` 引入,不复制正文。
+- 文档与 skill 正文一律中文,不维护英文镜像。
+- 请求用户确认重大决策(L3 级)前,先给 3-8 条要点摘要(修改重点、歧义点、风险),让用户不读全文也能决策。
+- 删除、重写 git 历史、改动公共接口这类不可逆操作,先列清单再动手,不要边做边扩范围。
+- `install.sh` 必须兼容 bash 3.2(macOS 自带):不用 `readarray`、关联数组、globstar。
+
+## 环境坑
+
+- EnterWorktree 建出的 worktree 可能缺本地未推送 commit(baseRef 默认 origin/main);worktree 内 `git merge --ff-only main` 补齐(2026-07-03 实证)。
+- ExitWorktree remove 会误报"N commits 将丢失":先 `git merge-base --is-ancestor <tip> main` 确认已包含,再 discard。
+- 对同一个文件并行发起多个编辑会互相覆盖(各自基于同一份原始内容写回,后写者胜),只有最后一个生效。同一文件的多处改动必须串行,或合并成一次整体写入。
+- 在 skill 目录里跑 Python 会生成 `__pycache__`,已加进 `.gitignore`。

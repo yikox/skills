@@ -4,8 +4,11 @@
 # git worktrees for isolated execution
 .claude/worktrees/
 
+# agent 本地工作记忆,不进仓库
+.workbuddy/
+
 # macOS
 .DS_Store
 
-# 在 legacy/ 里跑 Python 会在此生成 *.pyc，同步门会误报 legacy-v1 漂移
+# 在 skill 目录里跑 Python 会生成 *.pyc
 __pycache__/

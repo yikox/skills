@@ -32,3 +32,17 @@
 - 变更:废除 .last-sync 锚点;check_drift.py → check_sync.py(range 门模式,sync_branches 默认 [main],Arch-Sync: skip 放行出口);docs-init 安装 pre-push hook;docs-sync 改为门后对齐/抽查/压缩/迁移;验收清单第 1/2 条改为门语义。
 - 验证:同步(exit 0)/不受管分支放行/DRIFT 点名/skip 放行/hook 随 push --dry-run 触发,五条路径实测通过;commit ac5bbfe、0071b8a。
 - 状态:待试用期检验;存疑条目就此关闭。
+
+## 2026-09-11 套件修改(变更记录,非 init/sync 运行)
+
+- 依据:① 用户当场指令"整体调整优化,使架构更合理、职责更清晰、功能更完整";② 本次真实使用中观察到的失败(见下)。两者都属日志允许的输入,不是"看着不对劲"。
+- 观察到的失败:
+  1. 同步门核心脚本的绝对路径被烧进 hook 模板,而脚本只存在于用户的全局 skill 目录 → 换机器或未装 skill 时门静默失效。
+  2. `check_sync.py` 的配置类错误一律 `sys.exit("文本")`,退出码恒为 1,与文档承诺的"2=配置错误"不符,会把配置问题混进"有漂移"。
+  3. `git diff --name-only` 对重命名只报新路径,文件跨模块移动时源模块被漏点名。
+  4. 一次性删除无归属文件时 ORPHAN 无法通过,而当时唯一出口是永久改 ignored_paths 配置。
+  5. docs-init / module-template / docs-sync 三处对"四节还是五节"表述不一致。
+  6. docs-sync 的抽查命令写相对路径 `scripts/check_sync.py`,在目标项目里不成立。
+- 变更:pre-push hook 改为自包含(与 check_sync.py 成对装到 `.git/hooks/`,用自身目录定位);新增 `die()` 显式传退出码;diff 加 `--no-renames`;新增 `Arch-Sync: skip <路径 glob>` 一次性放行 ORPHAN;统一模块文档为"frontmatter code_paths + 正文四节";抽查命令改用 `.git/hooks/` 里的副本;新增 `tests/test_check_sync.py`;docs-init 验收清单第 1 条改为核对两份 hook 文件。
+- 验证:`test_check_sync.py` 10/10 通过;另在本地 bare 仓库端到端跑通四路径——首次 push 放行、DRIFT 拦截、补文档后放行、`Arch-Sync: skip` 放行;本仓库自身已装同步门并实跑通过。
+- 状态:待试用期检验。本次未改动验收清单的判定标准,故不重置"连续全过"计数。

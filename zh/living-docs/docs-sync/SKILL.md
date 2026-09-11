@@ -14,15 +14,17 @@ pre-push 报 DRIFT 或 ORPHAN：
 1. `git diff <range> -- <该模块 code_paths>` 看实际变更，判断职责/对外接口/依赖/注意点是否受影响。
 2. 受影响 → 更新模块文档，追进本次提交（amend 或补一颗 commit）再 push。
 3. 确实无需更新 → 在 commit message 加一行 `Arch-Sync: skip <module> <一句话理由>`（理由入历史，可审计）。**不用 `--no-verify` 绕过。**
-4. ORPHAN 路径三选一：补进某模块 code_paths / 新建模块（建文档 + main-design 加行）/ 加进 main-design 的 ignored_paths。
+4. ORPHAN 路径四种处置：补进某模块 code_paths / 新建模块（建文档 + main-design 加行）/ 加进 main-design 的 ignored_paths / 一次性清理旧文件时在 commit message 写 `Arch-Sync: skip <路径 glob> <理由>`（如 `Arch-Sync: skip docs/legacy/** 清理已废弃过程文档`）。
 
 ## 抽查审计（低频后盾）
 
 门可能被绕过（`--no-verify`、没装 hook 的机器、网页直接编辑）。怀疑时对任意历史段跑：
 
 ```sh
-python3 scripts/check_sync.py --arch-dir <architecture 目录> --range <起点>..HEAD
+python3 .git/hooks/living-docs-check-sync.py --arch-dir <architecture 目录> --range <起点>..HEAD
 ```
+
+该副本由 docs-init 装同步门时落到 `.git/hooks/`；目标项目没装门时，改用本 skill 的 `scripts/check_sync.py`。
 
 对被点名的模块按上面 1-3 处理（补文档提交即可，无需其他动作）。
 
@@ -39,7 +41,7 @@ python3 scripts/check_sync.py --arch-dir <architecture 目录> --range <起点>.
 | project-management.md 的 Overview / Current Status | project.md 概况 + 当前焦点 |
 | knowledge-summary.md | project.md 知识（按主题合并） |
 | Recent Updates / Completed Work | project.md 变更日志（一条一行，保留 commit 证据） |
-| architecture/modules/*.md | 新模块文档（保留职责、接口、code_paths；砍 kind 分类、baseline/target、关系词表、verified/inferred 标注） |
+| architecture/modules/*.md | 新模块文档（保留职责、对外接口、依赖、注意点与 code_paths；砍 kind 分类、baseline/target、关系词表、verified/inferred 标注） |
 | 旧 `.last-sync` 锚点文件 | 删除（同步门取代锚点机制） |
 | changes/ adrs/ plans/ 等设计历史 | 原地保留，作为历史引用 |
 
@@ -49,5 +51,5 @@ python3 scripts/check_sync.py --arch-dir <architecture 目录> --range <起点>.
 
 - 单次对齐/抽查控制在 10 分钟内；超时如实记录原因。
 - 不重建、不美化：对齐只让文档回到与代码一致，重构模块划分是另一件事，需用户发起。
-- 模板见 `../docs-init/templates/`（迁移建新文档、装 hook 时使用）。
+- 模板见 `../docs-init/templates/`；装同步门时还要把本 skill 的 `scripts/check_sync.py` 一并落到 `.git/hooks/`（见 docs-init 第 5 步）。
 - 完成对齐、抽查或迁移后必须调用 $docs-acceptance。

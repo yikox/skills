@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# 把 zh/ 下全部 skill 平铺安装到各 agent 的 skills 目录,并清理历史遗留的旧 skill 名。
+# 兼容 bash 3.2(macOS 自带),不使用 readarray / 关联数组 / globstar。
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,18 +9,15 @@ dry_run=0
 usage() {
   cat <<'USAGE'
 Usage:
-  ./install.sh <lang> [--dry-run] [target_dir ...]
+  ./install.sh zh [--dry-run] [target_dir ...]
 
-Installs one language edition of the skills in this repo into one or more
-agent skills directories. The first positional argument selects the language
-and is required:
+把本仓库 zh/ 下的全部 skill(按目录名平铺)复制到目标 skills 目录,并清理
+deprecated 列表中的旧 skill 名。语言参数必填且只接受 zh。
 
-  <lang>   zh   (source is <lang>/)
+  zh   source is zh/
 
-en is frozen: the modular-programming v1 suite (en + zh) lives read-only in
-legacy/ (git tag modular-v1-frozen) and is not installed. Deprecated skill
-names, including the frozen modular-* suite and its _shared layer, are removed
-from the targets.
+en 已冻结:modular-programming v1 套件(en + zh)只读存放在 legacy/
+(git tag modular-v1-frozen),不参与安装。
 
 Default targets:
   ~/.agents/skills
@@ -63,7 +62,7 @@ while (($#)); do
 done
 
 if ((${#positional[@]} == 0)); then
-  echo "Missing required <lang> (zh|en)." >&2
+  echo "Missing required <lang> (zh)." >&2
   usage >&2
   exit 2
 fi
@@ -98,14 +97,41 @@ if ((${#targets[@]} == 0)); then
   )
 fi
 
+# 发现 skill:凡含 SKILL.md 的目录即一个 skill,取其目录名。
 skills=()
 while IFS= read -r -d '' skill_file; do
   skills+=("$(dirname "$skill_file")")
-done < <(
-  find "$src_dir" -name SKILL.md -type f -print0
-)
+done < <(find "$src_dir" -name SKILL.md -type f -print0)
 
+if ((${#skills[@]} == 0)); then
+  echo "No skills found in $src_dir" >&2
+  exit 1
+fi
+
+# 排序(while read 而非 readarray:兼容 bash 3.2);数组下标顺序决定安装顺序。
+sorted_skills=()
+while IFS= read -r skill; do
+  sorted_skills+=("$skill")
+done < <(printf '%s\n' "${skills[@]}" | LC_ALL=C sort)
+skills=("${sorted_skills[@]}")
+
+# 本仓库历史版本产出过的 skill 名,安装时从目标目录清除。
+# 分组仅作注释,匹配是精确目录名。
 deprecated_skills=(
+  # v1 治理套件(modular-programming,已冻结入 legacy/)
+  modular-architect
+  modular-init
+  modular-architecture
+  modular-change
+  modular-autopilot
+  modular-advisor
+  modular-narrator
+  modular-status
+  modular-review
+  modular-audit
+  modular-knowledge
+  _shared
+  # v1 之前的 PM / 架构 / 记忆套件
   architecture-design
   pm-audit-memory
   pm-design-requirement
@@ -124,33 +150,20 @@ deprecated_skills=(
   pm-architecture-docs
   pm-requirement-to-design
   project-management-docs
-  modular-architect
-  modular-init
-  modular-architecture
-  modular-change
-  modular-autopilot
-  modular-advisor
-  modular-narrator
-  modular-status
-  modular-review
-  modular-audit
-  modular-knowledge
-  _shared
+  # 已被 git-commit 取代的 AI 署名 skill
+  auto-ai-coauthor
 )
-
-if ((${#skills[@]} == 0)); then
-  echo "No skills found in $src_dir" >&2
-  exit 1
-fi
-
-IFS=$'\n' skills=($(printf '%s\n' "${skills[@]}" | sort))
-unset IFS
 
 rsync_flags=(-a --delete)
 if ((dry_run)); then
   rsync_flags+=(--dry-run --itemize-changes)
   echo "Dry run: no files will be changed."
 fi
+
+echo "Found ${#skills[@]} skill(s) in $src_dir:"
+for skill in "${skills[@]}"; do
+  echo "  $(basename "$skill")"
+done
 
 for target in "${targets[@]}"; do
   expanded_target="${target/#\~/$HOME}"
@@ -179,12 +192,17 @@ for target in "${targets[@]}"; do
     deprecated_destination="$expanded_target/$deprecated_skill"
     if [[ -e "$deprecated_destination" ]]; then
       if ((dry_run)); then
-        echo "  remove deprecated $deprecated_skill -> $deprecated_destination"
+        echo "  would remove deprecated $deprecated_skill"
       else
+        echo "  removed deprecated $deprecated_skill"
         rm -rf "$deprecated_destination"
       fi
     fi
   done
 done
 
-echo "Installed ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
+if ((dry_run)); then
+  echo "Dry run: would install ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
+else
+  echo "Installed ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
+fi

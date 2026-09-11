@@ -11,15 +11,28 @@
 
 ## Skills
 
+仓库内共 9 个 skill，安装时全部平铺到目标目录。套件三个有调用关系，其余六个彼此独立。
+
+套件（`living-docs`）：
+
 | Skill | 什么时候用 |
 | --- | --- |
 | `docs-init` | 新项目接入:建两份文档 + 写入顺带更新规则 |
 | `docs-sync` | 漂移对账、项目文档归档压缩、旧文档体系一次性迁移 |
 | `docs-acceptance` | 临时验收员:init/sync 完成后自动调用,结果记入 acceptance-log.md;连续 5 次全过后拆除毕业 |
+
+独立 skill：
+
+| Skill | 什么时候用 |
+| --- | --- |
 | `personal-style` | 处理开发请求时遵循个人编码风格约定 |
+| `git-commit` | 生成、规范化或检查 Git 提交信息;用户明确要求时执行提交或推送 |
+| `writing-plexus-notes` | 把笔记安全写入本机 Plexus Markdown 工作区 |
 | `using-cursor-cli` | 低带宽调度本地 Cursor Agent CLI 做分析、规划、结构化自动化或隔离代码修改 |
 | `using-claude-cli` | 低带宽调度本地 Claude Code CLI 做分析、规划、结构化自动化或隔离代码修改 |
 | `using-codex-cli` | 低带宽调度本地 Codex CLI 做分析、规划、结构化自动化或隔离代码修改 |
+
+三个 CLI 调度 skill 均为手动触发：只有显式调用 `$using-*-cli` 或明确点名对应 CLI 时才加载。
 
 对套件本身的修改,唯一合法输入是 acceptance-log.md 里的使用证据——这是 v1 三十次"看着不对劲"式修改永不收敛的教训。
 
@@ -28,6 +41,9 @@
 ```text
 Use $docs-init 给这个项目接入 living-docs。
 Use $docs-sync 对账/压缩项目文档/迁移旧文档体系。
+Use $git-commit 规范/检查我的提交信息。
+Use $personal-style 按我的编码风格约束本次改动。
+Use $writing-plexus-notes 把这段内容记进 Plexus。
 Use $using-cursor-cli 通过 Cursor Agent CLI 复核当前改动。
 Use $using-claude-cli 通过 Claude Code CLI 复核当前改动。
 Use $using-codex-cli 通过 Codex CLI 复核当前改动。
@@ -38,17 +54,21 @@ Use $using-codex-cli 通过 Codex CLI 复核当前改动。
 ```sh
 ./install.sh zh              # 安装(默认 ~/.agents、~/.codex、~/.claude 的 skills 目录)
 ./install.sh zh --dry-run    # 预演
+./install.sh zh ~/my-agent/skills   # 指定目标目录
 ```
 
-中文单源,不维护英文镜像。安装会顺带清理旧 v1 skill(`modular-*`、`_shared`)。另含独立 skill `personal-style`(个人编码风格约定)。
+中文单源,不维护英文镜像。skill 按目录名平铺复制,目标目录内同名 skill 被完全镜像;安装时会一并清理早前版本遗留的旧 skill 名(`modular-*`、`_shared`、`pm-*`、`auto-ai-coauthor` 等)。
 
 ## 仓库结构
 
 ```text
 project.md            # 本仓库自己的项目文档
-architecture/         # 本仓库自己的模块地图
+architecture/         # 本仓库自己的模块地图(main-design + modules/*)
+acceptance-log.md     # living-docs 套件的验收日志(套件修改的唯一合法输入)
 zh/living-docs/       # v2 套件:docs-init / docs-sync / docs-acceptance
 zh/personal-style/    # 独立 skill
+zh/git-commit/        # 独立 skill
+zh/writing-plexus-notes/  # 独立 skill
 zh/using-cursor-cli/  # Cursor Agent CLI 调用 skill
 zh/using-claude-cli/  # Claude Code CLI 调用 skill
 zh/using-codex-cli/   # Codex CLI 调用 skill

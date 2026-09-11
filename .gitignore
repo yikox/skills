@@ -1,5 +1,11 @@
-# v2 起 CLAUDE.md 入库(规则仅含仓库相对路径,决定见 project.md 知识区)
-AGENTS.md
+# AI 协作规则唯一事实源是 AGENTS.md；CLAUDE.md 只做引入。
+# 规则正文一律改 AGENTS.md，不要在两边各写一份。
 
 # git worktrees for isolated execution
 .claude/worktrees/
+
+# macOS
+.DS_Store
+
+# 在 legacy/ 里跑 Python 会在此生成 *.pyc，同步门会误报 legacy-v1 漂移
+__pycache__/

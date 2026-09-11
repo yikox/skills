@@ -10,7 +10,7 @@ living-docs 的产品是两份文档，不是流程。init 只做一件事：让
 ## 两份文档
 
 1. **project.md（项目文档）**：概况 / 当前焦点 / 知识 / 变更日志，四章固定。
-2. **architecture/（设计文档）**：main-design.md（系统一段话 + 模块表 + 协作描述）+ modules/<name>.md（每模块五节：职责 / 对外接口 / code_paths / 依赖 / 注意点）。
+2. **architecture/（设计文档）**：main-design.md（系统一段话 + 模块表 + 协作描述）+ modules/<name>.md（frontmatter 声明 code_paths，正文四节：职责 / 对外接口 / 依赖 / 注意点）。
 
 模板在 `templates/`，各章的读者与写法/压缩规则以 `templates/project-template.md` 内注释为准。
 
@@ -22,7 +22,7 @@ living-docs 的产品是两份文档，不是流程。init 只做一件事：让
    - project.md：概况按已知信息填写；当前焦点写接入时的状态；变更日志首条记 init。
    - architecture/：从代码结构推断模块划分，顶层模块建议 3-9 个；每模块一份文档。不确定的边界如实标注"(不确定)"，不假装明确。
 4. **确认后落盘**：给用户看草稿要点——模块清单 + 每模块一句话职责 + 你不确定的点。**模块划分必须经用户确认才写入。**
-5. **安装同步门**：git 项目把 `templates/pre-push-hook.sh` 装到 `.git/hooks/pre-push`（替换其中 ARCH_DIR 与 CHECK_SYNC_PATH 为实际路径，`chmod +x`；已有 pre-push hook 则追加调用，先确认）；main-design.md frontmatter 写 `sync_branches`（默认 main）。非 git 项目跳过并告知同步门不可用。
+5. **安装同步门**：git 项目把两个文件一起装进 `.git/hooks/`——`templates/pre-push-hook.sh` → `.git/hooks/pre-push`（改写其中的 ARCH_DIR 为项目实际的 architecture 目录，`chmod +x`），`../docs-sync/scripts/check_sync.py` → `.git/hooks/living-docs-check-sync.py`。**两份必须一起装**：hook 按自身所在目录定位检查脚本，因此不依赖目标机器上的 skill 安装路径，也不随 skill 升级而失效。已有 pre-push hook 则追加调用，先确认。main-design.md frontmatter 写 `sync_branches`（默认 main）。非 git 项目跳过并告知同步门不可用。
 6. **写入规则**：把 `templates/ai-rules-snippet.md` 合并进项目的 CLAUDE.md / AGENTS.md（合并不覆盖既有内容；首次创建或修改前先向用户确认）。
 7. **验收**：完成后必须调用 $docs-acceptance 验收本次 init。
 

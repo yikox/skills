@@ -10,22 +10,37 @@
 - --range A..B:检查指定 commit 段——pre-push hook 与历史抽查用。
 - 仅当 branch 在 main-design.md frontmatter 的 sync_branches(默认 [main])
   中才检查,否则直接放行(开发分支不受管,合入受管分支时再查)。
-- 跳过出口:range 内任一 commit message 含 "Arch-Sync: skip <module> <理由>"。
+- 跳过出口:range 内任一 commit message 含 "Arch-Sync: skip <模块名|路径 glob> <理由>"。
+  模块名放行对应 DRIFT,路径 glob 放行对应 ORPHAN;理由入历史可审计。
+
+由 pre-push hook 调用时,本文件是 `.git/hooks/living-docs-check-sync.py`
+(hook 用自身目录定位它),因此不依赖 skill 的安装位置。
 
 退出码: 0 同步/不受管, 1 有漂移, 2 配置错误。仅 Python 标准库。
 """
 import argparse
+import fnmatch
 import re
 import subprocess
 import sys
 from pathlib import Path
 
 
+def die(message, code=2):
+    """打印到 stderr 并用非 0 退出码结束。
+
+    注意不能用 sys.exit("文本"):那样退出码恒为 1,会把配置错误混进
+    "有漂移"的语义里,hook 与调用方都据退出码分流。
+    """
+    print(message, file=sys.stderr)
+    sys.exit(code)
+
+
 def git(repo, *args, check=True):
     r = subprocess.run(["git", "-C", str(repo), *args],
                        capture_output=True, text=True)
     if check and r.returncode != 0:
-        sys.exit(f"git {' '.join(args)} 失败: {r.stderr.strip()}")
+        die(f"git {' '.join(args)} 失败: {r.stderr.strip()}")
     return r.stdout
 
 
@@ -50,7 +65,6 @@ def parse_frontmatter_list(text, key):
 
 def glob_match(path, pattern):
     """仓库相对路径 glob 匹配,支持尾部 /** 与普通 fnmatch。"""
-    import fnmatch
     if pattern.endswith("/**"):
         return path == pattern[:-3] or path.startswith(pattern[:-3] + "/")
     return fnmatch.fnmatch(path, pattern)
@@ -69,11 +83,15 @@ def main():
     args = ap.parse_args()
 
     repo = Path(args.repo).resolve()
-    arch = repo / args.arch_dir
+    arch = (repo / args.arch_dir).resolve()
     main_design = arch / "main-design.md"
     modules_dir = arch / "modules"
     if not main_design.is_file():
-        sys.exit(f"缺 {main_design}。退出码 2。")
+        die(f"缺 {main_design}。退出码 2。")
+    try:
+        arch_rel = str(arch.relative_to(repo))
+    except ValueError:
+        die(f"--arch-dir 必须位于仓库内: {arch} 不在 {repo} 下。退出码 2。")
 
     md_text = main_design.read_text()
     managed = parse_frontmatter_list(md_text, "sync_branches") or ["main"]
@@ -85,16 +103,18 @@ def main():
         print(f"分支 {branch} 不受管(sync_branches: {managed}),放行;合入受管分支时再检查。")
         return 0
 
+    # --no-renames:重命名默认只报新路径,文件跨模块移动时源模块会被漏掉。
     if args.rev_range:
-        changed = set(git(repo, "diff", "--name-only",
+        changed = set(git(repo, "diff", "--name-only", "--no-renames",
                           args.rev_range).splitlines())
         log_range = args.rev_range
     else:
         base = f"{args.remote}/{branch}"
         if subprocess.run(["git", "-C", str(repo), "rev-parse", "--verify",
                            base], capture_output=True).returncode:
-            sys.exit(f"找不到 {base};指定 --range 或先 fetch。退出码 2。")
-        changed = set(git(repo, "diff", "--name-only", base).splitlines())
+            die(f"找不到 {base};指定 --range 或先 fetch。退出码 2。")
+        changed = set(git(repo, "diff", "--name-only", "--no-renames",
+                          base).splitlines())
         changed |= set(git(repo, "ls-files", "--others",
                            "--exclude-standard").splitlines())
         log_range = f"{base}..HEAD"
@@ -109,9 +129,8 @@ def main():
             globs = parse_frontmatter_list(doc.read_text(), "code_paths")
             modules[doc.stem] = (str(doc.relative_to(repo)), globs)
     if not modules:
-        sys.exit(f"{modules_dir} 下没有模块文档。退出码 2。")
+        die(f"{modules_dir} 下没有模块文档。退出码 2。")
 
-    arch_rel = str(arch.relative_to(repo))
     drifted, claimed = [], set()
     for name, (doc_rel, globs) in modules.items():
         hits = sorted(p for p in changed
@@ -123,7 +142,8 @@ def main():
     orphans = sorted(
         p for p in changed - claimed
         if not p.startswith(arch_rel + "/")
-        and not any(glob_match(p, g) for g in ignored))
+        and not any(glob_match(p, g) for g in ignored)
+        and not any(glob_match(p, s) for s in skips))
 
     if not drifted and not orphans:
         skipped = f",跳过 {sorted(skips)}" if skips else ""
@@ -138,7 +158,8 @@ def main():
         if len(hits) > 5:
             print(f"    … 共 {len(hits)} 个")
     for p in orphans:
-        print(f"ORPHAN {p}  (不属于任何模块; 补 code_paths / 建模块 / 加 ignored_paths)")
+        print(f"ORPHAN {p}  (补 code_paths / 建模块 / 加 ignored_paths / "
+              f"Arch-Sync: skip {p} <理由>)")
     return 1
 
 

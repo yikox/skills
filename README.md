@@ -14,7 +14,7 @@
 | `using-codex-cli` | 低带宽调度本地 Codex CLI 做分析、规划、结构化自动化或隔离代码修改 |
 | `show-me` | 按真实执行顺序讲解仓库中的一个逻辑实现 |
 | `with-doc` | 为单次任务维护一份人读的工作记录 |
-| `doc-writing` | 写或重写一份成形文档时,先判断体裁再按该体裁的写作逻辑组织 |
+| `writing-good-docs` | 写或重写一份成形文档时,先判断体裁再按该体裁的写作逻辑组织 |
 
 三个 CLI 调度 skill 均为手动触发:只有显式调用 `$using-*-cli` 或明确点名对应 CLI 时才加载。
 
@@ -29,7 +29,7 @@ Use $using-claude-cli 通过 Claude Code CLI 复核当前改动。
 Use $using-codex-cli 通过 Codex CLI 复核当前改动。
 Use $show-me 讲解当前仓库中这段逻辑的真实执行过程。
 Use $with-doc 为本次任务记一份工作文档。
-Use $doc-writing 按体裁写这份文档。
+Use $writing-good-docs 按体裁写这份文档。
 ```
 
 ## 安装

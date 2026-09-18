@@ -109,6 +109,8 @@ skills=("${sorted_skills[@]}")
 # 本仓库历史版本产出过的 skill 名,安装时从目标目录清除。
 # 分组仅作注释,匹配是精确目录名。
 deprecated_skills=(
+  # 更名前的旧名
+  doc-writing
   # v2 文档治理套件(已移除,内容存 git 历史)
   docs-init
   docs-sync

@@ -111,6 +111,7 @@ skills=("${sorted_skills[@]}")
 deprecated_skills=(
   # 更名前的旧名
   doc-writing
+  personal-style
   # v2 文档治理套件(已移除,内容存 git 历史)
   docs-init
   docs-sync

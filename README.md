@@ -16,7 +16,7 @@
 
 | Skill | 什么时候用 |
 | --- | --- |
-| `personal-style` | 处理开发请求时遵循个人编码风格约定 |
+| `me` | 所有开发请求必定加载；按具体任务触发条件读取个人规则专题文档 |
 | `git-commit` | 生成、规范化或检查 Git 提交信息;用户明确要求时执行提交或推送 |
 | `writing-good-docs` | 写或重写一份成形文档时,先判断体裁再按该体裁的写作逻辑组织 |
 | `writing-plexus-notes` | 把笔记安全写入本机 Plexus Markdown 工作区 |
@@ -33,7 +33,7 @@
 ```text
 AGENTS.md   # 本仓库约定(AI 协作规则唯一事实源)
 CLAUDE.md   # @AGENTS.md 引入
-zh/         # 全部 skill 源码,每个子目录一个 SKILL.md
+zh/         # 全部 skill 源码,每个 skill 子目录含 SKILL.md,可带按需读取的专题文档
 install.sh  # 安装脚本
 ```
 

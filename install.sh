@@ -18,6 +18,7 @@ Default targets:
   ~/.agents/skills
   ~/.codex/skills
   ~/.claude/skills
+  ~/.workbuddy/skills
 
 Examples:
   ./install.sh zh
@@ -85,6 +86,7 @@ if ((${#targets[@]} == 0)); then
     "$HOME/.agents/skills"
     "$HOME/.codex/skills"
     "$HOME/.claude/skills"
+    "$HOME/.workbuddy/skills"
   )
 fi
 

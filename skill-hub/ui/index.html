@@ -339,6 +339,63 @@
       z-index: 100;
       box-shadow: 0 8px 24px rgba(0,0,0,0.45);
     }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 520px;
+      max-width: 92vw;
+      padding: 18px 20px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    }
+    .modal-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 15.5px;
+      color: #f87171;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-box .modal-body {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .modal-box .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .icon-del-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 12px;
+      opacity: 0.55;
+      transition: all 0.12s;
+    }
+    .skill-item:hover .icon-del-btn { opacity: 1; }
+    .icon-del-btn:hover {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.15);
+    }
   </style>
 </head>
 <body>
@@ -461,6 +518,18 @@
   </main>
 
   <div class="toast" id="toast"></div>
+
+  <!-- 安全删除确认弹窗 (适配原生 WKWebView 与浏览器) -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal-box">
+      <h3 id="modal-title">🗑️ 确认删除 Skill</h3>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeConfirmModal()">取消</button>
+        <button class="btn danger" id="modal-confirm-btn">🗑️ 确认删除 (自动备份至回收站)</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     let DATA = null;
@@ -660,7 +729,10 @@
         <div class="skill-item ${suiteCls} ${sel}" onclick="selectSkill('${esc(g.name)}')">
           <div class="row1">
             <span>${esc(g.name)}</span>
-            <span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span>
+            <div style="display:flex; align-items:center; gap:5px;">
+              <span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span>
+              <button class="icon-del-btn" title="删除此 Skill" onclick="event.stopPropagation(); promptDeleteSkills(['${esc(g.name)}'])">🗑️</button>
+            </div>
           </div>
           <div class="desc">${esc(g.description)}</div>
           <div class="pills">
@@ -816,7 +888,13 @@
     function renderSuiteOverview(suiteId) {
       const suiteMeta = (DATA.skill_suites || []).find(s => s.suite_id === suiteId);
       const items = (DATA.skill_groups || []).filter(g => g.suite_id === suiteId);
-      if (!items.length) return;
+      if (!items.length) {
+        const fallback = (DATA.skill_suites || [])[0];
+        if (fallback && fallback.suite_id !== suiteId) {
+          selectSuiteOverview(fallback.suite_id, false);
+        }
+        return;
+      }
 
       const title = suiteMeta ? suiteMeta.suite_title : (items[0].suite_title || suiteId);
       const desc = suiteMeta ? suiteMeta.suite_desc : (items[0].suite_desc || '');
@@ -827,10 +905,16 @@
 
       document.getElementById('detail-header-actions').innerHTML = `
         <button class="btn sm" onclick="toggleSuite('${esc(suiteId)}'); renderSuiteOverview('${esc(suiteId)}')">
-          ${isCollapsed ? '➕ 在左侧展开本套件列表' : '➖ 在左侧折叠本套件列表'}
+          ${isCollapsed ? '➕ 展开左侧列表' : '➖ 折叠左侧列表'}
         </button>
         <button class="btn sm primary" onclick="linkEntireSuite('${esc(suiteId)}', '${esc(title)}')">
-          🔗 将整套 (${items.length} 个) 一键软链到 4 大工具
+          🔗 整套软链到 4 大工具
+        </button>
+        <button class="btn sm danger" id="btn-batch-del-suite" style="display:none;" onclick="deleteCheckedInSuite()">
+          🗑️ 批量删除已勾选
+        </button>
+        <button class="btn sm danger" onclick="promptDeleteSuite('${esc(suiteId)}', '${esc(title)}', ${items.length})">
+          🗑️ 删除整套 (${items.length} 个)
         </button>
       `;
 
@@ -850,14 +934,18 @@
           .join(' ');
         return `
           <tr style="cursor:pointer;" onclick="selectSkill('${esc(g.name)}')">
+            <td style="width:28px; text-align:center;" onclick="event.stopPropagation();">
+              <input type="checkbox" class="suite-row-chk" value="${esc(g.name)}" onchange="updateSuiteBatchBtn()" />
+            </td>
             <td style="font-weight:600; color:#60a5fa; white-space:nowrap;">${esc(g.name)}</td>
-            <td style="color:var(--muted); max-width:420px;">${esc(g.description)}</td>
+            <td style="color:var(--muted); max-width:390px;">${esc(g.description)}</td>
             <td style="white-space:nowrap;"><span class="pill">${esc(g.canonical_scope_label)}</span></td>
             <td>${appPills || '<span style="color:var(--muted);font-size:11px;">仅局部/单处</span>'}</td>
             <td style="white-space:nowrap;"><span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span></td>
             <td style="white-space:nowrap;" onclick="event.stopPropagation();">
-              <button class="btn sm" onclick="selectSkill('${esc(g.name)}')">👁️ 详情/编辑</button>
-              <button class="btn sm" onclick="launchApp('finder', '', '${esc(g.canonical_path)}')">📂</button>
+              <button class="btn sm" onclick="selectSkill('${esc(g.name)}')">👁️ 详情</button>
+              <button class="btn sm" onclick="launchApp('finder', '', '${esc(g.canonical_path)}')" title="在 Finder 中定位">📂</button>
+              <button class="btn sm danger" onclick="promptDeleteSkills(['${esc(g.name)}'])" title="删除此 Skill">🗑️</button>
             </td>
           </tr>
         `;
@@ -869,17 +957,23 @@
             <div style="font-weight:600; font-size:14px;">${esc(title)}</div>
             <div style="color:var(--muted); font-size:12.5px; margin-top:3px;">${esc(desc)}</div>
           </div>
-          <div style="display:flex; gap:10px; font-size:12.5px;">
+          <div style="display:flex; gap:10px; font-size:12.5px; align-items:center;">
             <span class="badge all_symlinked">🔗 已软链: ${items.filter(x => x.status === 'all_symlinked').length}</span>
             <span class="badge single">1️⃣ 单处: ${items.filter(x => x.status === 'single').length}</span>
             <span class="badge duplicated">📄 多拷贝: ${items.filter(x => x.status === 'duplicated').length}</span>
             <span class="badge drifted">⚡ 分叉: ${items.filter(x => x.status === 'drifted').length}</span>
           </div>
         </div>
-        <div style="font-weight:600; margin-bottom:6px;">📋 套件内全部成员列表 (点击任意行可查看副本路径或在线编辑 SKILL.md):</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-weight:600;">📋 套件内全部成员列表 (可勾选无用 Skill 批量删除，或点击行查看/编辑):</span>
+          <span style="font-size:12px; color:var(--muted);">💡 提示：所有删除操作均会自动将物理目录移入 <code>vault/trash/</code> 回收站备份</span>
+        </div>
         <table class="suite-table">
           <thead>
             <tr>
+              <th style="width:28px; text-align:center;">
+                <input type="checkbox" id="suite-chk-all" onchange="toggleSuiteAllChecks(this.checked)" title="全选 / 取消全选" />
+              </th>
               <th>Skill 名称</th>
               <th>功能描述</th>
               <th>基准来源</th>
@@ -935,7 +1029,8 @@
         <button class="btn sm codex" onclick="launchApp('codex', '${esc(activeInst.skill_dir)}')">⚡ 在此目录启动 Codex</button>
         <button class="btn sm" onclick="launchApp('cursor_app', '${esc(activeInst.skill_dir)}', '${esc(activeInst.skill_md_path)}')">✏️ 用 Cursor 打开</button>
         <button class="btn sm" onclick="launchApp('finder', '', '${esc(activeInst.skill_md_path)}')">📂 Finder 定位</button>
-        <button class="btn sm primary" onclick="linkSkillToAllApps('${esc(g.name)}', '${esc(activeInst.skill_dir)}')">🔗 将此版本软链到 4 大工具</button>
+        <button class="btn sm primary" onclick="linkSkillToAllApps('${esc(g.name)}', '${esc(activeInst.skill_dir)}')">🔗 软链到 4 大工具</button>
+        <button class="btn sm danger" onclick="promptDeleteSkills(['${esc(g.name)}'])">🗑️ 删除此 Skill (全盘 ${g.total_copies} 处)</button>
       `;
 
       const diffsHtml = (g.diffs && g.diffs.length) ? `
@@ -964,6 +1059,7 @@
               <div style="display:flex; gap:6px;">
                 <button class="btn sm" onclick="switchInstance('${esc(inst.skill_md_path)}')">👁️ 查看/编辑此副本</button>
                 <button class="btn sm" onclick="launchApp('finder', '', '${esc(inst.skill_md_path)}')">📂 打开目录</button>
+                <button class="btn sm danger" onclick="promptDeleteSingleInstance('${esc(g.name)}', '${esc(inst.skill_md_path)}', ${inst.is_symlink})">🗑️ 仅移除此副本</button>
               </div>
             </div>
             <div style="font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px;">
@@ -1041,6 +1137,142 @@
       } else {
         showToast(`❌ 软链失败: ${res.error}`);
       }
+    }
+
+    let MODAL_CONFIRM_ACTION = null;
+
+    function showConfirmModal(title, htmlBody, onConfirm) {
+      document.getElementById('modal-title').innerHTML = title;
+      document.getElementById('modal-body').innerHTML = htmlBody;
+      MODAL_CONFIRM_ACTION = onConfirm;
+      const btn = document.getElementById('modal-confirm-btn');
+      btn.onclick = async () => {
+        btn.disabled = true;
+        btn.textContent = '⏳ 正在删除...';
+        try {
+          if (MODAL_CONFIRM_ACTION) await MODAL_CONFIRM_ACTION();
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '🗑️ 确认删除 (自动备份至回收站)';
+          closeConfirmModal();
+        }
+      };
+      document.getElementById('confirm-modal').style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal').style.display = 'none';
+      MODAL_CONFIRM_ACTION = null;
+    }
+
+    function toggleSuiteAllChecks(checked) {
+      document.querySelectorAll('.suite-row-chk').forEach(cb => { cb.checked = checked; });
+      updateSuiteBatchBtn();
+    }
+
+    function updateSuiteBatchBtn() {
+      const checked = Array.from(document.querySelectorAll('.suite-row-chk:checked')).map(cb => cb.value);
+      const btn = document.getElementById('btn-batch-del-suite');
+      if (!btn) return;
+      if (checked.length > 0) {
+        btn.style.display = 'inline-flex';
+        btn.textContent = `🗑️ 批量删除已勾选 (${checked.length} 个)`;
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    function deleteCheckedInSuite() {
+      const checked = Array.from(document.querySelectorAll('.suite-row-chk:checked')).map(cb => cb.value);
+      if (!checked.length) return;
+      promptDeleteSkills(checked);
+    }
+
+    function promptDeleteSkills(skillNames) {
+      const matched = (DATA.skill_groups || []).filter(g => skillNames.includes(g.name));
+      if (!matched.length) return;
+      const totalInsts = matched.reduce((acc, g) => acc + g.total_copies, 0);
+      const namesPreview = matched.slice(0, 12).map(g => `<li><code>${esc(g.name)}</code> <span style="color:var(--muted);">(${esc(g.canonical_dir)})</span></li>`).join('');
+      const moreTxt = matched.length > 12 ? `<li>... 等共 ${matched.length} 个 Skill</li>` : '';
+
+      showConfirmModal(
+        `🗑️ 确认删除 ${matched.length} 个 Skill？`,
+        `
+          <div>即将从本机清理以下 <strong>${matched.length} 个 Skill</strong>（共涉及 <strong>${totalInsts} 处</strong> 软链与源目录实例）：</div>
+          <ul style="margin:8px 0; padding-left:20px; font-size:12px;">${namesPreview}${moreTxt}</ul>
+          <div style="color:#34d399; font-size:12px; margin-top:8px;">
+            🛡️ 安全保障：所有各工具目录中的软链将自动解绑清理，物理源目录将完整移入 <code>~/Work/skills/skill-hub/vault/trash/</code> 回收站备份，随时可找回。
+          </div>
+        `,
+        async () => {
+          const resp = await fetch('/api/skill/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skill_names: skillNames })
+          });
+          const res = await resp.json();
+          if (res.ok) {
+            DATA = res.data;
+            if (SELECTED_SKILL && skillNames.includes(SELECTED_SKILL.name)) {
+              SELECTED_SKILL = null;
+            }
+            updateSummary();
+            renderList();
+            if (SELECTED_SUITE_ID) {
+              renderSuiteOverview(SELECTED_SUITE_ID);
+            } else {
+              const first = (DATA.skill_groups || [])[0];
+              if (first) selectSkill(first.name);
+            }
+            showToast(`✅ 已删除 ${res.deleted_skills.length} 个 Skill（清理 ${res.removed_instances_count} 处实例，已备份至 vault/trash）`);
+          } else {
+            showToast(`❌ 删除失败: ${res.error}`);
+          }
+        }
+      );
+    }
+
+    function promptDeleteSuite(suiteId, suiteTitle, count) {
+      const names = (DATA.skill_groups || []).filter(g => g.suite_id === suiteId && g.is_user_skill).map(g => g.name);
+      if (!names.length) return;
+      promptDeleteSkills(names);
+    }
+
+    function promptDeleteSingleInstance(skillName, skillMdPath, isSymlink) {
+      const actionDesc = isSymlink
+        ? `仅解绑移除该处软链接（不影响源目录与其他工具挂载）`
+        : `将该物理副本移入 <code>vault/trash/</code> 回收站（若存在指向它的失效软链也会一并清理）`;
+
+      showConfirmModal(
+        `🗑️ 确认仅移除此单处副本？`,
+        `
+          <div>目标 Skill：<strong>${esc(skillName)}</strong></div>
+          <div style="font-family:var(--mono); font-size:12px; color:#60a5fa; margin:6px 0; word-break:break-all;">${esc(skillMdPath)}</div>
+          <div style="color:var(--muted); font-size:12px; margin-top:6px;">操作说明：${actionDesc}</div>
+        `,
+        async () => {
+          const resp = await fetch('/api/skill/delete-instance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skill_name: skillName, skill_md_path: skillMdPath })
+          });
+          const res = await resp.json();
+          if (res.ok) {
+            DATA = res.data;
+            updateSummary();
+            renderList();
+            const stillExists = (DATA.skill_groups || []).find(g => g.name === skillName);
+            if (stillExists) {
+              selectSkill(skillName);
+            } else if (SELECTED_SUITE_ID) {
+              selectSuiteOverview(SELECTED_SUITE_ID);
+            }
+            showToast(`✅ 已移除副本 (${skillMdPath})`);
+          } else {
+            showToast(`❌ 移除失败: ${res.error}`);
+          }
+        }
+      );
     }
 
     window.addEventListener('DOMContentLoaded', loadSkills);

@@ -853,7 +853,9 @@ def run_full_scan(root_dir: Path = HOME_DIR, save_index: bool = True, reaggregat
         old = json.loads(INDEX_OUTPUT_PATH.read_text(encoding="utf-8"))
         for g in old.get("skill_groups", []):
             for inst in g.get("instances", []):
-                instances.append(inst)
+                p = Path(inst.get("skill_md_path", ""))
+                if p.exists():
+                    instances.append(inst)
         scan_mode = old.get("summary", {}).get("scan_mode", "live_full_scan")
     else:
         paths = discover_skill_files_live(root_dir)

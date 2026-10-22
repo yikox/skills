@@ -201,6 +201,140 @@ def link_skill_to_apps(skill_name: str, canonical_dir: str, apps: list[str]) -> 
     return {"ok": True, "linked": linked}
 
 
+TRASH_ROOT = BASE_DIR / "vault" / "trash"
+
+PROTECTED_BROAD_DIRS = {
+    HOME_DIR.resolve(),
+    (HOME_DIR / "Downloads").resolve(),
+    (HOME_DIR / "Desktop").resolve(),
+    (HOME_DIR / "Documents").resolve(),
+    (HOME_DIR / "Work").resolve(),
+    (HOME_DIR / "MTGIT").resolve(),
+}
+
+
+def _safe_remove_instance(skill_md_path_str: str, batch_trash_dir: Path, idx: int = 0) -> Dict[str, Any]:
+    """
+    安全移除单个 Skill 实例：
+    - 若目录或文件本身是软链接：直接 unlink（不伤及指向的源目录）
+    - 若是物理目录：
+      - 若该目录本身是受保护大目录（如 ~/Downloads）或含 .git 仓库根，则仅将 SKILL.md 移入回收站
+      - 否则将整个 Skill 目录移入 vault/trash/<timestamp>/ 备份回收站，随时可恢复
+    """
+    md_path = Path(os.path.expanduser(skill_md_path_str))
+    skill_dir = md_path.parent
+
+    if skill_dir.is_symlink():
+        target = os.readlink(skill_dir)
+        skill_dir.unlink()
+        return {"action": "unlink_dir", "path": str(skill_dir), "target": target}
+
+    if md_path.is_symlink():
+        target = os.readlink(md_path)
+        md_path.unlink()
+        return {"action": "unlink_file", "path": str(md_path), "target": target}
+
+    if not md_path.exists():
+        return {"action": "already_missing", "path": str(md_path)}
+
+    batch_trash_dir.mkdir(parents=True, exist_ok=True)
+    resolved_dir = skill_dir.resolve()
+    is_protected_or_repo_root = (resolved_dir in PROTECTED_BROAD_DIRS) or (resolved_dir / ".git").exists()
+
+    if is_protected_or_repo_root:
+        dst = batch_trash_dir / f"{idx:03d}__{skill_dir.name}__SKILL.md"
+        shutil.move(str(md_path), str(dst))
+        return {"action": "trash_file", "path": str(md_path), "trash_path": str(dst)}
+
+    dst = batch_trash_dir / f"{idx:03d}__{skill_dir.parent.name}__{skill_dir.name}"
+    shutil.move(str(skill_dir), str(dst))
+    return {"action": "trash_dir", "path": str(skill_dir), "trash_path": str(dst)}
+
+
+def delete_skills_by_names(skill_names: list[str]) -> Dict[str, Any]:
+    """彻底删除一个或多个 Skill（清理本机所有软链并将物理源目录移入 vault/trash 回收站）。"""
+    target_set = set(skill_names)
+    if not target_set:
+        raise ValueError("未指定要删除的 Skill 名称")
+
+    cur_data = get_cached_or_scan(force_rescan=False)
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    batch_trash_dir = TRASH_ROOT / ts
+    records = []
+    deleted_skills = []
+    idx = 0
+
+    for grp in cur_data.get("skill_groups", []):
+        if grp["name"] not in target_set:
+            continue
+        deleted_skills.append(grp["name"])
+        insts = grp.get("instances", [])
+        # 若是用户 Skill，默认清理其所有非商城缓存实例；若本身就是缓存 Skill，则清理其全部实例
+        target_insts = [i for i in insts if not i.get("is_marketplace_cache")] if grp.get("is_user_skill") else insts
+        # 先删软链接，再删物理目录
+        symlinks = [i for i in target_insts if i.get("is_symlink")]
+        real_dirs = [i for i in target_insts if not i.get("is_symlink")]
+        for inst in symlinks + real_dirs:
+            idx += 1
+            rec = _safe_remove_instance(inst["skill_md_path"], batch_trash_dir, idx=idx)
+            rec["skill_name"] = grp["name"]
+            records.append(rec)
+
+    if records:
+        batch_trash_dir.mkdir(parents=True, exist_ok=True)
+        (batch_trash_dir / "manifest.json").write_text(
+            json.dumps({"deleted_at": ts, "skills": deleted_skills, "records": records}, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    importlib.reload(scan_skills)
+    new_data = scan_skills.run_full_scan(HOME_DIR, save_index=True, reaggregate_only=True)
+    return {
+        "ok": True,
+        "deleted_skills": deleted_skills,
+        "removed_instances_count": len(records),
+        "trash_dir": str(batch_trash_dir) if records else "",
+        "data": new_data,
+    }
+
+
+def delete_single_instance(skill_name: str, skill_md_path: str) -> Dict[str, Any]:
+    """仅删除某个 Skill 的单处路径副本；若删的是物理源目录，同时自动清理指向它的失效悬空软链。"""
+    cur_data = get_cached_or_scan(force_rescan=False)
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    batch_trash_dir = TRASH_ROOT / f"{ts}-single"
+    records = []
+
+    rec = _safe_remove_instance(skill_md_path, batch_trash_dir, idx=1)
+    rec["skill_name"] = skill_name
+    records.append(rec)
+
+    # 检查同组中是否有指向该被删目录的失效软链接，一并清理避免产生死链
+    for grp in cur_data.get("skill_groups", []):
+        if grp["name"] == skill_name:
+            for inst in grp.get("instances", []):
+                p = Path(inst["skill_md_path"])
+                d = p.parent
+                if d.is_symlink() and not d.exists():
+                    d.unlink()
+                    records.append({"action": "unlink_broken_symlink", "path": str(d), "skill_name": skill_name})
+
+    batch_trash_dir.mkdir(parents=True, exist_ok=True)
+    (batch_trash_dir / "manifest.json").write_text(
+        json.dumps({"deleted_at": ts, "skill": skill_name, "records": records}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    importlib.reload(scan_skills)
+    new_data = scan_skills.run_full_scan(HOME_DIR, save_index=True, reaggregate_only=True)
+    return {
+        "ok": True,
+        "removed_instances_count": len(records),
+        "trash_dir": str(batch_trash_dir),
+        "data": new_data,
+    }
+
+
 class LocalHubHandler(BaseHTTPRequestHandler):
     def log_message(self, fmt: str, *args: Any) -> None:
         sys.stderr.write(f"[Local-Skill-Hub] {fmt % args}\n")
@@ -288,6 +422,32 @@ class LocalHubHandler(BaseHTTPRequestHandler):
                         linked_skills.append(grp["name"])
                 new_data = scan_skills.run_full_scan(HOME_DIR, save_index=True, reaggregate_only=False)
                 self._send_json({"ok": True, "linked_count": len(linked_skills), "data": new_data})
+                return
+
+            if parsed.path == "/api/skill/delete":
+                names = body.get("skill_names") or ([body["skill_name"]] if body.get("skill_name") else [])
+                res = delete_skills_by_names(names)
+                self._send_json(res)
+                return
+
+            if parsed.path == "/api/skill/delete-instance":
+                res = delete_single_instance(
+                    skill_name=body["skill_name"],
+                    skill_md_path=body["skill_md_path"],
+                )
+                self._send_json(res)
+                return
+
+            if parsed.path == "/api/suite/delete":
+                suite_id = body["suite_id"]
+                cur_data = get_cached_or_scan(force_rescan=False)
+                names = [
+                    grp["name"]
+                    for grp in cur_data.get("skill_groups", [])
+                    if grp.get("suite_id") == suite_id and grp.get("is_user_skill")
+                ]
+                res = delete_skills_by_names(names)
+                self._send_json(res)
                 return
 
             if parsed.path == "/api/skills/sync-all":

@@ -290,6 +290,9 @@ def discover_skill_files_live(root_dir: Path) -> List[Path]:
 
         try:
             st = curr_dir.stat()
+            # SF_DATALESS 标记表示目录尚未下载，遍历可能阻塞。
+            if sys.platform == "darwin" and getattr(st, "st_flags", 0) & 0x40000000:
+                continue
             inode_key = (st.st_dev, st.st_ino)
             is_dir_link = curr_dir.is_symlink()
             if inode_key in visited_real_dirs and not is_dir_link:

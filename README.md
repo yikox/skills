@@ -48,7 +48,7 @@ skill-hub/  # 本机 Skill 全盘扫描、软链去重与 AI 工具快捷启动�
 # 方式 1: 直接双击打开原生桌面窗口应用（含 Dock 图标与右上角状态栏 ⚡ Skill Hub 指示，关闭窗口即自动停止后台服务）
 open "skill-hub/Skill Hub.app"
 
-# 方式 2: 命令行启停服务 (http://127.0.0.1:8765)
+# 方式 2: 命令行启停服务 (默认 http://127.0.0.1:8788，端口冲突自动顺延)
 ./skill-hub/ctl.sh start
 ./skill-hub/ctl.sh stop
 ./skill-hub/ctl.sh status

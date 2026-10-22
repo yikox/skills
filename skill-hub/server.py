@@ -11,7 +11,7 @@ server.py - 本机 Skill 管理与 App 快捷启动服务（纯本地轻量工�
 4. 支持在页面右上角一键安全关闭后台服务（POST /api/server/stop）。
 
 启动方式：
-  python3 server.py [--port 8765]
+  python3 server.py [--port 8788]
 """
 
 import argparse
@@ -38,6 +38,20 @@ from scan_skills import HOME_DIR, INDEX_OUTPUT_PATH
 BASE_DIR = Path(__file__).resolve().parent
 BACKUP_ROOT = BASE_DIR / "vault" / "backups"
 PID_FILE = BASE_DIR / "vault" / "server.pid"
+PORT_FILE = BASE_DIR / "vault" / "server.port"
+DEFAULT_PORT = 8788
+
+
+def _cleanup_pid_files() -> None:
+    """仅当 PID_FILE 记录的是当前进程 PID 时才清理，防止误删其他实例的状态文件。"""
+    my_pid = str(os.getpid())
+    try:
+        if PID_FILE.exists() and PID_FILE.read_text(encoding="utf-8").strip() == my_pid:
+            PID_FILE.unlink()
+            if PORT_FILE.exists():
+                PORT_FILE.unlink()
+    except Exception:
+        pass
 
 APP_TARGETS = {
     "claude": HOME_DIR / ".claude" / "skills",
@@ -365,6 +379,15 @@ class LocalHubHandler(BaseHTTPRequestHandler):
             self.wfile.write(raw)
             return
 
+        if parsed.path == "/api/health":
+            self._send_json({
+                "ok": True,
+                "service": "skill-hub",
+                "pid": os.getpid(),
+                "hub_dir": str(BASE_DIR),
+            })
+            return
+
         if parsed.path == "/api/skills":
             self._send_json(get_cached_or_scan(force_rescan=False))
             return
@@ -462,11 +485,7 @@ class LocalHubHandler(BaseHTTPRequestHandler):
 
                 def _shutdown() -> None:
                     time.sleep(0.25)
-                    try:
-                        if PID_FILE.exists():
-                            PID_FILE.unlink()
-                    except Exception:
-                        pass
+                    _cleanup_pid_files()
                     os._exit(0)
 
                 threading.Thread(target=_shutdown, daemon=True).start()
@@ -479,24 +498,35 @@ class LocalHubHandler(BaseHTTPRequestHandler):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="本机 Skill 管理与 App 快捷启动台")
-    parser.add_argument("--port", type=int, default=8765, help="本地端口 (默认 8765)")
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help=f"本地端口 (默认 {DEFAULT_PORT})")
     args = parser.parse_args()
 
     PID_FILE.parent.mkdir(parents=True, exist_ok=True)
-    PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
 
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), LocalHubHandler)
-    print(f"🚀 本地 Skill 管理与启动台已就绪: http://127.0.0.1:{args.port} (PID: {os.getpid()})")
+    srv = None
+    bound_port = args.port
+    for candidate_port in range(args.port, args.port + 20):
+        try:
+            srv = ThreadingHTTPServer(("127.0.0.1", candidate_port), LocalHubHandler)
+            bound_port = candidate_port
+            break
+        except OSError:
+            continue
+
+    if srv is None:
+        sys.stderr.write(f"❌ 无法绑定端口 {args.port}~{args.port + 19}\n")
+        return 1
+
+    PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
+    PORT_FILE.write_text(str(bound_port), encoding="utf-8")
+
+    print(f"🚀 本地 Skill 管理与启动台已就绪: http://127.0.0.1:{bound_port} (PID: {os.getpid()})")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
         print("\n已停止。")
     finally:
-        try:
-            if PID_FILE.exists():
-                PID_FILE.unlink()
-        except Exception:
-            pass
+        _cleanup_pid_files()
     return 0
 
 

@@ -7,6 +7,7 @@
 @property (nonatomic, strong) NSWindow *window;
 @property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) NSStatusItem *statusItem;
+@property (nonatomic, strong) NSMenuItem *statusLabelItem;
 @property (nonatomic, strong) NSTimer *healthTimer;
 @property (nonatomic, copy) NSString *hubDir;
 @property (nonatomic, copy) NSString *serverUrl;
@@ -20,7 +21,7 @@
 
     NSDictionary *env = [[NSProcessInfo processInfo] environment];
     self.hubDir = env[@"SKILL_HUB_DIR"] ?: [NSHomeDirectory() stringByAppendingPathComponent:@"Work/skills/skill-hub"];
-    NSString *port = env[@"SKILL_HUB_PORT"] ?: @"8765";
+    NSString *port = env[@"SKILL_HUB_PORT"] ?: @"8788";
     self.serverUrl = [NSString stringWithFormat:@"http://127.0.0.1:%@", port];
 
     [self setupMainMenu];
@@ -74,9 +75,9 @@
         self.statusItem.button.title = @"⚡ Skill Hub";
     }
     NSMenu *menu = [[NSMenu alloc] init];
-    NSMenuItem *statusLabel = [[NSMenuItem alloc] initWithTitle:@"🟢 服务运行中 (127.0.0.1:8765)" action:nil keyEquivalent:@""];
-    [statusLabel setEnabled:NO];
-    [menu addItem:statusLabel];
+    self.statusLabelItem = [[NSMenuItem alloc] initWithTitle:@"🟢 服务运行中 (127.0.0.1:8788)" action:nil keyEquivalent:@""];
+    [self.statusLabelItem setEnabled:NO];
+    [menu addItem:self.statusLabelItem];
     [menu addItem:[NSMenuItem separatorItem]];
     [menu addItemWithTitle:@"显示主窗口" action:@selector(showMainWindow:) keyEquivalent:@""];
     [menu addItemWithTitle:@"在浏览器中打开" action:@selector(openInBrowser:) keyEquivalent:@""];
@@ -127,7 +128,14 @@
 - (void)ensureServerStartedAndLoad {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self runCtlCommand:@"start-headless"];
+        NSString *portFile = [self.hubDir stringByAppendingPathComponent:@"vault/server.port"];
+        NSString *actualPort = [[NSString stringWithContentsOfFile:portFile encoding:NSUTF8StringEncoding error:nil]
+                                stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (actualPort.length > 0) {
+                self.serverUrl = [NSString stringWithFormat:@"http://127.0.0.1:%@", actualPort];
+                [self.statusLabelItem setTitle:[NSString stringWithFormat:@"🟢 服务运行中 (127.0.0.1:%@)", actualPort]];
+            }
             self.hasLoadedInitialPage = YES;
             NSURL *url = [NSURL URLWithString:self.serverUrl];
             [self.webView loadRequest:[NSURLRequest requestWithURL:url]];

@@ -1,15 +1,28 @@
 #!/bin/bash
 set -euo pipefail
 
-# 定位 skill-hub 主目录（支持将 Skill Hub.app 复制或软链到 /Applications 使用）
+# 定位 skill-hub 主目录（支持将 Skill Hub.app 复制到 /Applications 使用）
 APP_EXEC_DIR="$(cd "$(dirname "$0")" && pwd)"
 CANDIDATE_DIR="$(cd "${APP_EXEC_DIR}/../../.." && pwd)"
 
-if [ -x "${CANDIDATE_DIR}/ctl.sh" ]; then
-  exec "${CANDIDATE_DIR}/ctl.sh" gui
-elif [ -x "${HOME}/Work/skills/skill-hub/ctl.sh" ]; then
-  exec "${HOME}/Work/skills/skill-hub/ctl.sh" gui
+if [ -f "${CANDIDATE_DIR}/macos_app.m" ]; then
+  HUB_DIR="${CANDIDATE_DIR}"
+elif [ -f "${HOME}/Work/skills/skill-hub/macos_app.m" ]; then
+  HUB_DIR="${HOME}/Work/skills/skill-hub"
 else
-  osascript -e 'display alert "未找到 Skill Hub" message "请确认 ~/Work/skills/skill-hub/ctl.sh 存在且可执行。"'
+  osascript -e 'display alert "未找到 Skill Hub" message "请确认 ~/Work/skills/skill-hub 目录存在。"'
   exit 1
 fi
+
+BIN_DIR="${HUB_DIR}/vault/bin"
+BIN_PATH="${BIN_DIR}/SkillHubNative"
+SRC_PATH="${HUB_DIR}/macos_app.m"
+
+mkdir -p "${BIN_DIR}"
+
+if [ ! -x "${BIN_PATH}" ] || [ "${SRC_PATH}" -nt "${BIN_PATH}" ]; then
+  /usr/bin/clang -O2 -fobjc-arc -framework Cocoa -framework WebKit "${SRC_PATH}" -o "${BIN_PATH}"
+fi
+
+export SKILL_HUB_DIR="${HUB_DIR}"
+exec "${BIN_PATH}"

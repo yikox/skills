@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-# ctl.sh - Skill Hub 本地服务启停与 macOS App 交互控制脚本 (兼容 macOS bash 3.2)
+# ctl.sh - Skill Hub 本地服务启停与原生窗口控制脚本 (兼容 macOS bash 3.2)
 # 用法:
-#   ./ctl.sh start    # 启动后台服务并打开管理面板
-#   ./ctl.sh stop     # 停止后台服务
-#   ./ctl.sh restart  # 重启后台服务并打开管理面板
+#   ./ctl.sh app      # 打开 macOS 独立桌面窗口 (Dock 图标 + 顶部状态栏图标，关窗口自动停服务)
+#   ./ctl.sh start    # 启动后台服务并打开浏览器
+#   ./ctl.sh stop     # 停止后台服务与桌面窗口
+#   ./ctl.sh restart  # 重启后台服务
 #   ./ctl.sh status   # 查看服务运行状态
-#   ./ctl.sh gui      # macOS App 双击入口（未启动则一键启动并打开；已启动则弹出控制面板选择打开/重启/关闭）
 
 HUB_DIR="$(cd "$(dirname "$0")" && pwd)"
 PORT="${SKILL_HUB_PORT:-8765}"
@@ -40,17 +40,12 @@ get_running_pid() {
   echo "$pid"
 }
 
-notify_macos() {
-  local title="$1"
-  local msg="$2"
-  osascript -e "display notification \"${msg}\" with title \"${title}\"" >/dev/null 2>&1 || true
-}
-
 start_server() {
   local open_browser="${1:-1}"
   local pid
   pid="$(get_running_pid)"
   if [ -n "$pid" ]; then
+    echo "$pid" >"$PID_FILE"
     echo "🟢 Skill Hub 已在运行中 (PID: ${pid} | ${URL})"
     if [ "$open_browser" = "1" ]; then
       open "$URL"
@@ -65,9 +60,8 @@ start_server() {
   local new_pid=$!
   echo "$new_pid" >"$PID_FILE"
 
-  # 等待端口就绪（最多 2 秒）
   local i=0
-  while [ $i -lt 20 ]; do
+  while [ $i -lt 25 ]; do
     if [ -n "$(get_running_pid)" ]; then
       break
     fi
@@ -84,53 +78,19 @@ start_server() {
 stop_server() {
   local pid
   pid="$(get_running_pid)"
-  if [ -z "$pid" ]; then
-    pkill -f "${HUB_DIR}/server.py" 2>/dev/null || true
-    rm -f "$PID_FILE"
-    echo "⚪ Skill Hub 当前未运行"
-    return 0
+  if [ -n "$pid" ]; then
+    kill "$pid" 2>/dev/null || true
   fi
-
-  kill "$pid" 2>/dev/null || true
   pkill -f "${HUB_DIR}/server.py" 2>/dev/null || true
   rm -f "$PID_FILE"
-  echo "🛑 Skill Hub 已停止 (原 PID: ${pid})"
+  echo "🛑 Skill Hub 服务已停止"
 }
 
-gui_entry() {
-  local pid
-  pid="$(get_running_pid)"
-  if [ -z "$pid" ]; then
-    start_server 1
-    notify_macos "Skill Hub 已启动" "管理面板已打开: ${URL}"
-    return 0
-  fi
-
-  # 若已在运行，弹出原生对话框方便一键打开、重启或关闭
-  local choice
-  choice="$(osascript -e "button returned of (display dialog \"🟢 Skill Hub 正在后台运行中\\n\\n地址: ${URL}\\n进程 PID: ${pid}\" with title \"Skill Hub 控制台\" buttons {\"🛑 关闭服务\", \"🔄 重启服务\", \"🌐 打开面板\"} default button \"🌐 打开面板\")" 2>/dev/null || true)"
-
-  case "$choice" in
-    "🛑 关闭服务")
-      stop_server
-      notify_macos "Skill Hub 已关闭" "后台服务 (PID: ${pid}) 已安全退出"
-      ;;
-    "🔄 重启服务")
-      stop_server
-      sleep 0.2
-      start_server 1
-      notify_macos "Skill Hub 已重启" "管理面板已重新加载: ${URL}"
-      ;;
-    "🌐 打开面板")
-      open "$URL"
-      ;;
-    *)
-      ;;
-  esac
-}
-
-cmd="${1:-gui}"
+cmd="${1:-app}"
 case "$cmd" in
+  app|gui)
+    open "${HUB_DIR}/Skill Hub.app"
+    ;;
   start)
     start_server 1
     ;;
@@ -153,11 +113,8 @@ case "$cmd" in
       echo "⚪ 未运行"
     fi
     ;;
-  gui)
-    gui_entry
-    ;;
   *)
-    echo "用法: $0 {start|stop|restart|status|gui}" >&2
+    echo "用法: $0 {app|start|stop|restart|status}" >&2
     exit 1
     ;;
 esac

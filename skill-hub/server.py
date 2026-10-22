@@ -39,7 +39,81 @@ BASE_DIR = Path(__file__).resolve().parent
 BACKUP_ROOT = BASE_DIR / "vault" / "backups"
 PID_FILE = BASE_DIR / "vault" / "server.pid"
 PORT_FILE = BASE_DIR / "vault" / "server.port"
+LAUNCHER_CONFIG_FILE = BASE_DIR / "launcher_config.json"
 DEFAULT_PORT = 8788
+
+DEFAULT_LAUNCHER_CONFIG: Dict[str, Any] = {
+    "launchers": [
+        {"id": "codex", "label": "⚡ 启动 Codex (终端 CLI)", "type": "cli", "target": "codex", "pass_workdir": True, "custom_workdir": "", "style": "codex", "enabled": True},
+        {"id": "claude", "label": "🤖 启动 Claude Code (终端 CLI)", "type": "cli", "target": "claude", "pass_workdir": True, "custom_workdir": "", "style": "claude", "enabled": True},
+        {"id": "cursor_cli", "label": "🧭 启动 Cursor Agent (CLI)", "type": "cli", "target": "cursor-agent", "pass_workdir": True, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "cursor_app", "label": "🖥️ 打开 Cursor 桌面端", "type": "app", "target": "Cursor", "pass_workdir": True, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "claude_app", "label": "💬 打开 Claude 桌面端", "type": "app", "target": "Claude", "pass_workdir": False, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "antigravity", "label": "🪐 打开 Antigravity", "type": "app", "target": "Antigravity", "pass_workdir": True, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "workbuddy", "label": "🦊 打开 WorkBuddy", "type": "app", "target": "WorkBuddy", "pass_workdir": False, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "terminal", "label": "💻 在此目录打开终端", "type": "cli", "target": "", "pass_workdir": True, "custom_workdir": "", "style": "default", "enabled": True},
+        {"id": "finder", "label": "📂 在 Finder 打开目录", "type": "finder", "target": "", "pass_workdir": True, "custom_workdir": "", "style": "default", "enabled": True},
+    ],
+    "workdir_presets": [
+        {"label": "🛠️ Skill 个人源仓 (~/Work/skills)", "path": str(HOME_DIR / "Work" / "skills")},
+        {"label": "🏢 美团研发主仓 (~/MTGIT)", "path": str(HOME_DIR / "MTGIT")},
+        {"label": "🧪 算法优化工作区 (~/Work/algorithm-opt-workspace)", "path": str(HOME_DIR / "Work" / "algorithm-opt-workspace")},
+        {"label": "🏠 个人主目录 (~)", "path": str(HOME_DIR)},
+    ],
+}
+
+
+def get_launcher_config() -> Dict[str, Any]:
+    if LAUNCHER_CONFIG_FILE.exists():
+        try:
+            data = json.loads(LAUNCHER_CONFIG_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and "launchers" in data:
+                if "workdir_presets" not in data:
+                    data["workdir_presets"] = DEFAULT_LAUNCHER_CONFIG["workdir_presets"]
+                return data
+        except Exception:
+            pass
+    LAUNCHER_CONFIG_FILE.write_text(
+        json.dumps(DEFAULT_LAUNCHER_CONFIG, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return json.loads(json.dumps(DEFAULT_LAUNCHER_CONFIG))
+
+
+def save_launcher_config(config_data: Dict[str, Any]) -> Dict[str, Any]:
+    if config_data.get("reset"):
+        LAUNCHER_CONFIG_FILE.write_text(
+            json.dumps(DEFAULT_LAUNCHER_CONFIG, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return get_launcher_config()
+
+    launchers = config_data.get("launchers")
+    presets = config_data.get("workdir_presets")
+    if not isinstance(launchers, list):
+        raise ValueError("launchers 字段必须是数组")
+    normalized = {
+        "launchers": launchers,
+        "workdir_presets": presets if isinstance(presets, list) else DEFAULT_LAUNCHER_CONFIG["workdir_presets"],
+    }
+    LAUNCHER_CONFIG_FILE.write_text(
+        json.dumps(normalized, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return normalized
+
+
+def detect_installed_apps() -> list[str]:
+    apps = set()
+    for root in (Path("/Applications"), HOME_DIR / "Applications"):
+        if root.exists():
+            try:
+                for p in root.iterdir():
+                    if p.suffix == ".app":
+                        apps.add(p.stem)
+            except Exception:
+                pass
+    return sorted(apps, key=lambda s: s.lower())
 
 
 def _cleanup_pid_files() -> None:
@@ -75,67 +149,125 @@ def get_cached_or_scan(force_rescan: bool = False) -> Dict[str, Any]:
     return scan_skills.run_full_scan(HOME_DIR, save_index=True)
 
 
-def launch_local_tool(app_id: str, workdir: str = "", target_path: str = "") -> Dict[str, Any]:
-    """在 macOS 本机启动 CLI (拉起终端进入工作目录) 或 GUI 应用。"""
-    resolved_dir = Path(os.path.expanduser(workdir)).resolve() if workdir else HOME_DIR
+def _open_terminal_with_cmd(resolved_dir: Path, cli_cmd: str, tag_id: str = "custom") -> Dict[str, Any]:
+    quoted_dir = shlex.quote(str(resolved_dir))
+    shell_cmd = f"cd {quoted_dir} && clear && {cli_cmd}" if cli_cmd else f"cd {quoted_dir} && clear"
+
+    has_iterm = Path("/Applications/iTerm.app").exists()
+    try:
+        if has_iterm:
+            osa = (
+                'tell application "iTerm"\n'
+                '  activate\n'
+                f'  create window with default profile command "zsh -lic {shlex.quote(shell_cmd)}"\n'
+                'end tell'
+            )
+        else:
+            osa = (
+                'tell application "Terminal"\n'
+                '  activate\n'
+                f'  do script "{shell_cmd.replace(chr(34), chr(92) + chr(34))}"\n'
+                'end tell'
+            )
+        res = subprocess.run(["osascript", "-e", osa], capture_output=True, text=True, timeout=4)
+        if res.returncode == 0:
+            return {
+                "ok": True,
+                "message": f"已在 {'iTerm2' if has_iterm else 'Terminal'} 中启动 {cli_cmd or '终端'} (目录: {resolved_dir})",
+            }
+    except Exception:
+        pass
+
+    safe_tag = "".join(c if c.isalnum() or c in "-_" else "_" for c in tag_id) or "custom"
+    cmd_script = Path(f"/tmp/aihub-launch-{safe_tag}.command")
+    script_body = (
+        "#!/usr/bin/env zsh\n"
+        f"cd {quoted_dir} || exit 1\n"
+        "clear\n"
+        f'echo "🚀 已进入工作目录: $(pwd)"\n'
+    )
+    if cli_cmd:
+        script_body += f'echo "⚡ 正在启动 {cli_cmd} ..."\nexec {cli_cmd}\n'
+    else:
+        script_body += "exec zsh -l\n"
+    cmd_script.write_text(script_body, encoding="utf-8")
+    cmd_script.chmod(0o755)
+    subprocess.run(["open", str(cmd_script)], check=False)
+    return {
+        "ok": True,
+        "message": f"已通过系统终端拉起 {cli_cmd or 'Shell'} (目录: {resolved_dir})",
+    }
+
+
+def launch_local_tool(app_id: str, workdir: str = "", target_path: str = "", custom_item: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    """在 macOS 本机启动可配置的 CLI (拉起终端进入工作目录)、GUI 应用、URL 或后台命令。"""
+    # 1. 优先从自定义配置项查找
+    cfg = get_launcher_config()
+    item = custom_item
+    if not item and app_id:
+        for entry in cfg.get("launchers", []):
+            if entry.get("id") == app_id:
+                item = entry
+                break
+
+    effective_workdir = (item.get("custom_workdir") if item else "") or workdir
+    resolved_dir = Path(os.path.expanduser(effective_workdir)).resolve() if effective_workdir else HOME_DIR
     if not resolved_dir.exists():
         resolved_dir = HOME_DIR
 
+    if item:
+        ltype = item.get("type", "cli")
+        target = (item.get("target") or "").strip()
+        pass_workdir = bool(item.get("pass_workdir", True))
+        item_id = item.get("id") or "custom"
+
+        if ltype == "cli":
+            return _open_terminal_with_cmd(resolved_dir, target, tag_id=item_id)
+
+        if ltype == "app":
+            if not target:
+                raise ValueError("未配置要打开的 macOS 应用名称")
+            open_target = target_path if target_path else (str(resolved_dir) if pass_workdir else "")
+            cmd = ["open", "-a", target]
+            if open_target:
+                cmd.append(open_target)
+            res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            if res.returncode != 0:
+                raise ValueError(f"无法打开应用 '{target}': {(res.stderr or '').strip() or '请检查应用名称是否安装在 /Applications'}")
+            return {
+                "ok": True,
+                "message": f"已唤起应用 {target}" + (f" ({open_target})" if open_target else ""),
+            }
+
+        if ltype == "url":
+            if not target:
+                raise ValueError("未配置要打开的 URL")
+            subprocess.run(["open", target], check=False)
+            return {"ok": True, "message": f"已在浏览器打开: {target}"}
+
+        if ltype == "finder":
+            p = Path(os.path.expanduser(target_path or target or str(resolved_dir)))
+            if p.is_file():
+                subprocess.run(["open", "-R", str(p)], check=False)
+            else:
+                subprocess.run(["open", str(p)], check=False)
+            return {"ok": True, "message": f"已在 Finder 中打开: {p}"}
+
+        if ltype == "bg_cmd":
+            if not target:
+                raise ValueError("未配置后台命令")
+            subprocess.Popen(target, shell=True, cwd=str(resolved_dir))
+            return {"ok": True, "message": f"已在后台执行命令: {target} (目录: {resolved_dir})"}
+
+    # 2. 内置兜底 ID（供详情页固定按钮调用）
     cli_commands = {
         "codex": "codex",
         "claude": "claude",
         "cursor_cli": "cursor-agent",
         "terminal": "",
     }
-
     if app_id in cli_commands:
-        cli_bin = cli_commands[app_id]
-        quoted_dir = shlex.quote(str(resolved_dir))
-        shell_cmd = f"cd {quoted_dir} && clear && {cli_bin}" if cli_bin else f"cd {quoted_dir} && clear"
-
-        has_iterm = Path("/Applications/iTerm.app").exists()
-        try:
-            if has_iterm:
-                osa = (
-                    'tell application "iTerm"\n'
-                    '  activate\n'
-                    f'  create window with default profile command "zsh -lic {shlex.quote(shell_cmd)}"\n'
-                    'end tell'
-                )
-            else:
-                osa = (
-                    'tell application "Terminal"\n'
-                    '  activate\n'
-                    f'  do script "{shell_cmd.replace(chr(34), chr(92) + chr(34))}"\n'
-                    'end tell'
-                )
-            res = subprocess.run(["osascript", "-e", osa], capture_output=True, text=True, timeout=4)
-            if res.returncode == 0:
-                return {
-                    "ok": True,
-                    "message": f"已在 {'iTerm2' if has_iterm else 'Terminal'} 中启动 {cli_bin or '终端'} (目录: {resolved_dir})",
-                }
-        except Exception:
-            pass
-
-        cmd_script = Path(f"/tmp/aihub-launch-{app_id}.command")
-        script_body = (
-            "#!/usr/bin/env zsh\n"
-            f"cd {quoted_dir} || exit 1\n"
-            "clear\n"
-            f'echo "🚀 已进入工作目录: $(pwd)"\n'
-        )
-        if cli_bin:
-            script_body += f'echo "⚡ 正在启动 {cli_bin} ..."\nexec {cli_bin}\n'
-        else:
-            script_body += "exec zsh -l\n"
-        cmd_script.write_text(script_body, encoding="utf-8")
-        cmd_script.chmod(0o755)
-        subprocess.run(["open", str(cmd_script)], check=False)
-        return {
-            "ok": True,
-            "message": f"已通过系统终端拉起 {cli_bin or 'Shell'} (目录: {resolved_dir})",
-        }
+        return _open_terminal_with_cmd(resolved_dir, cli_commands[app_id], tag_id=app_id)
 
     if app_id == "cursor_app":
         open_target = target_path if target_path else str(resolved_dir)
@@ -145,12 +277,6 @@ def launch_local_tool(app_id: str, workdir: str = "", target_path: str = "") -> 
     if app_id == "claude_app":
         subprocess.run(["open", "-a", "Claude"], check=False)
         return {"ok": True, "message": "已唤起 Claude 桌面客户端"}
-
-    if app_id == "codex_app":
-        res = subprocess.run(["open", "-a", "Codex", str(resolved_dir)], capture_output=True, text=True)
-        if res.returncode == 0:
-            return {"ok": True, "message": f"已唤起 Codex App ({resolved_dir})"}
-        return launch_local_tool("codex", workdir=str(resolved_dir))
 
     if app_id == "antigravity":
         open_target = target_path if target_path else str(resolved_dir)
@@ -392,6 +518,15 @@ class LocalHubHandler(BaseHTTPRequestHandler):
             self._send_json(get_cached_or_scan(force_rescan=False))
             return
 
+        if parsed.path == "/api/launcher-config":
+            self._send_json({
+                "ok": True,
+                "config": get_launcher_config(),
+                "installed_apps": detect_installed_apps(),
+                "config_file": str(LAUNCHER_CONFIG_FILE),
+            })
+            return
+
         self._send_json({"ok": False, "error": "Not found"}, status=404)
 
     def do_POST(self) -> None:
@@ -408,8 +543,14 @@ class LocalHubHandler(BaseHTTPRequestHandler):
                     app_id=body.get("app", ""),
                     workdir=body.get("workdir", ""),
                     target_path=body.get("target_path", ""),
+                    custom_item=body.get("custom_item"),
                 )
                 self._send_json(res)
+                return
+
+            if parsed.path == "/api/launcher-config":
+                saved = save_launcher_config(body)
+                self._send_json({"ok": True, "config": saved})
                 return
 
             if parsed.path == "/api/skill/save":

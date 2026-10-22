@@ -408,8 +408,9 @@
       </div>
       <div class="workdir-bar">
         <label>📂 启动工作目录:</label>
-        <select id="workdir-preset" onchange="onPresetChange(this.value)" style="max-width:230px;"></select>
+        <select id="workdir-preset" onchange="onPresetChange(this.value)" style="max-width:240px;"></select>
         <input type="text" id="workdir-input" style="flex:1;" placeholder="/Users/chenzeyang/Work/skills" />
+        <button class="btn sm" onclick="pinCurrentWorkdir()" title="将当前输入框路径保存到常用工作目录预设">📌 收藏目录</button>
       </div>
       <div style="display:flex; gap:8px;">
         <button class="btn codex" onclick="triggerSyncAll()" id="btn-sync-all">🔄 一键对齐源仓</button>
@@ -418,17 +419,9 @@
       </div>
     </div>
 
-    <div class="launch-buttons">
+    <div class="launch-buttons" id="launch-buttons-bar">
       <span style="color:var(--muted); font-size:12px; margin-right:4px;">🚀 一键启动工具:</span>
-      <button class="btn codex" onclick="launchApp('codex')">⚡ 启动 Codex (终端 CLI)</button>
-      <button class="btn claude" onclick="launchApp('claude')">🤖 启动 Claude Code (终端 CLI)</button>
-      <button class="btn" onclick="launchApp('cursor_cli')">🧭 启动 Cursor Agent (CLI)</button>
-      <span style="color:var(--border);">|</span>
-      <button class="btn" onclick="launchApp('cursor_app')">🖥️ 打开 Cursor 桌面端</button>
-      <button class="btn" onclick="launchApp('claude_app')">💬 打开 Claude 桌面端</button>
-      <button class="btn" onclick="launchApp('antigravity')">🪐 打开 Antigravity</button>
-      <button class="btn" onclick="launchApp('terminal')">💻 在此目录打开终端</button>
-      <button class="btn" onclick="launchApp('finder')">📂 在 Finder 打开目录</button>
+      <span style="color:var(--muted); font-size:12px;">加载配置中...</span>
     </div>
   </header>
 
@@ -531,8 +524,60 @@
     </div>
   </div>
 
+  <!-- 一键启动台自定义配置弹窗 -->
+  <div class="modal-backdrop" id="launcher-config-modal">
+    <div class="modal-box" style="width:940px; max-width:95vw;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0;">⚙️ 自定义一键启动台 & 常用工作目录</h3>
+        <div style="display:flex; gap:6px;">
+          <button class="btn sm primary" id="tab-btn-visual" onclick="switchLauncherConfigTab('visual')">🎛️ 可视化列表编辑</button>
+          <button class="btn sm" id="tab-btn-json" onclick="switchLauncherConfigTab('json')">📝 JSON 源码编辑</button>
+        </div>
+      </div>
+
+      <datalist id="installed-apps-datalist"></datalist>
+
+      <div id="launcher-tab-visual" class="modal-body" style="max-height:66vh; overflow-y:auto;">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+          💡 支持添加任意 <strong>终端 CLI 命令</strong>（自动在选定工作目录打开 iTerm2/Terminal 执行）、<strong>macOS 桌面应用 (.app)</strong>、<strong>网页 URL</strong> 或 <strong>后台命令</strong>。配置保存在 <code>skill-hub/launcher_config.json</code>。
+        </div>
+        <div id="launcher-rows-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+        <div style="margin-top:10px;">
+          <button class="btn sm primary" onclick="addLauncherRow()">➕ 新增启动按钮</button>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;" />
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong style="font-size:13px;">📂 常用工作目录预设 (顶部下拉菜单优先展示)</strong>
+          <button class="btn sm" onclick="addWorkdirPresetRow()">➕ 新增常用目录</button>
+        </div>
+        <div id="workdir-preset-rows-container" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+
+      <div id="launcher-tab-json" class="modal-body" style="display:none; max-height:66vh;">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+          直接编辑 <code>launcher_config.json</code> 结构：
+        </div>
+        <textarea id="launcher-json-textarea" style="width:100%; height:360px; background:#090d16; color:var(--text); border:1px solid var(--border); border-radius:6px; padding:10px; font-family:monospace; font-size:12px;"></textarea>
+      </div>
+
+      <div class="modal-actions" style="justify-content:space-between; margin-top:12px;">
+        <button class="btn sm danger" onclick="resetLauncherConfigDefault()">↺ 恢复默认配置</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="closeLauncherConfigModal()">取消</button>
+          <button class="btn primary" onclick="saveLauncherConfigModal()">💾 保存并立即生效</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let DATA = null;
+    let LAUNCHER_CONFIG = null;
+    let INSTALLED_APPS = [];
+    let EDITING_CONFIG = null;
+    let LAUNCHER_TAB = 'visual';
     let SELECTED_SKILL = null;
     let SELECTED_SUITE_ID = null;
     let ACTIVE_INSTANCE_PATH = null;
@@ -548,10 +593,46 @@
     }
 
     function esc(s) {
-      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function loadLauncherConfig() {
+      try {
+        const resp = await fetch('/api/launcher-config');
+        const res = await resp.json();
+        if (res.ok && res.config) {
+          LAUNCHER_CONFIG = res.config;
+          INSTALLED_APPS = res.installed_apps || [];
+          renderLaunchButtonsBar();
+          initWorkspaces();
+          const dl = document.getElementById('installed-apps-datalist');
+          if (dl) {
+            dl.innerHTML = INSTALLED_APPS.map(a => `<option value="${esc(a)}"></option>`).join('');
+          }
+        }
+      } catch (e) {}
+    }
+
+    function renderLaunchButtonsBar() {
+      const bar = document.getElementById('launch-buttons-bar');
+      if (!bar || !LAUNCHER_CONFIG) return;
+      const items = (LAUNCHER_CONFIG.launchers || []).filter(item => item.enabled !== false);
+      const btnsHtml = items.map(item => {
+        const styleCls = item.style && item.style !== 'default' ? item.style : '';
+        const tip = `${item.type.toUpperCase()}: ${item.target || '(当前目录)'}${item.custom_workdir ? ' @ ' + item.custom_workdir : ''}`;
+        return `<button class="btn ${esc(styleCls)}" title="${esc(tip)}" onclick="launchApp('${esc(item.id)}')">${esc(item.label)}</button>`;
+      }).join('');
+
+      bar.innerHTML = `
+        <span style="color:var(--muted); font-size:12px; margin-right:4px;">🚀 一键启动工具:</span>
+        ${btnsHtml}
+        <span style="color:var(--border); margin:0 2px;">|</span>
+        <button class="btn sm" style="border-style:dashed; color:#93c5fd;" onclick="openLauncherConfigModal()">⚙️ 配置启动项</button>
+      `;
     }
 
     async function loadSkills() {
+      await loadLauncherConfig();
       const resp = await fetch('/api/skills');
       DATA = await resp.json();
       initSuiteCollapseState();
@@ -610,15 +691,273 @@
     function initWorkspaces() {
       const sel = document.getElementById('workdir-preset');
       const inp = document.getElementById('workdir-input');
-      const ws = DATA.workspaces || [];
-      if (!sel.options.length && ws.length) {
-        sel.innerHTML = ws.map(w => `<option value="${esc(w.path)}">${esc(w.label)}</option>`).join('');
-        inp.value = ws[0].path;
+      const prevVal = inp.value;
+
+      const merged = [];
+      const seen = new Set();
+      const customPresets = (LAUNCHER_CONFIG && LAUNCHER_CONFIG.workdir_presets) || [];
+      const scannedWs = (DATA && DATA.workspaces) || [];
+
+      [...customPresets, ...scannedWs].forEach(w => {
+        if (w && w.path && !seen.has(w.path)) {
+          seen.add(w.path);
+          merged.push(w);
+        }
+      });
+
+      if (merged.length) {
+        sel.innerHTML = merged.map(w => `<option value="${esc(w.path)}">${esc(w.label)}</option>`).join('');
+        if (!prevVal) {
+          inp.value = merged[0].path;
+        } else {
+          sel.value = prevVal;
+        }
       }
     }
 
     function onPresetChange(val) {
       document.getElementById('workdir-input').value = val;
+    }
+
+    async function pinCurrentWorkdir() {
+      const pathVal = (document.getElementById('workdir-input').value || '').trim();
+      if (!pathVal) {
+        showToast('⚠️ 请先在输入框填写工作目录路径');
+        return;
+      }
+      if (!LAUNCHER_CONFIG) await loadLauncherConfig();
+      const presets = LAUNCHER_CONFIG.workdir_presets || [];
+      if (presets.some(p => p.path === pathVal)) {
+        showToast('📌 该目录已在常用预设列表中');
+        return;
+      }
+      const shortName = pathVal.split('/').filter(Boolean).slice(-2).join('/') || pathVal;
+      presets.unshift({ label: `📌 ${shortName} (${pathVal})`, path: pathVal });
+      LAUNCHER_CONFIG.workdir_presets = presets;
+      const resp = await fetch('/api/launcher-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(LAUNCHER_CONFIG)
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        LAUNCHER_CONFIG = res.config;
+        initWorkspaces();
+        showToast(`✅ 已收藏工作目录: ${pathVal}`);
+      }
+    }
+
+    function openLauncherConfigModal() {
+      EDITING_CONFIG = JSON.parse(JSON.stringify(LAUNCHER_CONFIG || { launchers: [], workdir_presets: [] }));
+      LAUNCHER_TAB = 'visual';
+      switchLauncherConfigTab('visual');
+      document.getElementById('launcher-config-modal').classList.add('open');
+    }
+
+    function closeLauncherConfigModal() {
+      document.getElementById('launcher-config-modal').classList.remove('open');
+    }
+
+    function switchLauncherConfigTab(tab) {
+      if (LAUNCHER_TAB === 'json' && tab === 'visual') {
+        try {
+          EDITING_CONFIG = JSON.parse(document.getElementById('launcher-json-textarea').value);
+        } catch (e) {
+          showToast(`❌ JSON 格式有误: ${e.message}`);
+          return;
+        }
+      }
+      LAUNCHER_TAB = tab;
+      document.getElementById('tab-btn-visual').className = tab === 'visual' ? 'btn sm primary' : 'btn sm';
+      document.getElementById('tab-btn-json').className = tab === 'json' ? 'btn sm primary' : 'btn sm';
+      document.getElementById('launcher-tab-visual').style.display = tab === 'visual' ? 'block' : 'none';
+      document.getElementById('launcher-tab-json').style.display = tab === 'json' ? 'block' : 'none';
+
+      if (tab === 'visual') {
+        renderLauncherConfigRows();
+      } else {
+        document.getElementById('launcher-json-textarea').value = JSON.stringify(EDITING_CONFIG, null, 2);
+      }
+    }
+
+    function renderLauncherConfigRows() {
+      const box = document.getElementById('launcher-rows-container');
+      const items = EDITING_CONFIG.launchers || [];
+      box.innerHTML = items.map((item, idx) => {
+        const isApp = item.type === 'app';
+        const placeholder = item.type === 'cli'
+          ? '终端命令 (如 codex / claude / npm run dev，留空则仅打开终端)'
+          : item.type === 'app'
+          ? 'macOS 应用名 (如 Cursor / Antigravity / WorkBuddy / Visual Studio Code)'
+          : item.type === 'url'
+          ? '网址 URL (如 https://chatgpt.com)'
+          : item.type === 'bg_cmd'
+          ? '后台 Shell 命令'
+          : '可选指定路径 (留空则打开当前工作目录)';
+
+        return `
+          <div style="display:grid; grid-template-columns: 28px 180px 135px 1fr 145px 95px 135px; gap:6px; align-items:center; background:#0d131f; border:1px solid var(--border); padding:7px 9px; border-radius:6px;">
+            <input type="checkbox" title="是否在顶部栏显示" ${item.enabled !== false ? 'checked' : ''}
+              onchange="updateLauncherField(${idx}, 'enabled', this.checked)" />
+            <input type="text" value="${esc(item.label)}" placeholder="按钮文字 (如 ⚡ 启动 Codex)"
+              oninput="updateLauncherField(${idx}, 'label', this.value)" style="width:100%;" />
+            <select onchange="updateLauncherField(${idx}, 'type', this.value); renderLauncherConfigRows();" style="width:100%;">
+              <option value="cli" ${item.type === 'cli' ? 'selected' : ''}>💻 终端 CLI</option>
+              <option value="app" ${item.type === 'app' ? 'selected' : ''}>🖥️ 桌面 App</option>
+              <option value="url" ${item.type === 'url' ? 'selected' : ''}>🌐 网页 URL</option>
+              <option value="finder" ${item.type === 'finder' ? 'selected' : ''}>📂 Finder</option>
+              <option value="bg_cmd" ${item.type === 'bg_cmd' ? 'selected' : ''}>⚙️ 后台命令</option>
+            </select>
+            <input type="text" value="${esc(item.target || '')}" placeholder="${esc(placeholder)}"
+              ${isApp ? 'list="installed-apps-datalist"' : ''}
+              oninput="updateLauncherField(${idx}, 'target', this.value)" style="width:100%;" />
+            <input type="text" value="${esc(item.custom_workdir || '')}" placeholder="专属目录 (默认跟随顶部)"
+              title="若填写，点击该按钮时固定使用此目录；留空则使用顶部栏当前选中的工作目录"
+              oninput="updateLauncherField(${idx}, 'custom_workdir', this.value)" style="width:100%;" />
+            <select onchange="updateLauncherField(${idx}, 'style', this.value)" style="width:100%;" title="按钮颜色样式">
+              <option value="default" ${(!item.style || item.style === 'default') ? 'selected' : ''}>深灰默认</option>
+              <option value="codex" ${item.style === 'codex' ? 'selected' : ''}>翡翠绿</option>
+              <option value="claude" ${item.style === 'claude' ? 'selected' : ''}>琥珀橙</option>
+              <option value="primary" ${item.style === 'primary' ? 'selected' : ''}>科技蓝</option>
+            </select>
+            <div style="display:flex; gap:4px; justify-content:flex-end;">
+              <button class="btn sm" title="测试运行此项" onclick="testLauncherRow(${idx})">▶️</button>
+              <button class="btn sm" title="上移" onclick="moveLauncherRow(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
+              <button class="btn sm" title="下移" onclick="moveLauncherRow(${idx}, 1)" ${idx === items.length - 1 ? 'disabled' : ''}>⬇️</button>
+              <button class="btn sm danger" title="删除此按钮" onclick="removeLauncherRow(${idx})">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const presetBox = document.getElementById('workdir-preset-rows-container');
+      const presets = EDITING_CONFIG.workdir_presets || [];
+      presetBox.innerHTML = presets.map((p, idx) => `
+        <div style="display:grid; grid-template-columns: 240px 1fr 70px; gap:6px; align-items:center;">
+          <input type="text" value="${esc(p.label || '')}" placeholder="显示名称 (如 🛠️ Skill 个人源仓)"
+            oninput="updatePresetField(${idx}, 'label', this.value)" />
+          <input type="text" value="${esc(p.path || '')}" placeholder="绝对路径 (如 /Users/chenzeyang/Work/skills)"
+            oninput="updatePresetField(${idx}, 'path', this.value)" />
+          <button class="btn sm danger" onclick="removePresetRow(${idx})">🗑️ 移除</button>
+        </div>
+      `).join('');
+    }
+
+    function updateLauncherField(idx, key, val) {
+      if (!EDITING_CONFIG || !EDITING_CONFIG.launchers[idx]) return;
+      EDITING_CONFIG.launchers[idx][key] = val;
+    }
+
+    function moveLauncherRow(idx, delta) {
+      const arr = EDITING_CONFIG.launchers;
+      const targetIdx = idx + delta;
+      if (targetIdx < 0 || targetIdx >= arr.length) return;
+      const tmp = arr[idx];
+      arr[idx] = arr[targetIdx];
+      arr[targetIdx] = tmp;
+      renderLauncherConfigRows();
+    }
+
+    function removeLauncherRow(idx) {
+      EDITING_CONFIG.launchers.splice(idx, 1);
+      renderLauncherConfigRows();
+    }
+
+    function addLauncherRow() {
+      const newId = 'custom_' + Date.now();
+      EDITING_CONFIG.launchers.push({
+        id: newId,
+        label: '🚀 自定义工具',
+        type: 'cli',
+        target: '',
+        pass_workdir: true,
+        custom_workdir: '',
+        style: 'default',
+        enabled: true
+      });
+      renderLauncherConfigRows();
+    }
+
+    async function testLauncherRow(idx) {
+      const item = EDITING_CONFIG.launchers[idx];
+      if (!item) return;
+      const workdir = document.getElementById('workdir-input').value;
+      const resp = await fetch('/api/launch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ app: item.id, workdir, custom_item: item })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        showToast(`🚀 测试成功: ${res.message}`);
+      } else {
+        showToast(`❌ 测试失败: ${res.error}`);
+      }
+    }
+
+    function addWorkdirPresetRow() {
+      EDITING_CONFIG.workdir_presets = EDITING_CONFIG.workdir_presets || [];
+      EDITING_CONFIG.workdir_presets.push({
+        label: '📂 新工作目录',
+        path: document.getElementById('workdir-input').value || '/Users/chenzeyang/Work'
+      });
+      renderLauncherConfigRows();
+    }
+
+    function updatePresetField(idx, key, val) {
+      if (!EDITING_CONFIG || !EDITING_CONFIG.workdir_presets[idx]) return;
+      EDITING_CONFIG.workdir_presets[idx][key] = val;
+    }
+
+    function removePresetRow(idx) {
+      EDITING_CONFIG.workdir_presets.splice(idx, 1);
+      renderLauncherConfigRows();
+    }
+
+    async function saveLauncherConfigModal() {
+      if (LAUNCHER_TAB === 'json') {
+        try {
+          EDITING_CONFIG = JSON.parse(document.getElementById('launcher-json-textarea').value);
+        } catch (e) {
+          showToast(`❌ JSON 解析错误: ${e.message}`);
+          return;
+        }
+      }
+      const resp = await fetch('/api/launcher-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(EDITING_CONFIG)
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        LAUNCHER_CONFIG = res.config;
+        renderLaunchButtonsBar();
+        initWorkspaces();
+        closeLauncherConfigModal();
+        showToast('✅ 一键启动台配置已保存并生效！');
+      } else {
+        showToast(`❌ 保存失败: ${res.error}`);
+      }
+    }
+
+    async function resetLauncherConfigDefault() {
+      const resp = await fetch('/api/launcher-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reset: true })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        LAUNCHER_CONFIG = res.config;
+        EDITING_CONFIG = JSON.parse(JSON.stringify(LAUNCHER_CONFIG));
+        renderLauncherConfigRows();
+        if (LAUNCHER_TAB === 'json') {
+          document.getElementById('launcher-json-textarea').value = JSON.stringify(EDITING_CONFIG, null, 2);
+        }
+        renderLaunchButtonsBar();
+        initWorkspaces();
+        showToast('↺ 已恢复默认启动台配置');
+      }
     }
 
     function updateSummary() {

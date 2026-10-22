@@ -1,0 +1,112 @@
+{
+  "launchers": [
+    {
+      "id": "codex",
+      "label": "⚡ 启动 Codex (终端 CLI)",
+      "type": "cli",
+      "target": "codex",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "codex",
+      "enabled": true
+    },
+    {
+      "id": "claude",
+      "label": "🤖 启动 Claude Code (终端 CLI)",
+      "type": "cli",
+      "target": "claude",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "claude",
+      "enabled": true
+    },
+    {
+      "id": "cursor_cli",
+      "label": "🧭 启动 Cursor Agent (CLI)",
+      "type": "cli",
+      "target": "cursor-agent",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "cursor_app",
+      "label": "🖥️ 打开 Cursor 桌面端",
+      "type": "app",
+      "target": "Cursor",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "claude_app",
+      "label": "💬 打开 Claude 桌面端",
+      "type": "app",
+      "target": "Claude",
+      "pass_workdir": false,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "antigravity",
+      "label": "🪐 打开 Antigravity",
+      "type": "app",
+      "target": "Antigravity",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "workbuddy",
+      "label": "🦊 打开 WorkBuddy",
+      "type": "app",
+      "target": "WorkBuddy",
+      "pass_workdir": false,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "terminal",
+      "label": "💻 在此目录打开终端",
+      "type": "cli",
+      "target": "",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    },
+    {
+      "id": "finder",
+      "label": "📂 在 Finder 打开目录",
+      "type": "finder",
+      "target": "",
+      "pass_workdir": true,
+      "custom_workdir": "",
+      "style": "default",
+      "enabled": true
+    }
+  ],
+  "workdir_presets": [
+    {
+      "label": "🛠️ Skill 个人源仓 (~/Work/skills)",
+      "path": "/Users/chenzeyang/Work/skills"
+    },
+    {
+      "label": "🏢 美团研发主仓 (~/MTGIT)",
+      "path": "/Users/chenzeyang/MTGIT"
+    },
+    {
+      "label": "🧪 算法优化工作区 (~/Work/algorithm-opt-workspace)",
+      "path": "/Users/chenzeyang/Work/algorithm-opt-workspace"
+    },
+    {
+      "label": "🏠 个人主目录 (~)",
+      "path": "/Users/chenzeyang"
+    }
+  ]
+}

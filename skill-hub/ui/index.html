@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>本机 Skill 管理器 & AI 工具快捷启动台</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-alt: #1f2630;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    /* 顶部启动台 */
+    .launcher-bar {
+      background: linear-gradient(180deg, #1b222d 0%, #161b22 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 22px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+    .launcher-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .workdir-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      max-width: 720px;
+    }
+    .workdir-bar label {
+      color: var(--muted);
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+    select, input[type="text"], textarea {
+      background: #090d11;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    .launch-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button.btn {
+      padding: 7px 13px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s;
+    }
+    button.btn:hover { border-color: #58a6ff; background: #262f3d; }
+    button.btn.codex { background: rgba(16, 185, 129, 0.18); border-color: var(--green); color: #34d399; font-weight: 600; }
+    button.btn.codex:hover { background: rgba(16, 185, 129, 0.3); }
+    button.btn.claude { background: rgba(245, 158, 11, 0.18); border-color: var(--amber); color: #fbbf24; font-weight: 600; }
+    button.btn.claude:hover { background: rgba(245, 158, 11, 0.3); }
+    button.btn.danger { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: #f87171; font-weight: 600; }
+    button.btn.danger:hover { background: rgba(239, 68, 68, 0.28); }
+    button.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    button.btn.primary:hover { background: var(--accent-hover); }
+    button.btn.sm { padding: 4px 9px; font-size: 12px; }
+
+    main {
+      padding: 16px 22px;
+      max-width: 1640px;
+      margin: 0 auto;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 15px;
+    }
+    .stat-card .label { color: var(--muted); font-size: 12px; }
+    .stat-card .val { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    .stat-card .sub { color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 16px;
+      height: calc(100vh - 235px);
+      min-height: 540px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 10px 14px;
+      background: var(--panel-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .filter-bar {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .panel-body {
+      padding: 14px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .skill-item {
+      padding: 10px 13px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .skill-item:hover { background: var(--panel-alt); }
+    .skill-item.selected { background: rgba(59, 130, 246, 0.16); border-left: 3px solid var(--accent); }
+    .skill-item .row1 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-weight: 600;
+    }
+    .skill-item .desc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+      font-size: 11px;
+    }
+    .pill {
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #090d11;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .pill.symlink { color: #60a5fa; border-color: rgba(59,130,246,0.5); }
+    .pill.synced { color: #34d399; border-color: rgba(16,185,129,0.5); }
+    .pill.drifted { color: #fbbf24; border-color: rgba(245,158,11,0.6); }
+    .badge {
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+    }
+    .badge.drifted { color: #fbbf24; border-color: var(--amber); background: rgba(245,158,11,0.12); }
+    .badge.duplicated { color: #c084fc; border-color: var(--purple); background: rgba(168,85,247,0.12); }
+    .badge.all_symlinked { color: #60a5fa; border-color: var(--accent); background: rgba(59,130,246,0.12); }
+    .badge.single { color: #34d399; border-color: var(--green); background: rgba(16,185,129,0.12); }
+
+    .instance-card {
+      background: #0b0f14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .diff-box {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #080b10;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      overflow-x: auto;
+      white-space: pre;
+      max-height: 280px;
+      margin-bottom: 12px;
+    }
+    .diff-add { color: #34d399; background: rgba(16,185,129,0.12); display: block; }
+    .diff-del { color: #f87171; background: rgba(239,68,68,0.12); display: block; }
+    .diff-hdr { color: #60a5fa; font-weight: 600; display: block; }
+    textarea.editor {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--accent);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部 App 快捷启动栏 -->
+  <header class="launcher-bar">
+    <div class="launcher-top">
+      <div class="brand">
+        <h1>⚡ 本地 Skill 管家 & 快捷启动台</h1>
+        <span class="badge single" id="scan-time-badge">加载中...</span>
+      </div>
+      <div class="workdir-bar">
+        <label>📂 启动工作目录:</label>
+        <select id="workdir-preset" onchange="onPresetChange(this.value)" style="max-width:230px;"></select>
+        <input type="text" id="workdir-input" style="flex:1;" placeholder="/Users/chenzeyang/Work/skills" />
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn codex" onclick="triggerSyncAll()" id="btn-sync-all">🔄 一键对齐源仓</button>
+        <button class="btn primary" onclick="triggerRescan()" id="btn-rescan">🔍 重新全盘扫描 Skill</button>
+        <button class="btn danger" onclick="stopServer()" id="btn-stop">🛑 关闭服务</button>
+      </div>
+    </div>
+
+    <div class="launch-buttons">
+      <span style="color:var(--muted); font-size:12px; margin-right:4px;">🚀 一键启动工具:</span>
+      <button class="btn codex" onclick="launchApp('codex')">⚡ 启动 Codex (终端 CLI)</button>
+      <button class="btn claude" onclick="launchApp('claude')">🤖 启动 Claude Code (终端 CLI)</button>
+      <button class="btn" onclick="launchApp('cursor_cli')">🧭 启动 Cursor Agent (CLI)</button>
+      <span style="color:var(--border);">|</span>
+      <button class="btn" onclick="launchApp('cursor_app')">🖥️ 打开 Cursor 桌面端</button>
+      <button class="btn" onclick="launchApp('claude_app')">💬 打开 Claude 桌面端</button>
+      <button class="btn" onclick="launchApp('antigravity')">🪐 打开 Antigravity</button>
+      <button class="btn" onclick="launchApp('terminal')">💻 在此目录打开终端</button>
+      <button class="btn" onclick="launchApp('finder')">📂 在 Finder 打开目录</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">我的有效独立 Skill (去重后)</div>
+        <div class="val" id="st-user-unique">-</div>
+        <div class="sub" id="st-user-files">分布在源码仓、全局与项目目录</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">内容版本分叉 (脑裂冲突)</div>
+        <div class="val" style="color:var(--amber);" id="st-drifted">-</div>
+        <div class="sub">同名 Skill 在不同目录内容不一致</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">多处拷贝与软链状态</div>
+        <div class="val" style="color:#60a5fa;" id="st-symlinks">-</div>
+        <div class="sub" id="st-redundant">支持一键收敛为符号链接</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">全盘物理检出 SKILL.md (零遗漏)</div>
+        <div class="val" style="color:var(--green);" id="st-raw-total">-</div>
+        <div class="sub" id="st-raw-sub">含第三方插件商城与系统内置缓存</div>
+      </div>
+    </div>
+
+    <div class="workspace-grid">
+      <!-- 左侧：Skill 列表与多维过滤 -->
+      <div class="panel">
+        <div class="filter-bar">
+          <div style="display:flex; gap:6px;">
+            <select id="f-status" onchange="renderList()" style="flex:1;">
+              <option value="all">全部状态</option>
+              <option value="drifted">⚡ 存在版本分叉 (需对齐)</option>
+              <option value="duplicated">📄 多处物理拷贝 (可转软链)</option>
+              <option value="all_symlinked">🔗 已全部软链</option>
+              <option value="single">1️⃣ 仅单处存在</option>
+            </select>
+            <select id="f-scope" onchange="renderList()" style="flex:1;">
+              <option value="all">全部位置 / 工具</option>
+              <option value="source_repo">源码仓 (Work/skills & MTGIT)</option>
+              <option value="claude">已装在 Claude (~/.claude)</option>
+              <option value="codex">已装在 Codex (~/.codex)</option>
+              <option value="cursor">已装在 Cursor (~/.cursor)</option>
+              <option value="agents">已装在 Agents (~/.agents)</option>
+              <option value="workbuddy">已装在 WorkBuddy (~/.workbuddy)</option>
+              <option value="project_local">项目/iCloud 局部 Skill</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="text" id="f-search" placeholder="搜索 Skill 名称、描述或路径..." oninput="renderList()" style="flex:1;" />
+            <label style="font-size:12px; color:var(--muted); white-space:nowrap; cursor:pointer;">
+              <input type="checkbox" id="f-include-cache" onchange="renderList()" />
+              含插件商城缓存
+            </label>
+          </div>
+          <div style="font-size:12px; color:var(--muted); display:flex; justify-content:space-between;">
+            <span id="list-counter">共 0 个 Skill</span>
+            <span>点击任一 Skill 查看所有副本路径与 Diff</span>
+          </div>
+        </div>
+        <div class="panel-body" id="skill-list" style="padding:0;"></div>
+      </div>
+
+      <!-- 右侧：选中 Skill 的多副本路径、Diff 对比与在线编辑 -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <strong id="detail-title">请在左侧选择一个 Skill</strong>
+            <span id="detail-sub" style="font-size:12px; color:var(--muted); margin-left:8px;"></span>
+          </div>
+          <div id="detail-header-actions" style="display:flex; gap:6px;"></div>
+        </div>
+        <div class="panel-body" id="detail-body">
+          <p style="color:var(--muted);">👈 点击左侧列表中的任意 Skill，可查看它在本机所有目录中的分布、对比不同版本差异、一键用 Cursor/Finder 打开，或将物理拷贝统一替换为软链。</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let DATA = null;
+    let SELECTED_SKILL = null;
+    let ACTIVE_INSTANCE_PATH = null;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function loadSkills() {
+      const resp = await fetch('/api/skills');
+      DATA = await resp.json();
+      initWorkspaces();
+      updateSummary();
+      renderList();
+      if (SELECTED_SKILL) {
+        selectSkill(SELECTED_SKILL.name);
+      } else {
+        const first = (DATA.skill_groups || [])[0];
+        if (first) selectSkill(first.name);
+      }
+    }
+
+    function initWorkspaces() {
+      const sel = document.getElementById('workdir-preset');
+      const inp = document.getElementById('workdir-input');
+      const ws = DATA.workspaces || [];
+      if (!sel.options.length && ws.length) {
+        sel.innerHTML = ws.map(w => `<option value="${esc(w.path)}">${esc(w.label)}</option>`).join('');
+        inp.value = ws[0].path;
+      }
+    }
+
+    function onPresetChange(val) {
+      document.getElementById('workdir-input').value = val;
+    }
+
+    function updateSummary() {
+      const s = DATA.summary;
+      document.getElementById('scan-time-badge').textContent = `最近扫描: ${s.scanned_at}`;
+      document.getElementById('st-user-unique').textContent = `${s.unique_skill_names} 个`;
+      document.getElementById('st-user-files').textContent = `对应 ${s.total_skill_files} 份已安装/源码 SKILL.md`;
+      document.getElementById('st-drifted').textContent = `${s.drifted_skills} 个`;
+      document.getElementById('st-symlinks').textContent = `🔗 ${s.symlink_copies} 份软链`;
+      document.getElementById('st-redundant').textContent = `共 ${s.redundant_copies} 份跨目录同名实例`;
+      document.getElementById('st-raw-total').textContent = `${s.raw_total_files} 份`;
+      document.getElementById('st-raw-sub').textContent =
+        `全盘共 ${s.raw_unique_names} 个独立名 (含商城缓存 ${s.by_scope.marketplace_cache} 份)`;
+    }
+
+    async function triggerSyncAll() {
+      const btn = document.getElementById('btn-sync-all');
+      btn.disabled = true;
+      btn.textContent = '⏳ 正在对齐源仓...';
+      showToast('正在执行源仓对齐与软链治理（原副本自动备份至 vault/backups）...');
+      try {
+        const resp = await fetch('/api/skills/sync-all', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: '{}'
+        });
+        const res = await resp.json();
+        if (res.ok) {
+          DATA = res.data;
+          updateSummary();
+          renderList();
+          const sc = res.sync || {};
+          showToast(`✅ 对齐完成！共处理 ${sc.total_actions || 0} 项，当前版本分叉: ${DATA.summary.drifted_skills} 个`);
+        } else {
+          showToast(`❌ 对齐失败: ${res.error}`);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 一键对齐源仓';
+      }
+    }
+
+    async function triggerRescan() {
+      const btn = document.getElementById('btn-rescan');
+      btn.disabled = true;
+      btn.textContent = '⏳ 正在全盘扫描...';
+      showToast('正在深度扫描本机所有 SKILL.md，请稍候...');
+      try {
+        const resp = await fetch('/api/scan', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}' });
+        const res = await resp.json();
+        if (res.ok) {
+          DATA = res.data;
+          updateSummary();
+          renderList();
+          showToast(`✅ 扫描完成！全盘共检出 ${DATA.summary.raw_total_files} 份 SKILL.md`);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 重新全盘扫描 Skill';
+      }
+    }
+
+    async function stopServer() {
+      try {
+        await fetch('/api/server/stop', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}' });
+      } catch (e) {}
+      document.body.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;text-align:center;">
+          <div style="font-size:42px;">🛑</div>
+          <h2 style="margin:0;">Skill Hub 本地服务已安全关闭</h2>
+          <p style="color:#8b949e;margin:0;">后台进程 (127.0.0.1:8765) 已退出，你可以直接关闭此浏览器标签页。<br/>下次需要时双击 <strong>Skill Hub.app</strong> 或执行 <code>~/Work/skills/skill-hub/ctl.sh start</code> 即可启动。</p>
+        </div>
+      `;
+    }
+
+    async function launchApp(app, customWorkdir, customTargetPath) {
+      const workdir = customWorkdir || document.getElementById('workdir-input').value;
+      const resp = await fetch('/api/launch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ app, workdir, target_path: customTargetPath || '' })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        showToast(`🚀 ${res.message}`);
+      } else {
+        showToast(`❌ 启动失败: ${res.error}`);
+      }
+    }
+
+    function renderList() {
+      const stFilter = document.getElementById('f-status').value;
+      const scFilter = document.getElementById('f-scope').value;
+      const q = (document.getElementById('f-search').value || '').toLowerCase();
+      const includeCache = document.getElementById('f-include-cache').checked;
+
+      const statusText = {
+        drifted: '⚡ 版本分叉',
+        duplicated: '📄 多处拷贝',
+        all_symlinked: '🔗 已软链',
+        single: '单一位置'
+      };
+      const appLabel = { symlink: '🔗', synced: '📄', drifted: '⚠️' };
+
+      const groups = (DATA.skill_groups || []).filter(g => {
+        if (!includeCache && !g.is_user_skill) return false;
+        if (stFilter !== 'all' && g.status !== stFilter) return false;
+        if (scFilter !== 'all') {
+          if (['claude', 'codex', 'cursor', 'agents', 'workbuddy'].includes(scFilter)) {
+            if ((g.app_status[scFilter] || {}).state === 'missing') return false;
+          } else {
+            if (!g.instances.some(i => i.scope === scFilter)) return false;
+          }
+        }
+        if (q) {
+          const matchName = g.name.toLowerCase().includes(q);
+          const matchDesc = (g.description || '').toLowerCase().includes(q);
+          const matchPath = g.instances.some(i => i.skill_md_path.toLowerCase().includes(q));
+          if (!matchName && !matchDesc && !matchPath) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('list-counter').textContent = `当前筛选共 ${groups.length} 个 Skill`;
+      const container = document.getElementById('skill-list');
+      container.innerHTML = groups.slice(0, 400).map(g => {
+        const sel = SELECTED_SKILL && SELECTED_SKILL.name === g.name ? 'selected' : '';
+        const as = g.app_status || {};
+        const appPills = ['claude', 'codex', 'cursor', 'agents', 'workbuddy']
+          .filter(a => as[a] && as[a].state !== 'missing')
+          .map(a => `<span class="pill ${as[a].state}">${a} ${appLabel[as[a].state] || ''}</span>`)
+          .join('');
+
+        return `
+          <div class="skill-item ${sel}" onclick="selectSkill('${esc(g.name)}')">
+            <div class="row1">
+              <span>${esc(g.name)}</span>
+              <span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span>
+            </div>
+            <div class="desc">${esc(g.description)}</div>
+            <div class="pills">
+              <span class="pill">${esc(g.canonical_scope_label)}</span>
+              ${appPills}
+            </div>
+          </div>
+        `;
+      }).join('') || '<div style="padding:24px; color:var(--muted);">没有匹配的 Skill</div>';
+    }
+
+    function formatDiff(txt) {
+      return (txt || '').split('\n').map(line => {
+        if (line.startsWith('+++') || line.startsWith('---') || line.startsWith('@@')) {
+          return `<span class="diff-hdr">${esc(line)}</span>`;
+        }
+        if (line.startsWith('+')) return `<span class="diff-add">${esc(line)}</span>`;
+        if (line.startsWith('-')) return `<span class="diff-del">${esc(line)}</span>`;
+        return esc(line) + '\n';
+      }).join('');
+    }
+
+    function selectSkill(name) {
+      const g = (DATA.skill_groups || []).find(x => x.name === name);
+      if (!g) return;
+      SELECTED_SKILL = g;
+      ACTIVE_INSTANCE_PATH = g.canonical_path;
+      renderList();
+      renderDetail();
+    }
+
+    function renderDetail() {
+      const g = SELECTED_SKILL;
+      if (!g) return;
+      const activeInst = g.instances.find(i => i.skill_md_path === ACTIVE_INSTANCE_PATH) || g.instances[0];
+
+      document.getElementById('detail-title').textContent = `📦 ${g.name}`;
+      document.getElementById('detail-sub').textContent =
+        `基准路径: ${g.canonical_dir} | 有效实例: ${g.total_copies} 处`;
+
+      document.getElementById('detail-header-actions').innerHTML = `
+        <button class="btn sm codex" onclick="launchApp('codex', '${esc(activeInst.skill_dir)}')">⚡ 在此目录启动 Codex</button>
+        <button class="btn sm" onclick="launchApp('cursor_app', '${esc(activeInst.skill_dir)}', '${esc(activeInst.skill_md_path)}')">✏️ 用 Cursor 打开</button>
+        <button class="btn sm" onclick="launchApp('finder', '', '${esc(activeInst.skill_md_path)}')">📂 Finder 定位</button>
+        <button class="btn sm primary" onclick="linkSkillToAllApps('${esc(g.name)}', '${esc(activeInst.skill_dir)}')">🔗 将此版本软链到 4 大工具</button>
+      `;
+
+      const diffsHtml = (g.diffs && g.diffs.length) ? `
+        <div style="margin-bottom:14px;">
+          <div style="font-weight:600; color:var(--amber); margin-bottom:6px;">
+            ⚠️ 检测到 ${g.diffs.length} 处内容版本差异 (与基准版对比 Unified Diff):
+          </div>
+          ${g.diffs.map(d => `
+            <div class="diff-box">${formatDiff(d.diff_text)}</div>
+          `).join('')}
+        </div>
+      ` : '';
+
+      const instancesHtml = g.instances.slice(0, 15).map(inst => {
+        const isCurrent = inst.skill_md_path === activeInst.skill_md_path;
+        const linkNote = inst.is_symlink
+          ? `<span style="color:#60a5fa;">🔗 软链 -> ${esc(inst.symlink_target)}</span>`
+          : `<span style="color:#34d399;">📄 物理文件</span>`;
+        return `
+          <div class="instance-card" style="border-color:${isCurrent ? 'var(--accent)' : 'var(--border)'};">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <div>
+                <strong>${esc(inst.scope_label)}</strong>
+                <span style="font-size:12px; color:var(--muted); margin-left:8px;">修改时间: ${inst.mtime_str} | Hash: #${inst.raw_hash.slice(0,8)}</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn sm" onclick="switchInstance('${esc(inst.skill_md_path)}')">👁️ 查看/编辑此副本</button>
+                <button class="btn sm" onclick="launchApp('finder', '', '${esc(inst.skill_md_path)}')">📂 打开目录</button>
+              </div>
+            </div>
+            <div style="font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px;">
+              ${esc(inst.skill_md_path)} (${linkNote})
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const moreNote = g.instances.length > 15
+        ? `<div style="font-size:12px; color:var(--muted); margin-bottom:10px;">... 以及其余 ${g.instances.length - 15} 处软链副本 (如 .trae / .qwen / .roo 等目录)</div>`
+        : '';
+
+      document.getElementById('detail-body').innerHTML = `
+        <div style="margin-bottom:14px;">
+          <div style="font-weight:600; margin-bottom:6px;">📍 本机发现的所有路径副本 (${g.instances.length} 处):</div>
+          ${instancesHtml}
+          ${moreNote}
+        </div>
+        ${diffsHtml}
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong>📝 在线查看与编辑: <code>${esc(activeInst.skill_md_path)}</code></strong>
+            <div style="display:flex; gap:8px;">
+              <button class="btn sm" onclick="copyCurrentSkill()">📋 复制内容</button>
+              <button class="btn sm primary" onclick="saveCurrentSkill('${esc(activeInst.skill_md_path)}')">💾 保存修改到磁盘</button>
+            </div>
+          </div>
+          <textarea id="skill-editor" class="editor" rows="20">${esc(activeInst.full_content)}</textarea>
+        </div>
+      `;
+    }
+
+    function switchInstance(path) {
+      ACTIVE_INSTANCE_PATH = path;
+      renderDetail();
+    }
+
+    function copyCurrentSkill() {
+      const el = document.getElementById('skill-editor');
+      if (!el) return;
+      navigator.clipboard.writeText(el.value);
+      showToast('📋 已复制 SKILL.md 内容到剪贴板');
+    }
+
+    async function saveCurrentSkill(skillMdPath) {
+      const content = document.getElementById('skill-editor').value;
+      const resp = await fetch('/api/skill/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skill_md_path: skillMdPath, content })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        showToast(`✅ 已保存修改至: ${res.path}`);
+        await loadSkills();
+      } else {
+        showToast(`❌ 保存失败: ${res.error}`);
+      }
+    }
+
+    async function linkSkillToAllApps(skillName, canonicalDir) {
+      const resp = await fetch('/api/skill/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skill_name: skillName,
+          canonical_dir: canonicalDir,
+          apps: ['claude', 'codex', 'cursor', 'agents']
+        })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        showToast(`🔗 已将 ${skillName} 软链至四大工具目录 (原物理副本已备份)`);
+      } else {
+        showToast(`❌ 软链失败: ${res.error}`);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadSkills);
+  </script>
+</body>
+</html>

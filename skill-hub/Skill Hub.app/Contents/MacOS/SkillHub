@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+# 定位 skill-hub 主目录（支持将 Skill Hub.app 复制或软链到 /Applications 使用）
+APP_EXEC_DIR="$(cd "$(dirname "$0")" && pwd)"
+CANDIDATE_DIR="$(cd "${APP_EXEC_DIR}/../../.." && pwd)"
+
+if [ -x "${CANDIDATE_DIR}/ctl.sh" ]; then
+  exec "${CANDIDATE_DIR}/ctl.sh" gui
+elif [ -x "${HOME}/Work/skills/skill-hub/ctl.sh" ]; then
+  exec "${HOME}/Work/skills/skill-hub/ctl.sh" gui
+else
+  osascript -e 'display alert "未找到 Skill Hub" message "请确认 ~/Work/skills/skill-hub/ctl.sh 存在且可执行。"'
+  exit 1
+fi

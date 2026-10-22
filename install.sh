@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 把 zh/ 下全部 skill 平铺安装到各 agent 的 skills 目录,并清理历史遗留的旧 skill 名。
+# 把 zh/ 下全部 skill 以软链接平铺安装到各 agent 的 skills 目录,并清理历史遗留的旧 skill 名。
 # 兼容 bash 3.2(macOS 自带),不使用 readarray / 关联数组 / globstar。
 set -euo pipefail
 
@@ -11,13 +11,14 @@ usage() {
 Usage:
   ./install.sh zh [--dry-run] [target_dir ...]
 
-把本仓库 zh/ 下的全部 skill(按目录名平铺)复制到目标 skills 目录,并清理
+把本仓库 zh/ 下的全部 skill(按目录名平铺)以软链接安装到目标 skills 目录,并清理
 deprecated 列表中的旧 skill 名。语言参数必填且只接受 zh。
 
 Default targets:
   ~/.agents/skills
   ~/.codex/skills
   ~/.claude/skills
+  ~/.cursor/skills
   ~/.workbuddy/skills
 
 Examples:
@@ -86,6 +87,7 @@ if ((${#targets[@]} == 0)); then
     "$HOME/.agents/skills"
     "$HOME/.codex/skills"
     "$HOME/.claude/skills"
+    "$HOME/.cursor/skills"
     "$HOME/.workbuddy/skills"
   )
 fi
@@ -154,9 +156,7 @@ deprecated_skills=(
   auto-ai-coauthor
 )
 
-rsync_flags=(-a --delete)
 if ((dry_run)); then
-  rsync_flags+=(--dry-run --itemize-changes)
   echo "Dry run: no files will be changed."
 fi
 
@@ -179,18 +179,27 @@ for target in "${targets[@]}"; do
     skill_name="$(basename "$skill")"
     destination="$expanded_target/$skill_name"
 
-    if ((dry_run)); then
-      echo "  $skill_name -> $destination"
-    else
-      mkdir -p "$destination"
+    if [[ "$destination" == "$skill" ]]; then
+      echo "Refusing to link skill onto itself: $destination" >&2
+      exit 1
     fi
 
-    rsync "${rsync_flags[@]}" "$skill/" "$destination/"
+    if ((dry_run)); then
+      echo "  $skill_name -> $destination (symlink -> $skill)"
+    else
+      if [[ -L "$destination" && "$(readlink "$destination")" == "$skill" ]]; then
+        echo "  $skill_name -> $destination (ok)"
+      else
+        rm -rf "$destination"
+        ln -s "$skill" "$destination"
+        echo "  $skill_name -> $destination (linked -> $skill)"
+      fi
+    fi
   done
 
   for deprecated_skill in "${deprecated_skills[@]}"; do
     deprecated_destination="$expanded_target/$deprecated_skill"
-    if [[ -e "$deprecated_destination" ]]; then
+    if [[ -e "$deprecated_destination" || -L "$deprecated_destination" ]]; then
       if ((dry_run)); then
         echo "  would remove deprecated $deprecated_skill"
       else
@@ -202,7 +211,7 @@ for target in "${targets[@]}"; do
 done
 
 if ((dry_run)); then
-  echo "Dry run: would install ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
+  echo "Dry run: would link ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
 else
-  echo "Installed ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
+  echo "Linked ${#skills[@]} skill(s) to ${#targets[@]} target(s)."
 fi

@@ -12,3 +12,6 @@
 
 # 在 skill 目录里跑 Python 会生成 *.pyc
 __pycache__/
+
+# skill-hub 本地运行缓存与备份（不入库）
+skill-hub/vault/

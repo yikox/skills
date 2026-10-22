@@ -50,7 +50,11 @@ APP_TARGETS = {
 def get_cached_or_scan(force_rescan: bool = False) -> Dict[str, Any]:
     if not force_rescan and INDEX_OUTPUT_PATH.exists():
         try:
-            return json.loads(INDEX_OUTPUT_PATH.read_text(encoding="utf-8"))
+            cached = json.loads(INDEX_OUTPUT_PATH.read_text(encoding="utf-8"))
+            if "skill_suites" in cached:
+                return cached
+            importlib.reload(scan_skills)
+            return scan_skills.run_full_scan(HOME_DIR, save_index=True, reaggregate_only=True)
         except Exception:
             pass
     importlib.reload(scan_skills)
@@ -266,6 +270,24 @@ class LocalHubHandler(BaseHTTPRequestHandler):
                     apps=body.get("apps", ["claude", "codex", "cursor", "agents"]),
                 )
                 self._send_json(res)
+                return
+
+            if parsed.path == "/api/suite/link":
+                suite_id = body["suite_id"]
+                apps = body.get("apps", ["claude", "codex", "cursor", "agents"])
+                cur_data = get_cached_or_scan(force_rescan=False)
+                linked_skills = []
+                for grp in cur_data.get("skill_groups", []):
+                    if grp.get("suite_id") == suite_id:
+                        safe_name = grp["name"].split("/")[-1]
+                        link_skill_to_apps(
+                            skill_name=safe_name,
+                            canonical_dir=grp["canonical_dir"],
+                            apps=apps,
+                        )
+                        linked_skills.append(grp["name"])
+                new_data = scan_skills.run_full_scan(HOME_DIR, save_index=True, reaggregate_only=False)
+                self._send_json({"ok": True, "linked_count": len(linked_skills), "data": new_data})
                 return
 
             if parsed.path == "/api/skills/sync-all":

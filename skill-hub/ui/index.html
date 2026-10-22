@@ -172,6 +172,86 @@
     }
     .skill-item:hover { background: var(--panel-alt); }
     .skill-item.selected { background: rgba(59, 130, 246, 0.16); border-left: 3px solid var(--accent); }
+    .skill-item.in-suite {
+      padding: 8px 13px 8px 24px;
+      background: #11161d;
+      border-left: 2px solid #263040;
+    }
+    .skill-item.in-suite:hover { background: #19212c; }
+    .skill-item.in-suite.selected {
+      background: rgba(59, 130, 246, 0.18);
+      border-left: 3px solid var(--accent);
+    }
+    .suite-group {
+      border-bottom: 1px solid var(--border);
+    }
+    .suite-header {
+      padding: 10px 12px;
+      background: linear-gradient(90deg, #1b222c 0%, #161b22 100%);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      user-select: none;
+      transition: background 0.12s;
+    }
+    .suite-header:hover { background: #222b38; }
+    .suite-header.active-suite {
+      background: rgba(59, 130, 246, 0.14);
+      border-left: 3px solid var(--accent);
+    }
+    .suite-header .suite-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+    .suite-chevron {
+      font-size: 11px;
+      color: var(--muted);
+      width: 14px;
+      text-align: center;
+      transition: transform 0.15s;
+    }
+    .suite-title {
+      font-weight: 600;
+      font-size: 13.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .suite-sub {
+      color: var(--muted);
+      font-size: 11.5px;
+      margin-top: 2px;
+      padding-left: 22px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .suite-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-top: 8px;
+    }
+    .suite-table th, .suite-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+    .suite-table th {
+      background: var(--panel-alt);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .suite-table tr:hover td {
+      background: rgba(59, 130, 246, 0.08);
+    }
     .skill-item .row1 {
       display: flex;
       align-items: center;
@@ -343,15 +423,22 @@
             </select>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
-            <input type="text" id="f-search" placeholder="搜索 Skill 名称、描述或路径..." oninput="renderList()" style="flex:1;" />
+            <input type="text" id="f-search" placeholder="搜索 Skill 名称、套件、描述或路径..." oninput="renderList()" style="flex:1;" />
             <label style="font-size:12px; color:var(--muted); white-space:nowrap; cursor:pointer;">
               <input type="checkbox" id="f-include-cache" onchange="renderList()" />
               含插件商城缓存
             </label>
           </div>
-          <div style="font-size:12px; color:var(--muted); display:flex; justify-content:space-between;">
-            <span id="list-counter">共 0 个 Skill</span>
-            <span>点击任一 Skill 查看所有副本路径与 Diff</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap;">
+            <div style="display:flex; gap:5px; align-items:center;">
+              <button class="btn sm primary" id="btn-mode-suite" onclick="setViewMode('suite')">🗂️ 按套件折叠归纳</button>
+              <button class="btn sm" id="btn-mode-flat" onclick="setViewMode('flat')">📋 平铺列表</button>
+              <span id="suite-fold-btns" style="display:inline-flex; gap:4px; margin-left:4px;">
+                <button class="btn sm" onclick="expandOrCollapseAll(false)" title="展开所有套件分组">➕ 全展开</button>
+                <button class="btn sm" onclick="expandOrCollapseAll(true)" title="折叠所有套件分组">➖ 全折叠</button>
+              </span>
+            </div>
+            <span id="list-counter" style="font-size:12px; color:var(--muted);">共 0 个 Skill</span>
           </div>
         </div>
         <div class="panel-body" id="skill-list" style="padding:0;"></div>
@@ -378,7 +465,11 @@
   <script>
     let DATA = null;
     let SELECTED_SKILL = null;
+    let SELECTED_SUITE_ID = null;
     let ACTIVE_INSTANCE_PATH = null;
+    let VIEW_MODE = 'suite'; // 'suite' | 'flat'
+    let COLLAPSED_SUITES = {}; // suite_id -> boolean
+    let SUITES_INITIALIZED = false;
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -394,15 +485,57 @@
     async function loadSkills() {
       const resp = await fetch('/api/skills');
       DATA = await resp.json();
+      initSuiteCollapseState();
       initWorkspaces();
       updateSummary();
       renderList();
       if (SELECTED_SKILL) {
         selectSkill(SELECTED_SKILL.name);
+      } else if (SELECTED_SUITE_ID) {
+        selectSuiteOverview(SELECTED_SUITE_ID, false);
       } else {
-        const first = (DATA.skill_groups || [])[0];
-        if (first) selectSkill(first.name);
+        const defaultSuite = (DATA.skill_suites || []).find(s => s.suite_id === 'core_personal') || (DATA.skill_suites || [])[0];
+        if (defaultSuite) {
+          selectSuiteOverview(defaultSuite.suite_id, false);
+        } else {
+          const first = (DATA.skill_groups || [])[0];
+          if (first) selectSkill(first.name);
+        }
       }
+    }
+
+    function initSuiteCollapseState() {
+      if (SUITES_INITIALIZED) return;
+      (DATA.skill_suites || []).forEach(s => {
+        COLLAPSED_SUITES[s.suite_id] = !!s.default_collapsed;
+      });
+      SUITES_INITIALIZED = true;
+    }
+
+    function setViewMode(mode) {
+      VIEW_MODE = mode;
+      document.getElementById('btn-mode-suite').className = mode === 'suite' ? 'btn sm primary' : 'btn sm';
+      document.getElementById('btn-mode-flat').className = mode === 'flat' ? 'btn sm primary' : 'btn sm';
+      document.getElementById('suite-fold-btns').style.display = mode === 'suite' ? 'inline-flex' : 'none';
+      renderList();
+    }
+
+    function expandOrCollapseAll(collapsed) {
+      (DATA.skill_suites || []).forEach(s => {
+        COLLAPSED_SUITES[s.suite_id] = collapsed;
+      });
+      renderList();
+    }
+
+    function toggleSuite(suiteId, ev) {
+      if (ev) ev.stopPropagation();
+      COLLAPSED_SUITES[suiteId] = !COLLAPSED_SUITES[suiteId];
+      renderList();
+    }
+
+    function onSuiteHeaderClick(suiteId) {
+      COLLAPSED_SUITES[suiteId] = !COLLAPSED_SUITES[suiteId];
+      selectSuiteOverview(suiteId, false);
     }
 
     function initWorkspaces() {
@@ -507,12 +640,7 @@
       }
     }
 
-    function renderList() {
-      const stFilter = document.getElementById('f-status').value;
-      const scFilter = document.getElementById('f-scope').value;
-      const q = (document.getElementById('f-search').value || '').toLowerCase();
-      const includeCache = document.getElementById('f-include-cache').checked;
-
+    function renderSkillItemHtml(g, inSuite = false) {
       const statusText = {
         drifted: '⚡ 版本分叉',
         duplicated: '📄 多处拷贝',
@@ -520,6 +648,35 @@
         single: '单一位置'
       };
       const appLabel = { symlink: '🔗', synced: '📄', drifted: '⚠️' };
+      const sel = SELECTED_SKILL && SELECTED_SKILL.name === g.name ? 'selected' : '';
+      const suiteCls = inSuite ? 'in-suite' : '';
+      const as = g.app_status || {};
+      const appPills = ['claude', 'codex', 'cursor', 'agents', 'workbuddy']
+        .filter(a => as[a] && as[a].state !== 'missing')
+        .map(a => `<span class="pill ${as[a].state}">${a} ${appLabel[as[a].state] || ''}</span>`)
+        .join('');
+
+      return `
+        <div class="skill-item ${suiteCls} ${sel}" onclick="selectSkill('${esc(g.name)}')">
+          <div class="row1">
+            <span>${esc(g.name)}</span>
+            <span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span>
+          </div>
+          <div class="desc">${esc(g.description)}</div>
+          <div class="pills">
+            <span class="pill">${esc(g.canonical_scope_label)}</span>
+            ${appPills}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderList() {
+      const stFilter = document.getElementById('f-status').value;
+      const scFilter = document.getElementById('f-scope').value;
+      const q = (document.getElementById('f-search').value || '').toLowerCase();
+      const includeCache = document.getElementById('f-include-cache').checked;
+      const hasActiveFilter = (stFilter !== 'all') || (scFilter !== 'all') || (q.length > 0);
 
       const groups = (DATA.skill_groups || []).filter(g => {
         if (!includeCache && !g.is_user_skill) return false;
@@ -533,37 +690,93 @@
         }
         if (q) {
           const matchName = g.name.toLowerCase().includes(q);
+          const matchSuite = (g.suite_title || '').toLowerCase().includes(q);
           const matchDesc = (g.description || '').toLowerCase().includes(q);
           const matchPath = g.instances.some(i => i.skill_md_path.toLowerCase().includes(q));
-          if (!matchName && !matchDesc && !matchPath) return false;
+          if (!matchName && !matchSuite && !matchDesc && !matchPath) return false;
         }
         return true;
       });
 
-      document.getElementById('list-counter').textContent = `当前筛选共 ${groups.length} 个 Skill`;
       const container = document.getElementById('skill-list');
-      container.innerHTML = groups.slice(0, 400).map(g => {
-        const sel = SELECTED_SKILL && SELECTED_SKILL.name === g.name ? 'selected' : '';
-        const as = g.app_status || {};
-        const appPills = ['claude', 'codex', 'cursor', 'agents', 'workbuddy']
-          .filter(a => as[a] && as[a].state !== 'missing')
-          .map(a => `<span class="pill ${as[a].state}">${a} ${appLabel[as[a].state] || ''}</span>`)
-          .join('');
+      if (!groups.length) {
+        document.getElementById('list-counter').textContent = '共 0 个匹配';
+        container.innerHTML = '<div style="padding:24px; color:var(--muted);">没有匹配的 Skill</div>';
+        return;
+      }
+
+      if (VIEW_MODE === 'flat') {
+        document.getElementById('list-counter').textContent = `平铺共 ${groups.length} 个 Skill`;
+        container.innerHTML = groups.slice(0, 400).map(g => renderSkillItemHtml(g, false)).join('');
+        return;
+      }
+
+      // 按套件分组渲染
+      const bySuite = {};
+      groups.forEach(g => {
+        const sid = g.suite_id || 'standalone_misc';
+        if (!bySuite[sid]) {
+          bySuite[sid] = {
+            suite_id: sid,
+            suite_title: g.suite_title || '🧩 其他独立与专项 Skill',
+            suite_desc: g.suite_desc || '',
+            suite_order: g.suite_order || 50,
+            items: []
+          };
+        }
+        bySuite[sid].items.push(g);
+      });
+
+      const suiteList = Object.values(bySuite).sort((a, b) => (a.suite_order - b.suite_order) || a.suite_title.localeCompare(b.suite_title));
+      document.getElementById('list-counter').textContent = `${suiteList.length} 个套件 · 共 ${groups.length} 个 Skill`;
+
+      container.innerHTML = suiteList.map(suite => {
+        const sid = suite.suite_id;
+        // 搜索或筛选时自动展开匹配套件；否则按用户折叠状态展示
+        const isCollapsed = hasActiveFilter ? false : !!COLLAPSED_SUITES[sid];
+        const chevron = isCollapsed ? '▶' : '▼';
+        const isSuiteSelected = (!SELECTED_SKILL && SELECTED_SUITE_ID === sid) ? 'active-suite' : '';
+
+        const driftedCnt = suite.items.filter(x => x.status === 'drifted').length;
+        const dupCnt = suite.items.filter(x => x.status === 'duplicated').length;
+        const symCnt = suite.items.filter(x => x.status === 'all_symlinked').length;
+
+        let suiteBadge = '';
+        if (driftedCnt > 0) {
+          suiteBadge = `<span class="badge drifted">⚡ ${driftedCnt} 分叉</span>`;
+        } else if (dupCnt > 0) {
+          suiteBadge = `<span class="badge duplicated">📄 ${dupCnt} 多拷贝</span>`;
+        } else if (symCnt === suite.items.length) {
+          suiteBadge = `<span class="badge all_symlinked">🔗 全部已软链</span>`;
+        } else if (symCnt > 0) {
+          suiteBadge = `<span class="badge all_symlinked">🔗 ${symCnt}/${suite.items.length} 软链</span>`;
+        } else {
+          suiteBadge = `<span class="badge single">单处 (${suite.items.length})</span>`;
+        }
+
+        const childrenHtml = isCollapsed
+          ? ''
+          : `<div class="suite-children">${suite.items.map(g => renderSkillItemHtml(g, true)).join('')}</div>`;
 
         return `
-          <div class="skill-item ${sel}" onclick="selectSkill('${esc(g.name)}')">
-            <div class="row1">
-              <span>${esc(g.name)}</span>
-              <span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span>
+          <div class="suite-group">
+            <div class="suite-header ${isSuiteSelected}" onclick="onSuiteHeaderClick('${esc(sid)}')">
+              <div style="min-width:0; flex:1;">
+                <div class="suite-left">
+                  <span class="suite-chevron" onclick="toggleSuite('${esc(sid)}', event)">${chevron}</span>
+                  <span class="suite-title">${esc(suite.suite_title)}</span>
+                  <span class="pill" style="color:#e6edf3; font-weight:600;">${suite.items.length} 个</span>
+                </div>
+                ${suite.suite_desc ? `<div class="suite-sub">${esc(suite.suite_desc)}</div>` : ''}
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                ${suiteBadge}
+              </div>
             </div>
-            <div class="desc">${esc(g.description)}</div>
-            <div class="pills">
-              <span class="pill">${esc(g.canonical_scope_label)}</span>
-              ${appPills}
-            </div>
+            ${childrenHtml}
           </div>
         `;
-      }).join('') || '<div style="padding:24px; color:var(--muted);">没有匹配的 Skill</div>';
+      }).join('');
     }
 
     function formatDiff(txt) {
@@ -581,9 +794,127 @@
       const g = (DATA.skill_groups || []).find(x => x.name === name);
       if (!g) return;
       SELECTED_SKILL = g;
+      SELECTED_SUITE_ID = g.suite_id || null;
+      if (g.suite_id) {
+        COLLAPSED_SUITES[g.suite_id] = false;
+      }
       ACTIVE_INSTANCE_PATH = g.canonical_path;
       renderList();
       renderDetail();
+    }
+
+    function selectSuiteOverview(suiteId, forceExpand = false) {
+      SELECTED_SKILL = null;
+      SELECTED_SUITE_ID = suiteId;
+      if (forceExpand) {
+        COLLAPSED_SUITES[suiteId] = false;
+      }
+      renderList();
+      renderSuiteOverview(suiteId);
+    }
+
+    function renderSuiteOverview(suiteId) {
+      const suiteMeta = (DATA.skill_suites || []).find(s => s.suite_id === suiteId);
+      const items = (DATA.skill_groups || []).filter(g => g.suite_id === suiteId);
+      if (!items.length) return;
+
+      const title = suiteMeta ? suiteMeta.suite_title : (items[0].suite_title || suiteId);
+      const desc = suiteMeta ? suiteMeta.suite_desc : (items[0].suite_desc || '');
+      const isCollapsed = !!COLLAPSED_SUITES[suiteId];
+
+      document.getElementById('detail-title').textContent = `🗂️ 套件总览：${title}`;
+      document.getElementById('detail-sub').textContent = `共包含 ${items.length} 个成套 Skill`;
+
+      document.getElementById('detail-header-actions').innerHTML = `
+        <button class="btn sm" onclick="toggleSuite('${esc(suiteId)}'); renderSuiteOverview('${esc(suiteId)}')">
+          ${isCollapsed ? '➕ 在左侧展开本套件列表' : '➖ 在左侧折叠本套件列表'}
+        </button>
+        <button class="btn sm primary" onclick="linkEntireSuite('${esc(suiteId)}', '${esc(title)}')">
+          🔗 将整套 (${items.length} 个) 一键软链到 4 大工具
+        </button>
+      `;
+
+      const statusText = {
+        drifted: '⚡ 版本分叉',
+        duplicated: '📄 多处拷贝',
+        all_symlinked: '🔗 已软链',
+        single: '单一位置'
+      };
+      const appLabel = { symlink: '🔗', synced: '📄', drifted: '⚠️' };
+
+      const rowsHtml = items.map(g => {
+        const as = g.app_status || {};
+        const appPills = ['claude', 'codex', 'cursor', 'agents', 'workbuddy']
+          .filter(a => as[a] && as[a].state !== 'missing')
+          .map(a => `<span class="pill ${as[a].state}">${a} ${appLabel[as[a].state] || ''}</span>`)
+          .join(' ');
+        return `
+          <tr style="cursor:pointer;" onclick="selectSkill('${esc(g.name)}')">
+            <td style="font-weight:600; color:#60a5fa; white-space:nowrap;">${esc(g.name)}</td>
+            <td style="color:var(--muted); max-width:420px;">${esc(g.description)}</td>
+            <td style="white-space:nowrap;"><span class="pill">${esc(g.canonical_scope_label)}</span></td>
+            <td>${appPills || '<span style="color:var(--muted);font-size:11px;">仅局部/单处</span>'}</td>
+            <td style="white-space:nowrap;"><span class="badge ${g.status}">${statusText[g.status] || g.status} (${g.total_copies})</span></td>
+            <td style="white-space:nowrap;" onclick="event.stopPropagation();">
+              <button class="btn sm" onclick="selectSkill('${esc(g.name)}')">👁️ 详情/编辑</button>
+              <button class="btn sm" onclick="launchApp('finder', '', '${esc(g.canonical_path)}')">📂</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('detail-body').innerHTML = `
+        <div style="background:#0b0f14; border:1px solid var(--border); border-radius:8px; padding:12px 15px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-weight:600; font-size:14px;">${esc(title)}</div>
+            <div style="color:var(--muted); font-size:12.5px; margin-top:3px;">${esc(desc)}</div>
+          </div>
+          <div style="display:flex; gap:10px; font-size:12.5px;">
+            <span class="badge all_symlinked">🔗 已软链: ${items.filter(x => x.status === 'all_symlinked').length}</span>
+            <span class="badge single">1️⃣ 单处: ${items.filter(x => x.status === 'single').length}</span>
+            <span class="badge duplicated">📄 多拷贝: ${items.filter(x => x.status === 'duplicated').length}</span>
+            <span class="badge drifted">⚡ 分叉: ${items.filter(x => x.status === 'drifted').length}</span>
+          </div>
+        </div>
+        <div style="font-weight:600; margin-bottom:6px;">📋 套件内全部成员列表 (点击任意行可查看副本路径或在线编辑 SKILL.md):</div>
+        <table class="suite-table">
+          <thead>
+            <tr>
+              <th>Skill 名称</th>
+              <th>功能描述</th>
+              <th>基准来源</th>
+              <th>已挂载工具</th>
+              <th>状态 (实例数)</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function linkEntireSuite(suiteId, suiteTitle) {
+      showToast(`⏳ 正在将「${suiteTitle}」整套软链至四大工具...`);
+      const resp = await fetch('/api/suite/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          suite_id: suiteId,
+          apps: ['claude', 'codex', 'cursor', 'agents']
+        })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        DATA = res.data;
+        updateSummary();
+        renderList();
+        renderSuiteOverview(suiteId);
+        showToast(`✅ 已将「${suiteTitle}」共 ${res.linked_count} 个 Skill 全部软链至四大工具！`);
+      } else {
+        showToast(`❌ 套件软链失败: ${res.error}`);
+      }
     }
 
     function renderDetail() {
@@ -593,9 +924,14 @@
 
       document.getElementById('detail-title').textContent = `📦 ${g.name}`;
       document.getElementById('detail-sub').textContent =
-        `基准路径: ${g.canonical_dir} | 有效实例: ${g.total_copies} 处`;
+        `所属套件: ${g.suite_title || '独立 Skill'} | 基准路径: ${g.canonical_dir}`;
+
+      const backSuiteBtn = g.suite_id
+        ? `<button class="btn sm" onclick="selectSuiteOverview('${esc(g.suite_id)}')">🗂️ 返回套件总览</button>`
+        : '';
 
       document.getElementById('detail-header-actions').innerHTML = `
+        ${backSuiteBtn}
         <button class="btn sm codex" onclick="launchApp('codex', '${esc(activeInst.skill_dir)}')">⚡ 在此目录启动 Codex</button>
         <button class="btn sm" onclick="launchApp('cursor_app', '${esc(activeInst.skill_dir)}', '${esc(activeInst.skill_md_path)}')">✏️ 用 Cursor 打开</button>
         <button class="btn sm" onclick="launchApp('finder', '', '${esc(activeInst.skill_md_path)}')">📂 Finder 定位</button>

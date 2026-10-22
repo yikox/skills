@@ -583,6 +583,8 @@ def aggregate_skills(instances: List[Dict[str, Any]], scan_mode: str, duration_s
         key=lambda g: (0 if g["is_user_skill"] else 1, rank_map.get(g["status"], 9), -g["total_copies"], g["name"])
     )
 
+    skill_suites = assign_skill_suites(skill_groups)
+
     workspaces = [
         {"label": "个人 Skill 主仓 (~/Work/skills)", "path": str(HOME_DIR / "Work/skills")},
         {"label": "AIMaster 团队工具仓 (~/MTGIT/aimaster-tools)", "path": str(HOME_DIR / "MTGIT/aimaster-tools")},
@@ -617,6 +619,7 @@ def aggregate_skills(instances: List[Dict[str, Any]], scan_mode: str, duration_s
         "drifted_skills": user_drifted_count,
         "redundant_copies": user_redundant_copies,
         "symlink_copies": user_symlink_copies,
+        "user_suite_count": sum(1 for s in skill_suites if s["is_user_suite"]),
         "by_scope": {
             sc: sum(1 for i in instances if i["scope"] == sc)
             for sc in all_scopes
@@ -626,8 +629,220 @@ def aggregate_skills(instances: List[Dict[str, Any]], scan_mode: str, duration_s
     return {
         "summary": summary,
         "workspaces": workspaces,
+        "skill_suites": skill_suites,
         "skill_groups": skill_groups,
     }
+
+
+def _match_known_suite(g: Dict[str, Any]) -> Optional[Tuple[str, str, str, int, bool]]:
+    """
+    返回: (suite_id, suite_title, suite_desc, suite_order, default_collapsed)
+    """
+    name = g["name"]
+    cpath = g["canonical_path"].lower()
+
+    if "/work/skills/zh/" in cpath:
+        return (
+            "core_personal",
+            "⭐ 个人主控核心套件 (~/Work/skills)",
+            "个人开发规范、Git 提交、写作与三大 CLI 调度核心技能",
+            1,
+            False,
+        )
+    if name.startswith(("lark-", "feishu-")):
+        return (
+            "lark_feishu",
+            "🐦 飞书 / Lark 全家桶套件",
+            "飞书文档、多维表格、IM、日历、会议纪要、审批、OKR 等成套办公技能",
+            2,
+            True,
+        )
+    if "/mtgit/aimaster-tools/" in cpath or name.startswith(("aimaster-", "am-")):
+        return (
+            "aimaster_suite",
+            "🚀 AIMaster 算力与平台套件",
+            "AIMaster 远程机器控制、SSH/SFTP、性能剖析与平台发布工具集",
+            3,
+            True,
+        )
+    if "/mtgit/mtpipe-skill/" in cpath or name.startswith("infer-"):
+        return (
+            "mtpipe_infer",
+            "⚙️ MTPipe 算法推理与部署套件",
+            "MTPipe 算法部署流水线、API 契约校验与子模块技能集",
+            4,
+            True,
+        )
+    if name.startswith(("optkit-", "dit-", "parity-", "acceleration-", "model-integration", "model-acceleration", "aqua-")):
+        return (
+            "optkit_accel",
+            "⚡ OptKit 与模型加速评测套件",
+            "模型推理加速、DiT 优化、精度对齐测试与 Aqua 性能评测套件",
+            5,
+            True,
+        )
+    if name.startswith("meitu-") or "algo-monitor" in cpath or "meitu" in name or name == "Downloads":
+        return (
+            "meitu_internal",
+            "🏢 美图内部协同与算法监测套件",
+            "美图 Confluence、内部连接器、GitLab MR 评审与新算法监测查询套件",
+            6,
+            True,
+        )
+    if name.startswith("openspec-"):
+        return (
+            "openspec_suite",
+            "📐 OpenSpec 规范变更工作流套件",
+            "OpenSpec 规范创建、变更应用、验证、归档与同步成套工作流",
+            7,
+            True,
+        )
+    if "/superpowers/" in cpath or name in ("test-driven-development",):
+        return (
+            "superpowers_suite",
+            "🦸 Superpowers 研发工程方法论套件",
+            "TDD、系统化调试、代码评审、多 Agent 并行调度与分支收尾方法论",
+            8,
+            True,
+        )
+    if "xbtlin-ai-berkshire" in cpath or "daily_stock_analysis" in cpath:
+        return (
+            "investment_suite",
+            "📈 AI 投研与财报分析套件",
+            "行业漏斗、财报复盘、公司深度研究、投资组合与个股分析套件",
+            9,
+            True,
+        )
+    if "vscode-synced-customization-agent-host-copilotcli" in cpath:
+        return (
+            "copilot_pr_suite",
+            "🐙 Git & PR 研发协作套件 (Copilot)",
+            "PR 创建/更新、CI 修复、分支同步与代码评审自动化套件",
+            10,
+            True,
+        )
+    if "local-agent-mode-sessions/skills-plugin" in cpath:
+        return (
+            "claude_cowork_suite",
+            "📎 Claude 办公文档与日常套件",
+            "Word/PDF/PPTX/XLSX 文档处理、日程管理与记忆归档套件",
+            11,
+            True,
+        )
+    if g["canonical_scope"] == "workbuddy_global" or name.endswith("__skillhub"):
+        return (
+            "workbuddy_suite",
+            "🤖 WorkBuddy 专属技能套件",
+            "安装在 ~/.workbuddy/skills 下的全局扩展技能",
+            12,
+            True,
+        )
+    return None
+
+
+def assign_skill_suites(skill_groups: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    为每个 Skill Group 标记所属套件 (suite_id / suite_title / suite_order)，
+    并支持对未命中预设规则但具有相同前缀 (>=3 个) 的成套技能自动聚类。
+    """
+    unmatched_user: List[Dict[str, Any]] = []
+    unmatched_cache: List[Dict[str, Any]] = []
+
+    for g in skill_groups:
+        known = _match_known_suite(g)
+        if known and g["is_user_skill"]:
+            sid, title, desc, order, collapsed = known
+            g["suite_id"] = sid
+            g["suite_title"] = title
+            g["suite_desc"] = desc
+            g["suite_order"] = order
+            g["suite_default_collapsed"] = collapsed
+        elif g["is_user_skill"]:
+            unmatched_user.append(g)
+        else:
+            unmatched_cache.append(g)
+
+    # 对未命中固定规则的用户 Skill：若同前缀 >= 3 个，自动归为动态套件
+    prefix_buckets: Dict[str, List[Dict[str, Any]]] = {}
+    for g in unmatched_user:
+        parts = re.split(r"[-_]", g["name"])
+        prefix = parts[0].lower() if len(parts) > 1 and len(parts[0]) >= 2 else ""
+        prefix_buckets.setdefault(prefix, []).append(g)
+
+    dyn_order = 20
+    for prefix, bucket in sorted(prefix_buckets.items()):
+        if prefix and len(bucket) >= 3:
+            sid = f"auto_{prefix}"
+            title = f"📦 {prefix}-* 系列套件"
+            desc = f"自动归纳的 {prefix}-* 前缀成套技能 ({len(bucket)} 个)"
+            for g in bucket:
+                g["suite_id"] = sid
+                g["suite_title"] = title
+                g["suite_desc"] = desc
+                g["suite_order"] = dyn_order
+                g["suite_default_collapsed"] = True
+            dyn_order += 1
+        else:
+            for g in bucket:
+                g["suite_id"] = "standalone_misc"
+                g["suite_title"] = "🧩 其他独立与专项 Skill"
+                g["suite_desc"] = "未归入成套系列的独立工具或单项目技能"
+                g["suite_order"] = 50
+                g["suite_default_collapsed"] = True
+
+    # 对插件商城缓存 Skill 按来源或前缀分组
+    for g in unmatched_cache:
+        p = g["canonical_path"]
+        if "/scientific-skills/" in p:
+            sid, title, order = ("cache_scientific", "🔬 [商城缓存] 科研计算技能集 (scientific-skills)", 90)
+        elif "/workbuddy-connector-plugins-official/" in p:
+            sid, title, order = ("cache_wb_connectors", "🔌 [商城缓存] WorkBuddy 官方连接器套件", 91)
+        elif "/codebuddy-plugins-official/" in p:
+            sid, title, order = ("cache_codebuddy", "🧰 [商城缓存] CodeBuddy 官方插件套件", 92)
+        elif "/.codex/.tmp/plugins/" in p:
+            sid, title, order = ("cache_codex_plugins", "📦 [商城缓存] Codex 内置插件缓存套件", 93)
+        else:
+            sid, title, order = ("cache_other", "🏪 [商城缓存] 其他内置与第三方缓存套件", 95)
+        g["suite_id"] = sid
+        g["suite_title"] = title
+        g["suite_desc"] = "第三方插件商城或系统内置缓存（默认隐藏）"
+        g["suite_order"] = order
+        g["suite_default_collapsed"] = True
+
+    # 汇总生成 skill_suites 元数据列表
+    suites_map: Dict[str, Dict[str, Any]] = {}
+    for g in skill_groups:
+        sid = g["suite_id"]
+        if sid not in suites_map:
+            suites_map[sid] = {
+                "suite_id": sid,
+                "suite_title": g["suite_title"],
+                "suite_desc": g.get("suite_desc", ""),
+                "suite_order": g["suite_order"],
+                "default_collapsed": g["suite_default_collapsed"],
+                "is_user_suite": g["is_user_skill"],
+                "skill_count": 0,
+                "drifted_count": 0,
+                "duplicated_count": 0,
+                "all_symlinked_count": 0,
+                "single_count": 0,
+                "skill_names": [],
+            }
+        sm = suites_map[sid]
+        sm["skill_count"] += 1
+        sm["skill_names"].append(g["name"])
+        st = g["status"]
+        if st == "drifted":
+            sm["drifted_count"] += 1
+            sm["default_collapsed"] = False  # 存在版本分叉的套件默认自动展开提醒！
+        elif st == "duplicated":
+            sm["duplicated_count"] += 1
+        elif st == "all_symlinked":
+            sm["all_symlinked_count"] += 1
+        else:
+            sm["single_count"] += 1
+
+    return sorted(suites_map.values(), key=lambda x: (x["suite_order"], x["suite_title"]))
 
 
 def run_full_scan(root_dir: Path = HOME_DIR, save_index: bool = True, reaggregate_only: bool = False) -> Dict[str, Any]:

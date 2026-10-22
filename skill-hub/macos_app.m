@@ -16,11 +16,40 @@
 
 @implementation SkillHubAppDelegate
 
+- (NSString *)resolveHubDir {
+    NSDictionary *env = [[NSProcessInfo processInfo] environment];
+    NSFileManager *fm = [NSFileManager defaultManager];
+
+    if (env[@"SKILL_HUB_DIR"]) {
+        NSString *envDir = env[@"SKILL_HUB_DIR"];
+        if ([fm fileExistsAtPath:[envDir stringByAppendingPathComponent:@"ctl.sh"]]) {
+            return envDir;
+        }
+    }
+
+    // 若从仓库内的 Skill Hub.app 启动，其父目录即为 skill-hub
+    NSString *bundleParent = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
+    if ([fm fileExistsAtPath:[bundleParent stringByAppendingPathComponent:@"ctl.sh"]]) {
+        return bundleParent;
+    }
+
+    // 默认回退到 ~/Work/skills/skill-hub（支持从 /Applications/Skill Hub.app 启动）
+    return [NSHomeDirectory() stringByAppendingPathComponent:@"Work/skills/skill-hub"];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
+    NSString *iconPath = [[NSBundle mainBundle] pathForResource:@"AppIcon" ofType:@"icns"];
+    if (iconPath) {
+        NSImage *iconImg = [[NSImage alloc] initWithContentsOfFile:iconPath];
+        if (iconImg) {
+            [NSApp setApplicationIconImage:iconImg];
+        }
+    }
+
     NSDictionary *env = [[NSProcessInfo processInfo] environment];
-    self.hubDir = env[@"SKILL_HUB_DIR"] ?: [NSHomeDirectory() stringByAppendingPathComponent:@"Work/skills/skill-hub"];
+    self.hubDir = [self resolveHubDir];
     NSString *port = env[@"SKILL_HUB_PORT"] ?: @"8788";
     self.serverUrl = [NSString stringWithFormat:@"http://127.0.0.1:%@", port];
 
